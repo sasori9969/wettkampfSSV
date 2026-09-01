@@ -9,21 +9,22 @@
 // SUPABASE
 // ==========================================================
 
-const SUPABASE_URL =
+const teilnehmerSupabaseUrl =
     "https://pvvdbcvdhggqbembqrda.supabase.co";
 
-const SUPABASE_ANON_KEY =
+const teilnehmerSupabaseAnonKey =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
-const teilnehmerSupabase =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+
+const teilnehmerSupabaseClient =
+    window.supabase.createClient(
+        teilnehmerSupabaseUrl,
+        teilnehmerSupabaseAnonKey
     );
 
 
 // ==========================================================
-// DOM ELEMENTE
+// DOM
 // ==========================================================
 
 const teilnehmerForm =
@@ -31,20 +32,24 @@ const teilnehmerForm =
         "teilnehmer-form"
     );
 
+
 const vornameInput =
     document.getElementById(
         "vorname"
     );
+
 
 const nachnameInput =
     document.getElementById(
         "nachname"
     );
 
+
 const teilnehmerMeldung =
     document.getElementById(
         "teilnehmer-meldung"
     );
+
 
 const teilnehmerListe =
     document.getElementById(
@@ -65,11 +70,14 @@ function teilnehmerMeldungAnzeigen(
         return;
     }
 
+
     teilnehmerMeldung.textContent =
         text;
 
+
     teilnehmerMeldung.className =
         "meldung";
+
 
     if (typ) {
 
@@ -86,19 +94,21 @@ function teilnehmerMeldungAnzeigen(
 // HTML SICHER MACHEN
 // ==========================================================
 
-function htmlSicher(
+function teilnehmerHtmlSicher(
     text
 ) {
 
-    const div =
+    const element =
         document.createElement(
             "div"
         );
 
-    div.textContent =
+
+    element.textContent =
         text ?? "";
 
-    return div.innerHTML;
+
+    return element.innerHTML;
 
 }
 
@@ -127,7 +137,7 @@ async function teilnehmerLaden() {
         data,
         error
     } =
-        await teilnehmerSupabase
+        await teilnehmerSupabaseClient
 
             .from("participants")
 
@@ -164,7 +174,7 @@ async function teilnehmerLaden() {
 
             <div class="error">
 
-                Teilnehmer konnten nicht geladen werden.
+                Fehler beim Laden der Teilnehmer.
 
             </div>
 
@@ -213,6 +223,7 @@ async function teilnehmerLaden() {
                     "div"
                 );
 
+
             zeile.className =
                 "starter-card";
 
@@ -221,15 +232,13 @@ async function teilnehmerLaden() {
 
                 <div class="starter-name">
 
-                    ${htmlSicher(person.vorname)}
-                    ${htmlSicher(person.nachname)}
+                    ${teilnehmerHtmlSicher(
+                        person.vorname
+                    )}
 
-                </div>
-
-                <div>
-
-                    ID:
-                    ${htmlSicher(person.id)}
+                    ${teilnehmerHtmlSicher(
+                        person.nachname
+                    )}
 
                 </div>
 
@@ -276,7 +285,7 @@ async function teilnehmerAnlegen(
 
 
     // ------------------------------------------------------
-    // Eingaben prüfen
+    // EINGABEN PRÜFEN
     // ------------------------------------------------------
 
     if (!vorname) {
@@ -286,7 +295,9 @@ async function teilnehmerAnlegen(
             "status-fehler"
         );
 
+
         vornameInput.focus();
+
 
         return;
 
@@ -300,7 +311,9 @@ async function teilnehmerAnlegen(
             "status-fehler"
         );
 
+
         nachnameInput.focus();
+
 
         return;
 
@@ -308,7 +321,7 @@ async function teilnehmerAnlegen(
 
 
     // ------------------------------------------------------
-    // Button sperren
+    // BUTTON
     // ------------------------------------------------------
 
     const button =
@@ -336,14 +349,14 @@ async function teilnehmerAnlegen(
     try {
 
         // ==================================================
-        // PRÜFEN, OB TEILNEHMER BEREITS EXISTIERT
+        // PRÜFEN, OB TEILNEHMER EXISTIERT
         // ==================================================
 
         const {
-            data: vorhandene,
-            error: suchError
+            data: vorhanden,
+            error: suchFehler
         } =
-            await teilnehmerSupabase
+            await teilnehmerSupabaseClient
 
                 .from("participants")
 
@@ -364,17 +377,19 @@ async function teilnehmerAnlegen(
                 );
 
 
-        if (suchError) {
+        if (suchFehler) {
 
             console.error(
-                "Fehler bei der Teilnehmerprüfung:",
-                suchError
+                "Fehler bei der Prüfung:",
+                suchFehler
             );
+
 
             teilnehmerMeldungAnzeigen(
                 "❌ Teilnehmer konnte nicht geprüft werden.",
                 "status-fehler"
             );
+
 
             return;
 
@@ -382,14 +397,15 @@ async function teilnehmerAnlegen(
 
 
         if (
-            vorhandene &&
-            vorhandene.length > 0
+            vorhanden &&
+            vorhanden.length > 0
         ) {
 
             teilnehmerMeldungAnzeigen(
                 "⚠️ Dieser Teilnehmer ist bereits vorhanden.",
                 "status-warnung"
             );
+
 
             return;
 
@@ -401,10 +417,10 @@ async function teilnehmerAnlegen(
         // ==================================================
 
         const {
-            data,
-            error
+            data: neuerTeilnehmer,
+            error: insertFehler
         } =
-            await teilnehmerSupabase
+            await teilnehmerSupabaseClient
 
                 .from("participants")
 
@@ -422,11 +438,11 @@ async function teilnehmerAnlegen(
                 .single();
 
 
-        if (error) {
+        if (insertFehler) {
 
             console.error(
-                "Fehler beim Anlegen des Teilnehmers:",
-                error
+                "Fehler beim Anlegen:",
+                insertFehler
             );
 
 
@@ -435,6 +451,7 @@ async function teilnehmerAnlegen(
                 "status-fehler"
             );
 
+
             return;
 
         }
@@ -442,7 +459,7 @@ async function teilnehmerAnlegen(
 
         console.log(
             "Teilnehmer angelegt:",
-            data
+            neuerTeilnehmer
         );
 
 
@@ -458,7 +475,7 @@ async function teilnehmerAnlegen(
 
 
         // ==================================================
-        // ERFOLGSMELDUNG
+        // ERFOLG
         // ==================================================
 
         teilnehmerMeldungAnzeigen(
@@ -473,8 +490,8 @@ async function teilnehmerAnlegen(
 
         await teilnehmerLaden();
 
-
-    } catch (fehler) {
+    }
+    catch (fehler) {
 
         console.error(
             "Unerwarteter Fehler:",
@@ -487,8 +504,8 @@ async function teilnehmerAnlegen(
             "status-fehler"
         );
 
-
-    } finally {
+    }
+    finally {
 
         if (button) {
 
@@ -529,9 +546,5 @@ async function teilnehmerStart() {
 
 }
 
-
-// ==========================================================
-// AUSFÜHREN
-// ==========================================================
 
 teilnehmerStart();
