@@ -76,13 +76,33 @@
 
 
         <!-- ==========================================
-             WETTKAMPF AUSWÄHLEN
+             ÜBERSCHRIFT
              ========================================== -->
 
         <section class="card">
 
             <h2>
                 Ergebnisse erfassen
+            </h2>
+
+
+            <p>
+                Wähle zunächst den Wettkampf und anschließend
+                den Starter aus.
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             WETTKAMPF
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                1. Wettkampf auswählen
             </h2>
 
 
@@ -106,67 +126,86 @@
             </div>
 
 
-            <p id="wettkampf-info">
-            </p>
+            <p
+                id="wettkampf-info"
+                class="meldung"
+            ></p>
 
         </section>
 
 
 
         <!-- ==========================================
-             STARTER AUSWÄHLEN
+             STARTER SUCHEN
              ========================================== -->
 
         <section
             class="card"
-            id="starter-auswahl-bereich"
+            id="starter-suche-bereich"
             style="display: none;"
         >
 
             <h2>
-                Starter auswählen
+                2. Starter auswählen
             </h2>
 
 
-            <div class="form-group">
+            <label for="starter-suche">
 
-                <label for="starter-suche">
-                    Starter suchen
-                </label>
+                Teilnehmer suchen
+
+            </label>
 
 
-                <input
-                    type="text"
-                    id="starter-suche"
-                    placeholder="Name oder Anfangsbuchstaben ..."
-                    autocomplete="off"
-                >
-
-            </div>
+            <input
+                type="text"
+                id="starter-suche"
+                placeholder="Name oder Anfangsbuchstaben ..."
+                autocomplete="off"
+            >
 
 
             <div
                 id="starter-suchergebnisse"
-                class="suchergebnisse"
-            >
-            </div>
+            ></div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             START AUSWÄHLEN
+             ========================================== -->
+
+        <section
+            class="card"
+            id="start-auswahl-bereich"
+            style="display: none;"
+        >
+
+            <h2>
+                3. Start auswählen
+            </h2>
 
 
             <div
-                class="form-group"
-            >
+                id="ausgewaehlter-starter"
+            ></div>
 
-                <label for="starter-auswahl">
-                    Starter
+
+            <div class="form-group">
+
+                <label for="start-auswahl">
+                    Start
                 </label>
 
 
                 <select
-                    id="starter-auswahl"
+                    id="start-auswahl"
                 >
 
                     <option value="">
-                        Starter auswählen ...
+                        Start auswählen ...
                     </option>
 
                 </select>
@@ -175,18 +214,15 @@
 
 
             <div
-                id="starter-information"
-                class="starter-information"
-                style="display: none;"
-            >
-            </div>
+                id="start-information"
+            ></div>
 
         </section>
 
 
 
         <!-- ==========================================
-             ERGEBNISSE EINGEBEN
+             ERGEBNISSE
              ========================================== -->
 
         <section
@@ -195,45 +231,28 @@
             style="display: none;"
         >
 
-            <h2 id="ergebnis-titel">
-                Ergebnisse
+            <h2>
+                4. Ergebnisse
             </h2>
 
 
-            <p id="ergebnis-hinweis">
-            </p>
+            <p id="ergebnis-hinweis"></p>
 
 
-            <form id="ergebnis-form">
-
+            <form
+                id="ergebnis-form"
+            >
 
                 <div
                     id="ergebnis-felder"
-                >
-                </div>
+                ></div>
 
-
-
-                <!-- ==================================
-                     SPEICHERN
-                     ================================== -->
 
                 <button
                     type="submit"
-                    id="ergebnisse-speichern"
                 >
                     Ergebnisse speichern
                 </button>
-
-
-                <button
-                    type="button"
-                    id="ergebnisse-loeschen"
-                    style="display: none;"
-                >
-                    Eingaben zurücksetzen
-                </button>
-
 
             </form>
 
@@ -248,64 +267,23 @@
 
 
         <!-- ==========================================
-             BEREITS ERFASSTE STARTS
+             AKTUELLE ERGEBNISSE DES STARTS
              ========================================== -->
 
         <section
             class="card"
-            id="erfasste-starts-bereich"
+            id="gespeicherte-ergebnisse-bereich"
             style="display: none;"
         >
 
             <h2>
-                Bereits erfasste Ergebnisse
+                Bereits gespeicherte Ergebnisse
             </h2>
-
-
-            <p>
-                Hier kannst du bereits erfasste Starts
-                auswählen und die Ergebnisse jederzeit
-                korrigieren.
-            </p>
 
 
             <div
-                id="erfasste-starts"
-            >
-
-                <p>
-                    Ergebnisse werden geladen ...
-                </p>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ==========================================
-             NAVIGATION
-             ========================================== -->
-
-        <section class="card ergebnis-link">
-
-            <h2>
-                Ergebnisliste
-            </h2>
-
-
-            <p>
-                Die vollständige Auswertung des
-                Wettkampfs anzeigen.
-            </p>
-
-
-            <a
-                class="button"
-                href="ergebnisse.html"
-            >
-                Ergebnisse anzeigen
-            </a>
+                id="gespeicherte-ergebnisse"
+            ></div>
 
         </section>
 
@@ -344,11 +322,11 @@
 
 
     <!-- ==========================================
-         ANWENDUNG
+         ANWENDUNG -->
          ========================================== -->
 
     <script
-        src="ergebnisse-eingabe.js?v=1"
+        src="app.js?v=3"
     ></script>
 
 
