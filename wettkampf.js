@@ -8,13 +8,11 @@ const SUPABASE_URL =
 const SUPABASE_ANON_KEY =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
-
 const supabaseClient =
     supabase.createClient(
         SUPABASE_URL,
         SUPABASE_ANON_KEY
     );
-
 
 
 // ==========================================
@@ -26,10 +24,8 @@ const urlParameter =
         window.location.search
     );
 
-
 const wettkampfId =
     urlParameter.get("id");
-
 
 
 // ==========================================
@@ -43,7 +39,6 @@ let ausgewaehlterTeilnehmer = null;
 let aktuelleTeams = [];
 
 
-
 // ==========================================
 // WETTKAMPF LADEN
 // ==========================================
@@ -54,16 +49,9 @@ async function wettkampfLaden() {
         data,
         error
     } = await supabaseClient
-
         .from("competitions")
-
         .select("*")
-
-        .eq(
-            "id",
-            wettkampfId
-        )
-
+        .eq("id", wettkampfId)
         .single();
 
 
@@ -102,9 +90,7 @@ async function wettkampfLaden() {
     document.getElementById(
         "wettkampf-info"
     ).textContent =
-        datum.toLocaleDateString(
-            "de-DE"
-        ) +
+        datum.toLocaleDateString("de-DE") +
         " · " +
         data.anzahl_ergebnisse +
         " Ergebnisse · " +
@@ -123,7 +109,6 @@ async function wettkampfLaden() {
 }
 
 
-
 // ==========================================
 // TEAMS LADEN
 // ==========================================
@@ -134,16 +119,9 @@ async function teamsLaden() {
         data,
         error
     } = await supabaseClient
-
         .from("teams")
-
         .select("*")
-
-        .eq(
-            "competition_id",
-            wettkampfId
-        )
-
+        .eq("competition_id", wettkampfId)
         .order(
             "name",
             {
@@ -244,11 +222,9 @@ async function teamsLaden() {
                 titel
             );
 
-
             box.appendChild(
                 button
             );
-
 
             liste.appendChild(
                 box
@@ -261,7 +237,6 @@ async function teamsLaden() {
     teamsAuswahlAktualisieren();
 
 }
-
 
 
 // ==========================================
@@ -331,7 +306,6 @@ function teamsAuswahlAktualisieren() {
 }
 
 
-
 // ==========================================
 // TEAM ANLEGEN
 // ==========================================
@@ -369,9 +343,7 @@ if (teamForm) {
             const {
                 error
             } = await supabaseClient
-
                 .from("teams")
-
                 .insert([
                     {
                         competition_id:
@@ -419,7 +391,6 @@ if (teamForm) {
 }
 
 
-
 // ==========================================
 // TEAM LÖSCHEN
 // ==========================================
@@ -433,7 +404,8 @@ async function teamLoeschen(
         confirm(
             'Team "' +
             teamName +
-            '" wirklich löschen?'
+            '" wirklich löschen?\n\n' +
+            "Die Starter bleiben erhalten und werden zu Einzelstarts."
         );
 
 
@@ -443,18 +415,45 @@ async function teamLoeschen(
     }
 
 
+    // ======================================
+    // ZUERST STARTER ZU EINZELSTART MACHEN
+    // ======================================
+
+    const {
+        error: startError
+    } = await supabaseClient
+        .from("starts")
+        .update({
+            team_id: null
+        })
+        .eq("team_id", teamId);
+
+
+    if (startError) {
+
+        console.error(
+            "Fehler beim Entfernen der Teamzuordnung:",
+            startError
+        );
+
+        alert(
+            "Die Teamzuordnungen konnten nicht geändert werden."
+        );
+
+        return;
+    }
+
+
+    // ======================================
+    // TEAM LÖSCHEN
+    // ======================================
+
     const {
         error
     } = await supabaseClient
-
         .from("teams")
-
         .delete()
-
-        .eq(
-            "id",
-            teamId
-        );
+        .eq("id", teamId);
 
 
     if (error) {
@@ -479,7 +478,6 @@ async function teamLoeschen(
 }
 
 
-
 // ==========================================
 // TEILNEHMER SUCHEN
 // ==========================================
@@ -498,7 +496,6 @@ if (teilnehmerSuche) {
     );
 
 }
-
 
 
 async function teilnehmerSuchen() {
@@ -538,13 +535,10 @@ async function teilnehmerSuchen() {
         data,
         error
     } = await supabaseClient
-
         .from("participants")
-
         .select(
             "id, vorname, nachname"
         )
-
         .or(
             "vorname.ilike.%" +
             suchtext +
@@ -552,14 +546,12 @@ async function teilnehmerSuchen() {
             suchtext +
             "%"
         )
-
         .order(
             "nachname",
             {
                 ascending: true
             }
         )
-
         .limit(10);
 
 
@@ -627,7 +619,6 @@ async function teilnehmerSuchen() {
 }
 
 
-
 // ==========================================
 // TEILNEHMER AUSWÄHLEN
 // ==========================================
@@ -668,7 +659,6 @@ function teilnehmerAuswaehlen(
 }
 
 
-
 // ==========================================
 // START HINZUFÜGEN
 // ==========================================
@@ -679,7 +669,6 @@ document.getElementById(
     "click",
     starterHinzufuegen
 );
-
 
 
 async function starterHinzufuegen() {
@@ -702,12 +691,110 @@ async function starterHinzufuegen() {
         ).checked;
 
 
+    // ======================================
+    // TEAMGRÖSSE PRÜFEN
+    // ======================================
+
+    if (teamId && !ak) {
+
+        const {
+            count,
+            error
+        } = await supabaseClient
+            .from("starts")
+            .select(
+                "*",
+                {
+                    count: "exact",
+                    head: true
+                }
+            )
+            .eq(
+                "competition_id",
+                wettkampfId
+            )
+            .eq(
+                "team_id",
+                teamId
+            )
+            .eq(
+                "ak",
+                false
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler bei der Teamprüfung:",
+                error
+            );
+
+            return;
+        }
+
+
+        if (
+            count >=
+            aktuellerWettkampf.teamgroesse
+        ) {
+
+            const team =
+                aktuelleTeams.find(
+                    function(item) {
+
+                        return (
+                            item.id ===
+                            teamId
+                        );
+
+                    }
+                );
+
+
+            const teamName =
+                team
+                    ? team.name
+                    : "Dieses Team";
+
+
+            const akBestaetigung =
+                confirm(
+                    teamName +
+                    " hat bereits " +
+                    count +
+                    " reguläre Starter.\n\n" +
+                    "Soll der neue Starter als AK aufgenommen werden?"
+                );
+
+
+            if (akBestaetigung) {
+
+                document.getElementById(
+                    "starter-ak"
+                ).checked =
+                    true;
+
+            } else {
+
+                return;
+            }
+
+        }
+
+    }
+
+
+    const finaleAk =
+        document.getElementById(
+            "starter-ak"
+        ).checked;
+
+
     const {
         error
     } = await supabaseClient
-
         .from("starts")
-
         .insert([
             {
                 competition_id:
@@ -720,7 +807,7 @@ async function starterHinzufuegen() {
                     teamId,
 
                 ak:
-                    ak
+                    finaleAk
             }
         ]);
 
@@ -775,7 +862,6 @@ async function starterHinzufuegen() {
 }
 
 
-
 // ==========================================
 // STARTER LADEN
 // ==========================================
@@ -786,14 +872,13 @@ async function starterLaden() {
         data,
         error
     } = await supabaseClient
-
         .from("starts")
-
         .select(`
             id,
             participant_id,
             team_id,
             ak,
+            created_at,
             participants (
                 vorname,
                 nachname
@@ -807,12 +892,10 @@ async function starterLaden() {
                 wert
             )
         `)
-
         .eq(
             "competition_id",
             wettkampfId
         )
-
         .order(
             "created_at",
             {
@@ -857,266 +940,9 @@ async function starterLaden() {
     data.forEach(
         function(start) {
 
-            const box =
-                document.createElement(
-                    "div"
-                );
-
-
-            box.className =
-                "wettkampf-eintrag";
-
-
-            const name =
-                document.createElement(
-                    "h3"
-                );
-
-
-            name.textContent =
-                start.participants.vorname +
-                " " +
-                start.participants.nachname;
-
-
-            const info =
-                document.createElement(
-                    "p"
-                );
-
-
-            let zuordnung =
-                "Einzelstart";
-
-
-            if (start.team_id) {
-
-                zuordnung =
-                    start.teams
-                        ? start.teams.name
-                        : "Team";
-
-            }
-
-
-            if (start.ak) {
-
-                zuordnung +=
-                    " · AK";
-
-            }
-
-
-            info.textContent =
-                zuordnung;
-
-
-            // ==================================
-            // ERGEBNISFORMULAR
-            // ==================================
-
-            const ergebnisContainer =
-                document.createElement(
-                    "div"
-                );
-
-
-            ergebnisContainer.className =
-                "ergebnis-eingabe-container";
-
-
-            const vorhandeneErgebnisse =
-                start.start_results || [];
-
-
-            for (
-                let nummer = 1;
-                nummer <= aktuellerWettkampf.anzahl_ergebnisse;
-                nummer++
-            ) {
-
-                const vorhandenesErgebnis =
-                    vorhandeneErgebnisse.find(
-                        function(ergebnis) {
-
-                            return (
-                                Number(
-                                    ergebnis.nummer
-                                ) === nummer
-                            );
-
-                        }
-                    );
-
-
-                const zeile =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                zeile.className =
-                    "ergebnis-zeile";
-
-
-                const label =
-                    document.createElement(
-                        "label"
-                    );
-
-
-                label.textContent =
-                    "Ergebnis " +
-                    nummer;
-
-
-                const input =
-                    document.createElement(
-                        "input"
-                    );
-
-
-                input.type =
-                    "text";
-
-
-                input.inputMode =
-                    "decimal";
-
-
-                input.placeholder =
-                    "z. B. 12,5";
-
-
-                input.dataset.nummer =
-                    nummer;
-
-
-                if (
-                    vorhandenesErgebnis
-                ) {
-
-                    input.value =
-                        String(
-                            vorhandenesErgebnis.wert
-                        )
-                        .replace(
-                            ".",
-                            ","
-                        );
-
-                }
-
-
-                zeile.appendChild(
-                    label
-                );
-
-
-                zeile.appendChild(
-                    input
-                );
-
-
-                ergebnisContainer.appendChild(
-                    zeile
-                );
-
-            }
-
-
-            // ==================================
-            // ERGEBNISSE SPEICHERN BUTTON
-            // ==================================
-
-            const speichernButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            speichernButton.type =
-                "button";
-
-
-            speichernButton.textContent =
-                "Ergebnisse speichern";
-
-
-            speichernButton.addEventListener(
-                "click",
-                function() {
-
-                    ergebnisseSpeichern(
-                        start.id,
-                        ergebnisContainer,
-                        speichernButton
-                    );
-
-                }
-            );
-
-
-            // ==================================
-            // START LÖSCHEN BUTTON
-            // ==================================
-
-            const loeschenButton =
-                document.createElement(
-                    "button"
-                );
-
-
-            loeschenButton.type =
-                "button";
-
-
-            loeschenButton.textContent =
-                "Start löschen";
-
-
-            loeschenButton.addEventListener(
-                "click",
-                function() {
-
-                    startLoeschen(
-                        start.id,
-                        start.participants.vorname +
-                        " " +
-                        start.participants.nachname
-                    );
-
-                }
-            );
-
-
-            box.appendChild(
-                name
-            );
-
-
-            box.appendChild(
-                info
-            );
-
-
-            box.appendChild(
-                ergebnisContainer
-            );
-
-
-            box.appendChild(
-                speichernButton
-            );
-
-
-            box.appendChild(
-                loeschenButton
-            );
-
-
-            liste.appendChild(
-                box
+            starterAnzeigeErstellen(
+                start,
+                liste
             );
 
         }
@@ -1124,6 +950,747 @@ async function starterLaden() {
 
 }
 
+
+// ==========================================
+// STARTER-ANZEIGE ERSTELLEN
+// ==========================================
+
+function starterAnzeigeErstellen(
+    start,
+    liste
+) {
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        "wettkampf-eintrag";
+
+
+    // ======================================
+    // NAME
+    // ======================================
+
+    const name =
+        document.createElement(
+            "h3"
+        );
+
+
+    name.textContent =
+        start.participants.vorname +
+        " " +
+        start.participants.nachname;
+
+
+    // ======================================
+    // INFO
+    // ======================================
+
+    const info =
+        document.createElement(
+            "p"
+        );
+
+
+    info.textContent =
+        startZuordnungText(
+            start
+        );
+
+
+    // ======================================
+    // ERGEBNISSE
+    // ======================================
+
+    const ergebnisContainer =
+        ergebnisContainerErstellen(
+            start
+        );
+
+
+    // ======================================
+    // ERGEBNISSE SPEICHERN
+    // ======================================
+
+    const speichernButton =
+        document.createElement(
+            "button"
+        );
+
+
+    speichernButton.type =
+        "button";
+
+
+    speichernButton.textContent =
+        "Ergebnisse speichern";
+
+
+    speichernButton.addEventListener(
+        "click",
+        function() {
+
+            ergebnisseSpeichern(
+                start.id,
+                ergebnisContainer,
+                speichernButton
+            );
+
+        }
+    );
+
+
+    // ======================================
+    // START BEARBEITEN
+    // ======================================
+
+    const bearbeitenButton =
+        document.createElement(
+            "button"
+        );
+
+
+    bearbeitenButton.type =
+        "button";
+
+
+    bearbeitenButton.textContent =
+        "Start bearbeiten";
+
+
+    bearbeitenButton.addEventListener(
+        "click",
+        function() {
+
+            startBearbeiten(
+                start
+            );
+
+        }
+    );
+
+
+    // ======================================
+    // START LÖSCHEN
+    // ======================================
+
+    const loeschenButton =
+        document.createElement(
+            "button"
+        );
+
+
+    loeschenButton.type =
+        "button";
+
+
+    loeschenButton.textContent =
+        "Start löschen";
+
+
+    loeschenButton.addEventListener(
+        "click",
+        function() {
+
+            startLoeschen(
+                start.id,
+                start.participants.vorname +
+                " " +
+                start.participants.nachname
+            );
+
+        }
+    );
+
+
+    box.appendChild(
+        name
+    );
+
+
+    box.appendChild(
+        info
+    );
+
+
+    box.appendChild(
+        ergebnisContainer
+    );
+
+
+    box.appendChild(
+        speichernButton
+    );
+
+
+    box.appendChild(
+        bearbeitenButton
+    );
+
+
+    box.appendChild(
+        loeschenButton
+    );
+
+
+    liste.appendChild(
+        box
+    );
+
+}
+
+
+// ==========================================
+// ZUORDNUNGSTEXT
+// ==========================================
+
+function startZuordnungText(
+    start
+) {
+
+    let text =
+        "Einzelstart";
+
+
+    if (start.team_id) {
+
+        if (start.teams) {
+
+            text =
+                start.teams.name;
+
+        } else {
+
+            text =
+                "Team";
+
+        }
+
+    }
+
+
+    if (start.ak) {
+
+        text +=
+            " · AK";
+
+    }
+
+
+    return text;
+
+}
+
+
+// ==========================================
+// ERGEBNIS-CONTAINER
+// ==========================================
+
+function ergebnisContainerErstellen(
+    start
+) {
+
+    const container =
+        document.createElement(
+            "div"
+        );
+
+
+    container.className =
+        "ergebnis-eingabe-container";
+
+
+    const vorhandeneErgebnisse =
+        start.start_results || [];
+
+
+    for (
+        let nummer = 1;
+        nummer <= aktuellerWettkampf.anzahl_ergebnisse;
+        nummer++
+    ) {
+
+        const vorhandenesErgebnis =
+            vorhandeneErgebnisse.find(
+                function(ergebnis) {
+
+                    return (
+                        Number(
+                            ergebnis.nummer
+                        ) === nummer
+                    );
+
+                }
+            );
+
+
+        const zeile =
+            document.createElement(
+                "div"
+            );
+
+
+        zeile.className =
+            "ergebnis-zeile";
+
+
+        const label =
+            document.createElement(
+                "label"
+            );
+
+
+        label.textContent =
+            "Ergebnis " +
+            nummer;
+
+
+        const input =
+            document.createElement(
+                "input"
+            );
+
+
+        input.type =
+            "text";
+
+
+        input.inputMode =
+            "decimal";
+
+
+        input.placeholder =
+            "z. B. 12,5";
+
+
+        input.dataset.nummer =
+            nummer;
+
+
+        if (
+            vorhandenesErgebnis
+        ) {
+
+            input.value =
+                String(
+                    vorhandenesErgebnis.wert
+                ).replace(
+                    ".",
+                    ","
+                );
+
+        }
+
+
+        zeile.appendChild(
+            label
+        );
+
+
+        zeile.appendChild(
+            input
+        );
+
+
+        container.appendChild(
+            zeile
+        );
+
+    }
+
+
+    return container;
+
+}
+
+
+// ==========================================
+// START BEARBEITEN
+// ==========================================
+
+async function startBearbeiten(
+    start
+) {
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+
+    box.className =
+        "wettkampf-bearbeiten";
+
+
+    const titel =
+        document.createElement(
+            "h3"
+        );
+
+
+    titel.textContent =
+        "Start bearbeiten: " +
+        start.participants.vorname +
+        " " +
+        start.participants.nachname;
+
+
+    // ======================================
+    // TEAM AUSWAHL
+    // ======================================
+
+    const teamLabel =
+        document.createElement(
+            "label"
+        );
+
+
+    teamLabel.textContent =
+        "Zuordnung";
+
+
+    const teamSelect =
+        document.createElement(
+            "select"
+        );
+
+
+    const einzelOption =
+        document.createElement(
+            "option"
+        );
+
+
+    einzelOption.value =
+        "";
+
+
+    einzelOption.textContent =
+        "Einzelstart";
+
+
+    teamSelect.appendChild(
+        einzelOption
+    );
+
+
+    aktuelleTeams.forEach(
+        function(team) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                team.id;
+
+
+            option.textContent =
+                team.name;
+
+
+            if (
+                team.id ===
+                start.team_id
+            ) {
+
+                option.selected =
+                    true;
+
+            }
+
+
+            teamSelect.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    // ======================================
+    // AK
+    // ======================================
+
+    const akLabel =
+        document.createElement(
+            "label"
+        );
+
+
+    const akCheckbox =
+        document.createElement(
+            "input"
+        );
+
+
+    akCheckbox.type =
+        "checkbox";
+
+
+    akCheckbox.checked =
+        start.ak;
+
+
+    akLabel.appendChild(
+        akCheckbox
+    );
+
+
+    akLabel.appendChild(
+        document.createTextNode(
+            " Außer Konkurrenz (AK)"
+        )
+    );
+
+
+    // ======================================
+    // SPEICHERN
+    // ======================================
+
+    const speichernButton =
+        document.createElement(
+            "button"
+        );
+
+
+    speichernButton.type =
+        "button";
+
+
+    speichernButton.textContent =
+        "Änderung speichern";
+
+
+    speichernButton.addEventListener(
+        "click",
+        async function() {
+
+            const neueTeamId =
+                teamSelect.value ||
+                null;
+
+
+            const neueAk =
+                akCheckbox.checked;
+
+
+            // ==================================
+            // TEAMGRÖSSE PRÜFEN
+            // ==================================
+
+            if (
+                neueTeamId &&
+                !neueAk
+            ) {
+
+                const {
+                    count,
+                    error
+                } = await supabaseClient
+                    .from("starts")
+                    .select(
+                        "*",
+                        {
+                            count: "exact",
+                            head: true
+                        }
+                    )
+                    .eq(
+                        "competition_id",
+                        wettkampfId
+                    )
+                    .eq(
+                        "team_id",
+                        neueTeamId
+                    )
+                    .eq(
+                        "ak",
+                        false
+                    )
+                    .neq(
+                        "id",
+                        start.id
+                    );
+
+
+                if (error) {
+
+                    console.error(
+                        "Fehler bei der Teamprüfung:",
+                        error
+                    );
+
+                    return;
+                }
+
+
+                if (
+                    count >=
+                    aktuellerWettkampf.teamgroesse
+                ) {
+
+                    const team =
+                        aktuelleTeams.find(
+                            function(item) {
+
+                                return (
+                                    item.id ===
+                                    neueTeamId
+                                );
+
+                            }
+                        );
+
+
+                    const teamName =
+                        team
+                            ? team.name
+                            : "Dieses Team";
+
+
+                    const akBestaetigung =
+                        confirm(
+                            teamName +
+                            " hat bereits " +
+                            count +
+                            " reguläre Starter.\n\n" +
+                            "Soll dieser Start als AK geführt werden?"
+                        );
+
+
+                    if (
+                        !akBestaetigung
+                    ) {
+
+                        return;
+                    }
+
+
+                    akCheckbox.checked =
+                        true;
+
+                }
+
+            }
+
+
+            const finaleAk =
+                akCheckbox.checked;
+
+
+            const {
+                error
+            } = await supabaseClient
+                .from("starts")
+                .update({
+                    team_id:
+                        neueTeamId,
+
+                    ak:
+                        finaleAk
+                })
+                .eq(
+                    "id",
+                    start.id
+                );
+
+
+            if (error) {
+
+                console.error(
+                    "Fehler beim Ändern des Starts:",
+                    error
+                );
+
+                alert(
+                    "Der Start konnte nicht geändert werden."
+                );
+
+                return;
+            }
+
+
+            box.remove();
+
+
+            await starterLaden();
+
+        }
+    );
+
+
+    // ======================================
+    // ABBRECHEN
+    // ======================================
+
+    const abbrechenButton =
+        document.createElement(
+            "button"
+        );
+
+
+    abbrechenButton.type =
+        "button";
+
+
+    abbrechenButton.textContent =
+        "Abbrechen";
+
+
+    abbrechenButton.addEventListener(
+        "click",
+        function() {
+
+            box.remove();
+
+        }
+    );
+
+
+    box.appendChild(
+        titel
+    );
+
+
+    box.appendChild(
+        teamLabel
+    );
+
+
+    box.appendChild(
+        teamSelect
+    );
+
+
+    box.appendChild(
+        akLabel
+    );
+
+
+    box.appendChild(
+        speichernButton
+    );
+
+
+    box.appendChild(
+        abbrechenButton
+    );
+
+
+    document.getElementById(
+        "starter-liste"
+    ).prepend(
+        box
+    );
+
+}
 
 
 // ==========================================
@@ -1154,7 +1721,6 @@ function zahlUmwandeln(
     );
 
 }
-
 
 
 // ==========================================
@@ -1236,19 +1802,15 @@ async function ergebnisseSpeichern(
         "Speichert ...";
 
 
-
-    // ==================================
-    // VORHANDENE ERGEBNISSE LÖSCHEN
-    // ==================================
+    // ======================================
+    // ALTE ERGEBNISSE LÖSCHEN
+    // ======================================
 
     const {
         error: deleteError
     } = await supabaseClient
-
         .from("start_results")
-
         .delete()
-
         .eq(
             "start_id",
             startId
@@ -1279,10 +1841,9 @@ async function ergebnisseSpeichern(
     }
 
 
-
-    // ==================================
+    // ======================================
     // NEUE ERGEBNISSE SPEICHERN
-    // ==================================
+    // ======================================
 
     if (
         ergebnisse.length > 0
@@ -1291,9 +1852,7 @@ async function ergebnisseSpeichern(
         const {
             error: insertError
         } = await supabaseClient
-
             .from("start_results")
-
             .insert(
                 ergebnisse
             );
@@ -1325,14 +1884,12 @@ async function ergebnisseSpeichern(
     }
 
 
-
     button.disabled =
         false;
 
 
     button.textContent =
         "Gespeichert ✓";
-
 
 
     setTimeout(
@@ -1346,7 +1903,6 @@ async function ergebnisseSpeichern(
     );
 
 }
-
 
 
 // ==========================================
@@ -1376,11 +1932,8 @@ async function startLoeschen(
     const {
         error
     } = await supabaseClient
-
         .from("starts")
-
         .delete()
-
         .eq(
             "id",
             startId
@@ -1394,6 +1947,7 @@ async function startLoeschen(
             error
         );
 
+
         alert(
             "Start konnte nicht gelöscht werden."
         );
@@ -1406,6 +1960,47 @@ async function startLoeschen(
 
 }
 
+
+// ==========================================
+// ABBRECHEN DER STARTER-AUSWAHL
+// ==========================================
+
+const starterAbbrechen =
+    document.getElementById(
+        "starter-abbrechen"
+    );
+
+
+if (starterAbbrechen) {
+
+    starterAbbrechen.addEventListener(
+        "click",
+        function() {
+
+            document.getElementById(
+                "teilnehmer-suche"
+            ).value = "";
+
+
+            document.getElementById(
+                "teilnehmer-suchergebnisse"
+            ).innerHTML =
+                "";
+
+
+            document.getElementById(
+                "starter-bereich"
+            ).style.display =
+                "none";
+
+
+            ausgewaehlterTeilnehmer =
+                null;
+
+        }
+    );
+
+}
 
 
 // ==========================================
