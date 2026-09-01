@@ -1,620 +1,1460 @@
-/* ==========================================
-   SSV 1928 SULZBACH e.V.
-   KOMPAKTES VEREINSDESIGN
-   ========================================== */
+/* ==========================================================
+   SSV 1928 SULZBACH E.V.
+   ZENTRALES STYLESHEET
+   DATEI: style.css
+   ========================================================== */
+
+
+/* ==========================================================
+   GRUNDLAGEN
+   ========================================================== */
 
 * {
     box-sizing: border-box;
 }
 
+
 html {
     margin: 0;
     padding: 0;
+    min-height: 100%;
 }
+
 
 body {
     margin: 0;
     padding: 0;
 
-    font-family: Arial, Helvetica, sans-serif;
+    min-height: 100vh;
 
-    background: #f5f7f5;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
 
-    color: #26332a;
+    background:
+        #f3f4f6;
 
-    line-height: 1.5;
+    color:
+        #1f2937;
+
+    line-height:
+        1.5;
 }
 
 
-/* ==========================================
+/* ==========================================================
+   LINKS
+   ========================================================== */
+
+a {
+    color:
+        inherit;
+
+    text-decoration:
+        none;
+}
+
+
+a:hover {
+    text-decoration:
+        none;
+}
+
+
+/* ==========================================================
    HEADER
-   ========================================== */
+   ========================================================== */
 
 header {
-    background: #167a38;
+    width: 100%;
 
-    color: white;
+    background:
+        #111827;
 
-    padding: 18px 20px;
+    color:
+        white;
 
-    border-bottom: 4px solid #0f5f2b;
+    padding:
+        20px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 
 header h1 {
-    max-width: 1050px;
+    max-width:
+        1100px;
 
-    margin: 0 auto 14px auto;
+    margin:
+        0 auto 15px auto;
 
-    font-size: 24px;
+    font-size:
+        28px;
 
-    font-weight: 700;
+    font-weight:
+        700;
 }
 
 
-/* ==========================================
+/* ==========================================================
    NAVIGATION
-   ========================================== */
+   ========================================================== */
 
 nav {
-    max-width: 1050px;
+    max-width:
+        1100px;
 
-    margin: 0 auto;
+    margin:
+        0 auto;
 
-    display: flex;
+    display:
+        flex;
 
-    gap: 5px;
+    flex-wrap:
+        wrap;
 
-    flex-wrap: wrap;
+    gap:
+        8px;
 }
 
 
 nav a {
-    display: inline-block;
+    display:
+        inline-block;
 
-    padding: 7px 12px;
+    padding:
+        9px 14px;
 
-    border-radius: 5px;
+    border-radius:
+        6px;
 
-    color: white;
+    color:
+        #e5e7eb;
 
-    text-decoration: none;
+    font-size:
+        14px;
 
-    font-size: 14px;
-
-    background: rgba(255, 255, 255, 0.10);
-
-    transition: background 0.15s ease;
+    transition:
+        background 0.2s ease,
+        color 0.2s ease;
 }
 
 
 nav a:hover {
-    background: rgba(255, 255, 255, 0.20);
+    background:
+        #374151;
+
+    color:
+        white;
 }
 
 
-/* ==========================================
+nav a.active {
+    background:
+        #2563eb;
+
+    color:
+        white;
+}
+
+
+/* ==========================================================
    HAUPTBEREICH
-   ========================================== */
+   ========================================================== */
 
 main {
     width: 100%;
 
-    max-width: 1050px;
+    max-width:
+        1100px;
 
-    margin: 30px auto;
+    margin:
+        0 auto;
 
-    padding: 0 20px;
+    padding:
+        30px 20px 50px 20px;
 }
 
 
-/* ==========================================
-   KARTEN
-   ========================================== */
+/* ==========================================================
+   CARD
+   ========================================================== */
 
 .card {
-    background: white;
+    background:
+        white;
 
-    border: 1px solid #dfe6df;
+    border-radius:
+        10px;
 
-    border-radius: 8px;
+    padding:
+        24px;
 
-    padding: 22px;
+    margin-bottom:
+        20px;
 
-    margin-bottom: 20px;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 
 .card h2 {
-    margin: 0 0 5px 0;
+    margin:
+        0 0 15px 0;
 
-    color: #176b35;
+    font-size:
+        22px;
 
-    font-size: 20px;
+    color:
+        #111827;
 }
 
 
-.card > p {
-    margin: 0 0 18px 0;
+.card h3 {
+    margin:
+        20px 0 10px 0;
 
-    color: #69766d;
+    font-size:
+        18px;
 
-    font-size: 14px;
+    color:
+        #1f2937;
 }
 
 
-/* ==========================================
-   FORMULAR
-   ========================================== */
+.card p {
+    margin:
+        8px 0;
+}
+
+
+/* ==========================================================
+   FORMULARE
+   ========================================================== */
 
 .form-group {
-    margin-bottom: 14px;
+    margin-bottom:
+        18px;
 }
 
 
-.form-group label {
-    display: block;
+label {
+    display:
+        block;
 
-    margin-bottom: 5px;
+    margin-bottom:
+        6px;
 
-    color: #39463d;
+    font-weight:
+        600;
 
-    font-size: 14px;
-
-    font-weight: 600;
+    color:
+        #374151;
 }
 
 
-.form-group input,
-.form-group select {
-    width: 100%;
+input,
+select,
+textarea {
+    width:
+        100%;
 
-    height: 40px;
+    min-height:
+        44px;
 
-    padding: 7px 10px;
+    padding:
+        10px 12px;
 
-    border: 1px solid #cbd5cc;
+    border:
+        1px solid #d1d5db;
 
-    border-radius: 5px;
+    border-radius:
+        6px;
 
-    background: white;
+    background:
+        white;
 
-    color: #26332a;
+    color:
+        #111827;
 
-    font-size: 15px;
+    font-family:
+        inherit;
 
-    outline: none;
+    font-size:
+        16px;
+
+    outline:
+        none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 
-.form-group input:focus,
-.form-group select:focus {
-    border-color: #167a38;
+input:focus,
+select:focus,
+textarea:focus {
+    border-color:
+        #2563eb;
 
     box-shadow:
-        0 0 0 2px rgba(22, 122, 56, 0.10);
+        0 0 0 3px rgba(37, 99, 235, 0.12);
 }
 
 
-/* ==========================================
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background:
+        #f3f4f6;
+
+    color:
+        #6b7280;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ==========================================================
+   CHECKBOX
+   ========================================================== */
+
+input[type="checkbox"] {
+    width:
+        auto;
+
+    min-height:
+        auto;
+
+    margin-right:
+        8px;
+
+    vertical-align:
+        middle;
+}
+
+
+label:has(input[type="checkbox"]) {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    font-weight:
+        500;
+
+    cursor:
+        pointer;
+}
+
+
+/* ==========================================================
    BUTTONS
-   ========================================== */
+   ========================================================== */
 
 button,
 .button {
-    height: 38px;
+    display:
+        inline-flex;
 
-    padding: 0 14px;
+    align-items:
+        center;
 
-    border: none;
+    justify-content:
+        center;
 
-    border-radius: 5px;
+    min-height:
+        44px;
 
-    background: #167a38;
+    padding:
+        10px 18px;
 
-    color: white;
+    border:
+        none;
 
-    font-family: inherit;
+    border-radius:
+        6px;
 
-    font-size: 14px;
+    background:
+        #2563eb;
 
-    font-weight: 600;
+    color:
+        white;
 
-    cursor: pointer;
+    font-family:
+        inherit;
+
+    font-size:
+        15px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
 
     transition:
-        background 0.15s ease;
+        background 0.2s ease,
+        transform 0.1s ease,
+        opacity 0.2s ease;
 }
 
 
 button:hover,
 .button:hover {
-    background: #12632e;
+    background:
+        #1d4ed8;
 }
 
 
 button:active,
 .button:active {
-    transform: none;
+    transform:
+        translateY(1px);
 }
 
 
-/* ==========================================
-   SEKUNDÄR
-   ========================================== */
+button:disabled {
+    opacity:
+        0.6;
+
+    cursor:
+        not-allowed;
+}
+
+
+/* ==========================================================
+   SEKUNDÄRE BUTTONS
+   ========================================================== */
 
 .button-secondary {
-    background: #eef1ee;
-
-    color: #455149;
-
-    border: 1px solid #ccd5cd;
+    background:
+        #6b7280;
 }
 
 
 .button-secondary:hover {
-    background: #e2e8e3;
-
-    color: #26332a;
+    background:
+        #4b5563;
 }
 
 
-/* ==========================================
-   LÖSCHEN
-   ========================================== */
-
 .button-danger {
-    background: white;
-
-    color: #b42318;
-
-    border: 1px solid #e1b8b5;
+    background:
+        #dc2626;
 }
 
 
 .button-danger:hover {
-    background: #fff3f2;
-
-    color: #941b12;
+    background:
+        #b91c1c;
 }
 
 
-/* ==========================================
-   MELDUNGEN
-   ========================================== */
-
-.meldung {
-    margin-top: 14px;
-
-    padding: 9px 11px;
-
-    border-radius: 5px;
-
-    background: #f0f7f2;
-
-    border: 1px solid #cfe2d3;
-
-    color: #176b35;
-
-    font-size: 14px;
-
-    font-weight: 600;
+.button-success {
+    background:
+        #16a34a;
 }
 
 
-/* ==========================================
-   TEILNEHMERLISTE
-   ========================================== */
-
-.teilnehmer-liste {
-    margin-top: 14px;
-
-    border-top: 1px solid #e2e7e3;
+.button-success:hover {
+    background:
+        #15803d;
 }
 
 
-.teilnehmer-zeile {
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    gap: 15px;
-
-    min-height: 52px;
-
-    padding: 7px 4px;
-
-    border-bottom: 1px solid #e2e7e3;
-}
-
-
-.teilnehmer-zeile:hover {
-    background: #fafcfa;
-}
-
-
-.teilnehmer-name {
-    color: #26332a;
-
-    font-size: 15px;
-
-    font-weight: 600;
-}
-
-
-.teilnehmer-aktionen {
-    display: flex;
-
-    align-items: center;
-
-    gap: 6px;
-
-    flex-shrink: 0;
-}
-
-
-.teilnehmer-aktionen button {
-    height: 32px;
-
-    padding: 0 10px;
-
-    font-size: 13px;
-
-    font-weight: 500;
-}
-
-
-/* ==========================================
+/* ==========================================================
    STARTSEITE
-   ========================================== */
+   ========================================================== */
 
 .startseite-buttons {
-    display: grid;
+    display:
+        grid;
 
     grid-template-columns:
         repeat(3, 1fr);
 
-    gap: 12px;
+    gap:
+        15px;
 
-    margin-top: 20px;
+    margin-top:
+        20px;
 }
 
 
 .start-button {
-    display: block;
+    display:
+        flex;
 
-    padding: 16px;
+    align-items:
+        center;
 
-    background: white;
+    gap:
+        15px;
 
-    border: 1px solid #dfe6df;
+    min-height:
+        90px;
 
-    border-radius: 7px;
+    padding:
+        18px;
 
-    color: #26332a;
+    border:
+        1px solid #e5e7eb;
 
-    text-decoration: none;
+    border-radius:
+        10px;
+
+    background:
+        #f9fafb;
 
     transition:
-        border-color 0.15s ease,
-        background 0.15s ease;
+        transform 0.15s ease,
+        box-shadow 0.15s ease,
+        border-color 0.15s ease;
 }
 
 
 .start-button:hover {
-    border-color: #9dbca5;
+    transform:
+        translateY(-2px);
 
-    background: #fafcfb;
+    border-color:
+        #2563eb;
+
+    box-shadow:
+        0 5px 15px rgba(0, 0, 0, 0.08);
 }
 
 
 .start-button-icon {
-    margin-bottom: 8px;
+    display:
+        flex;
 
-    color: #167a38;
+    align-items:
+        center;
 
-    font-size: 22px;
+    justify-content:
+        center;
+
+    width:
+        48px;
+
+    height:
+        48px;
+
+    flex-shrink:
+        0;
+
+    border-radius:
+        10px;
+
+    background:
+        #e5edff;
+
+    font-size:
+        24px;
 }
 
 
 .start-button-text {
-    display: block;
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    gap:
+        3px;
 }
 
 
 .start-button-text strong {
-    display: block;
+    font-size:
+        16px;
 
-    margin-bottom: 3px;
-
-    color: #176b35;
-
-    font-size: 15px;
+    color:
+        #111827;
 }
 
 
 .start-button-text small {
-    color: #69766d;
+    color:
+        #6b7280;
 
-    font-size: 13px;
+    font-size:
+        13px;
 }
 
 
-/* ==========================================
+/* ==========================================================
    TABELLEN
-   ========================================== */
+   ========================================================== */
 
 .table-container {
-    width: 100%;
+    width:
+        100%;
 
-    overflow-x: auto;
+    overflow-x:
+        auto;
+
+    margin-top:
+        20px;
 }
 
 
 table {
-    width: 100%;
+    width:
+        100%;
 
-    border-collapse: collapse;
+    border-collapse:
+        collapse;
 
-    margin-top: 15px;
+    background:
+        white;
 
-    background: white;
+    min-width:
+        650px;
 }
 
 
 thead {
-    background: #176b35;
+    background:
+        #111827;
 
-    color: white;
+    color:
+        white;
 }
 
 
 th {
-    padding: 10px 11px;
+    padding:
+        12px 10px;
 
-    text-align: left;
+    text-align:
+        left;
 
-    font-size: 13px;
+    font-size:
+        14px;
 
-    font-weight: 600;
+    font-weight:
+        700;
+
+    white-space:
+        nowrap;
 }
 
 
 td {
-    padding: 10px 11px;
+    padding:
+        11px 10px;
 
-    border-bottom: 1px solid #e2e7e3;
+    border-bottom:
+        1px solid #e5e7eb;
 
-    font-size: 14px;
+    font-size:
+        14px;
+
+    vertical-align:
+        middle;
 }
 
 
 tbody tr:hover {
-    background: #fafcfa;
+    background:
+        #f9fafb;
 }
 
 
-td:first-child {
-    font-weight: 600;
-
-    color: #26332a;
+tbody tr:last-child td {
+    border-bottom:
+        none;
 }
 
 
-/* ==========================================
+/* ==========================================================
+   AK-TEILNEHMER
+   ========================================================== */
+
+.ak-zeile {
+    background:
+        #fff7ed;
+}
+
+
+.ak-zeile:hover {
+    background:
+        #ffedd5;
+}
+
+
+.ak-badge {
+    display:
+        inline-block;
+
+    padding:
+        3px 8px;
+
+    border-radius:
+        999px;
+
+    background:
+        #f59e0b;
+
+    color:
+        white;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    letter-spacing:
+        0.3px;
+}
+
+
+/* ==========================================================
+   TEILNEHMER-SUCHE
+   ========================================================== */
+
+#teilnehmer-suchergebnisse {
+    margin-top:
+        10px;
+}
+
+
+.teilnehmer-suchergebnis {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        10px;
+
+    padding:
+        12px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius:
+        6px;
+
+    margin-bottom:
+        6px;
+
+    background:
+        #f9fafb;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.teilnehmer-suchergebnis:hover {
+    background:
+        #eff6ff;
+
+    border-color:
+        #93c5fd;
+}
+
+
+/* ==========================================================
+   STARTER-BEREICH
+   ========================================================== */
+
+#starter-bereich {
+    margin-top:
+        20px;
+
+    padding:
+        20px;
+
+    border:
+        1px solid #dbeafe;
+
+    border-radius:
+        8px;
+
+    background:
+        #eff6ff;
+}
+
+
+#ausgewaehlter-teilnehmer {
+    margin-top:
+        0;
+
+    color:
+        #1e3a8a;
+}
+
+
+/* ==========================================================
+   TEAMS
+   ========================================================== */
+
+.team-card {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        15px;
+
+    padding:
+        15px;
+
+    margin-bottom:
+        10px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius:
+        8px;
+
+    background:
+        #f9fafb;
+}
+
+
+.team-card:last-child {
+    margin-bottom:
+        0;
+}
+
+
+.team-name {
+    font-weight:
+        700;
+
+    color:
+        #111827;
+}
+
+
+.team-members {
+    color:
+        #6b7280;
+
+    font-size:
+        14px;
+}
+
+
+/* ==========================================================
+   STARTER-LISTE
+   ========================================================== */
+
+.starter-card {
+    display:
+        grid;
+
+    grid-template-columns:
+        1fr auto auto;
+
+    gap:
+        15px;
+
+    align-items:
+        center;
+
+    padding:
+        15px;
+
+    margin-bottom:
+        10px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius:
+        8px;
+
+    background:
+        white;
+}
+
+
+.starter-card:last-child {
+    margin-bottom:
+        0;
+}
+
+
+.starter-name {
+    font-weight:
+        700;
+}
+
+
+.starter-team {
+    color:
+        #6b7280;
+
+    font-size:
+        14px;
+}
+
+
+.starter-ak {
+    color:
+        #b45309;
+
+    font-weight:
+        700;
+
+    font-size:
+        12px;
+}
+
+
+/* ==========================================================
+   STATUS / MELDUNGEN
+   ========================================================== */
+
+.meldung {
+    min-height:
+        20px;
+
+    margin-top:
+        15px;
+
+    font-weight:
+        600;
+}
+
+
+.status-ok {
+    color:
+        #15803d;
+}
+
+
+.status-fehler {
+    color:
+        #dc2626;
+}
+
+
+.status-warnung {
+    color:
+        #b45309;
+}
+
+
+/* ==========================================================
+   WETTKAMPF-LISTE
+   ========================================================== */
+
+.wettkampf-card {
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        space-between;
+
+    gap:
+        20px;
+
+    padding:
+        18px;
+
+    margin-bottom:
+        12px;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius:
+        8px;
+
+    background:
+        white;
+
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+}
+
+
+.wettkampf-card:hover {
+    border-color:
+        #93c5fd;
+
+    box-shadow:
+        0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+
+.wettkampf-card:last-child {
+    margin-bottom:
+        0;
+}
+
+
+.wettkampf-info {
+    flex:
+        1;
+}
+
+
+.wettkampf-name {
+    margin:
+        0 0 5px 0;
+
+    font-size:
+        18px;
+
+    font-weight:
+        700;
+}
+
+
+.wettkampf-meta {
+    color:
+        #6b7280;
+
+    font-size:
+        14px;
+}
+
+
+/* ==========================================================
+   STATUS-BADGES
+   ========================================================== */
+
+.status-badge {
+    display:
+        inline-block;
+
+    padding:
+        4px 9px;
+
+    border-radius:
+        999px;
+
+    font-size:
+        11px;
+
+    font-weight:
+        700;
+
+    text-transform:
+        uppercase;
+}
+
+
+.status-geplant {
+    background:
+        #dbeafe;
+
+    color:
+        #1d4ed8;
+}
+
+
+.status-laufend {
+    background:
+        #dcfce7;
+
+    color:
+        #15803d;
+}
+
+
+.status-beendet {
+    background:
+        #e5e7eb;
+
+    color:
+        #374151;
+}
+
+
+/* ==========================================================
+   ERGEBNISSE
+   ========================================================== */
+
+.dynamische-ergebnis-spalte,
+.dynamische-ergebnis-zelle {
+    text-align:
+        right;
+}
+
+
+.dynamische-ergebnis-zelle {
+    white-space:
+        nowrap;
+}
+
+
+td:last-child,
+th:last-child {
+    font-weight:
+        700;
+}
+
+
+/* ==========================================================
+   ERGEBNIS-LINK
+   ========================================================== */
+
+.ergebnis-link {
+    text-align:
+        center;
+}
+
+
+.ergebnis-link .button {
+    margin-top:
+        10px;
+}
+
+
+/* ==========================================================
+   LEERE ZUSTÄNDE
+   ========================================================== */
+
+.empty-state {
+    padding:
+        30px 20px;
+
+    text-align:
+        center;
+
+    color:
+        #6b7280;
+}
+
+
+.empty-state strong {
+    display:
+        block;
+
+    margin-bottom:
+        5px;
+
+    color:
+        #374151;
+}
+
+
+/* ==========================================================
+   LOADING
+   ========================================================== */
+
+.loading {
+    color:
+        #6b7280;
+
+    font-style:
+        italic;
+}
+
+
+/* ==========================================================
+   FEHLER
+   ========================================================== */
+
+.error {
+    padding:
+        12px 15px;
+
+    border:
+        1px solid #fecaca;
+
+    border-radius:
+        6px;
+
+    background:
+        #fef2f2;
+
+    color:
+        #b91c1c;
+}
+
+
+/* ==========================================================
    FOOTER
-   ========================================== */
+   ========================================================== */
 
 footer {
-    margin-top: 40px;
+    width:
+        100%;
 
-    padding: 20px;
+    padding:
+        25px 20px;
 
-    border-top: 1px solid #dfe6df;
+    background:
+        #111827;
 
-    text-align: center;
+    color:
+        #9ca3af;
 
-    color: #7a857d;
+    text-align:
+        center;
 
-    font-size: 13px;
+    font-size:
+        13px;
 }
 
 
 footer p {
-    margin: 2px 0;
+    margin:
+        3px 0;
 }
 
 
-/* ==========================================
-   MOBILE
-   ========================================== */
+/* ==========================================================
+   HILFSKLASSEN
+   ========================================================== */
 
-@media (max-width: 750px) {
+.text-center {
+    text-align:
+        center;
+}
 
-    main {
-        margin-top: 20px;
 
-        padding: 0 12px;
+.text-right {
+    text-align:
+        right;
+}
+
+
+.mt-10 {
+    margin-top:
+        10px;
+}
+
+
+.mt-20 {
+    margin-top:
+        20px;
+}
+
+
+.mb-10 {
+    margin-bottom:
+        10px;
+}
+
+
+.mb-20 {
+    margin-bottom:
+        20px;
+}
+
+
+.hidden {
+    display:
+        none !important;
+}
+
+
+/* ==========================================================
+   RESPONSIVE – TABLET
+   ========================================================== */
+
+@media (
+    max-width: 850px
+) {
+
+    .startseite-buttons {
+
+        grid-template-columns:
+            1fr;
+
     }
 
 
+    .wettkampf-card {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+
+    }
+
+
+    .starter-card {
+
+        grid-template-columns:
+            1fr;
+
+    }
+
+}
+
+
+/* ==========================================================
+   RESPONSIVE – SMARTPHONE
+   ========================================================== */
+
+@media (
+    max-width: 600px
+) {
+
     header {
-        padding: 15px 12px;
+
+        padding:
+            15px;
+
     }
 
 
     header h1 {
-        margin-bottom: 10px;
 
-        font-size: 20px;
+        font-size:
+            22px;
+
     }
 
 
     nav {
-        gap: 4px;
+
+        gap:
+            5px;
+
     }
 
 
     nav a {
-        padding: 6px 9px;
 
-        font-size: 13px;
+        padding:
+            8px 10px;
+
+        font-size:
+            13px;
+
+    }
+
+
+    main {
+
+        padding:
+            20px 12px 40px 12px;
+
     }
 
 
     .card {
-        padding: 17px;
 
-        margin-bottom: 15px;
+        padding:
+            18px;
+
+        border-radius:
+            8px;
+
     }
 
 
-    .startseite-buttons {
-        grid-template-columns: 1fr;
+    .card h2 {
+
+        font-size:
+            20px;
+
     }
 
 
-    .teilnehmer-zeile {
-        min-height: 50px;
+    .start-button {
 
-        padding: 7px 2px;
+        min-height:
+            80px;
+
+        padding:
+            14px;
+
     }
 
 
-    .teilnehmer-aktionen button {
-        height: 34px;
+    .start-button-icon {
 
-        padding: 0 9px;
+        width:
+            42px;
+
+        height:
+            42px;
+
+        font-size:
+            21px;
+
+    }
+
+
+    button,
+    .button {
+
+        width:
+            100%;
+
+    }
+
+
+    #starter-bereich button {
+
+        margin-top:
+            8px;
+
+    }
+
+
+    .team-card {
+
+        flex-direction:
+            column;
+
+        align-items:
+            stretch;
+
+    }
+
+
+    table {
+
+        min-width:
+            700px;
+
+    }
+
+
+    footer {
+
+        padding:
+            20px 15px;
+
     }
 
 }
 
 
-@media (max-width: 450px) {
-
-    .teilnehmer-zeile {
-        align-items: center;
-
-        gap: 8px;
-    }
-
-
-    .teilnehmer-name {
-        font-size: 14px;
-    }
-
-
-    .teilnehmer-aktionen {
-        gap: 4px;
-    }
-
-
-    .teilnehmer-aktionen button {
-        padding: 0 7px;
-
-        font-size: 12px;
-    }
-
-}
+/* ==========================================================
+   ENDE
+   ========================================================== */
