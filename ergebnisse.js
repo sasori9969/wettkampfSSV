@@ -1420,15 +1420,13 @@ function teamWertungAnzeigen(
             starts || []
         );
 
-
     const teams =
         [...new Map(
             gefilterteStarts
                 .filter(
                     function(start) {
-                        return (
-                            start.team_id &&
-                            start.teams
+                        return Boolean(
+                            start.team_id
                         );
                     }
                 )
@@ -1444,7 +1442,6 @@ function teamWertungAnzeigen(
                     }
                 )
         ).values()];
-
 
     if (
         !teams ||
@@ -1463,7 +1460,6 @@ function teamWertungAnzeigen(
 
     }
 
-
     if (
         typeof window.Rangliste === "undefined" ||
         typeof window.Rangliste.alleTeamwertungen !== "function"
@@ -1481,11 +1477,20 @@ function teamWertungAnzeigen(
 
     }
 
-
     const teamgroesse =
         Number(
             wettkampf?.teamgroesse ||
-            3
+            Math.max(
+                ...gefilterteStarts
+                    .map(
+                        function(start) {
+                            return Number(
+                                start.competitions?.teamgroesse || 3
+                            );
+                        }
+                    ),
+                3
+            )
         );
 
     const wertungen =
@@ -1528,9 +1533,20 @@ function teamWertungAnzeigen(
                     "td"
                 );
 
-            wettkampfZelle.textContent =
+            const wettkampfName =
+                (gefilterteStarts.find(
+                    function(start) {
+                        return (
+                            start.team_id ===
+                            wertung.team_id
+                        );
+                    }
+                )?.competitions?.name) ||
                 wettkampf?.name ||
                 "-";
+
+            wettkampfZelle.textContent =
+                wettkampfName;
 
             const starterZelle =
                 document.createElement(
