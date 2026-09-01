@@ -1,55 +1,123 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Wettkampfergebnisse</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <title>Ergebnisse</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
+
+    <!-- ==========================================
+         KOPFBEREICH
+         ========================================== -->
+
     <header>
-        <h1>Wettkampfergebnisse</h1>
+
+        <h1>
+            Wettkampfauswertung
+        </h1>
+
 
         <nav>
-            <a href="index.html">Eingabe</a>
-            <a href="ergebnisse.html">Ergebnisse</a>
+
+            <a href="index.html">
+                Teilnehmer
+            </a>
+
+            <a href="ergebnisse-eingabe.html">
+                Ergebnisse erfassen
+            </a>
+
+            <a href="ergebnisse.html">
+                Ergebnisse
+            </a>
+
         </nav>
+
     </header>
 
 
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
     <main>
+
 
         <section class="card">
 
-            <h2>Endergebnis</h2>
+            <h2>
+                Ergebnisse
+            </h2>
+
+
+            <p>
+                Die Ergebnisliste wird automatisch aktualisiert.
+            </p>
+
 
             <div class="table-container">
 
                 <table>
 
                     <thead>
+
                         <tr>
-                            <th>Platz</th>
-                            <th>Vorname</th>
-                            <th>Nachname</th>
-                            <th>Ergebnis 1</th>
-                            <th>Ergebnis 2</th>
-                            <th>Ergebnis 3</th>
-                            <th>Gesamt</th>
+
+                            <th>
+                                Platz
+                            </th>
+
+                            <th>
+                                Teilnehmer
+                            </th>
+
+                            <th>
+                                Ergebnis 1
+                            </th>
+
+                            <th>
+                                Ergebnis 2
+                            </th>
+
+                            <th>
+                                Ergebnis 3
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
                         </tr>
+
                     </thead>
+
 
                     <tbody id="ergebnis-tabelle">
 
                         <tr>
-                            <td colspan="7">
+
+                            <td colspan="6">
                                 Ergebnisse werden geladen...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -58,33 +126,45 @@
 
             </div>
 
-            <p id="lade-meldung" class="meldung"></p>
-
         </section>
 
-
-        <section class="card">
-
-            <a class="button" href="index.html">
-                Neue Ergebnisse erfassen
-            </a>
-
-        </section>
 
     </main>
 
 
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
     <footer>
-        <p>Wettkampfauswertung – Vereinsseite</p>
+
+        <p>
+            Wettkampfauswertung – Vereinsseite
+        </p>
+
     </footer>
 
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Ergebnislogik -->
-    <script src="ergebnisse.js"></script>
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ==========================================
+         ERGEBNIS-JAVASCRIPT
+         ========================================== -->
+
+    <script
+        src="ergebnisse.js?v=2"
+    ></script>
+
 
 </body>
+
 </html>
-```
