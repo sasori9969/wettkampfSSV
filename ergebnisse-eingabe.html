@@ -11,7 +11,7 @@
     >
 
     <title>
-        SSV 1928 Sulzbach e.V. – Ergebnisse erfassen
+        Ergebnisse erfassen
     </title>
 
     <link
@@ -25,9 +25,9 @@
 <body>
 
 
-    <!-- ==========================================
-         KOPFBEREICH
-         ========================================== -->
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
 
     <header>
 
@@ -42,21 +42,20 @@
                 Startseite
             </a>
 
-
             <a href="wettkaempfe.html">
                 Wettkämpfe
             </a>
-
 
             <a href="teilnehmer.html">
                 Teilnehmer
             </a>
 
-
-            <a href="ergebnisse-eingabe.html">
+            <a
+                href="ergebnisse-eingabe.html"
+                class="active"
+            >
                 Ergebnisse erfassen
             </a>
-
 
             <a href="ergebnisse.html">
                 Ergebnisse
@@ -68,16 +67,16 @@
 
 
 
-    <!-- ==========================================
+    <!-- ==================================================
          HAUPTBEREICH
-         ========================================== -->
+         ================================================== -->
 
     <main>
 
 
-        <!-- ==========================================
+        <!-- ==================================================
              ÜBERSCHRIFT
-             ========================================== -->
+             ================================================== -->
 
         <section class="card">
 
@@ -87,97 +86,95 @@
 
 
             <p>
-                Wähle zuerst den konkreten Start aus.
-            </p>
-
-
-            <p>
-                Ein Teilnehmer kann mehrere Starts haben.
-                Die Ergebnisse werden immer dem
-                ausgewählten Start zugeordnet.
+                Suche zuerst einen Teilnehmer und wähle anschließend
+                den gewünschten Start aus.
             </p>
 
         </section>
 
 
 
-        <!-- ==========================================
-             START AUSWÄHLEN
-             ========================================== -->
+        <!-- ==================================================
+             TEILNEHMER SUCHEN
+             ================================================== -->
 
         <section class="card">
 
             <h2>
-                Start auswählen
+                1. Teilnehmer suchen
             </h2>
 
 
-            <div class="form-group">
-
-                <label for="start-suche">
-                    Starter suchen
-                </label>
+            <label for="teilnehmer-suche">
+                Name
+            </label>
 
 
-                <input
-                    type="text"
-                    id="start-suche"
-                    placeholder="Name oder Anfangsbuchstaben"
-                    autocomplete="off"
-                >
-
-            </div>
+            <input
+                type="text"
+                id="teilnehmer-suche"
+                placeholder="Vorname oder Nachname eingeben"
+                autocomplete="off"
+            >
 
 
             <div
-                id="start-suchergebnisse"
-            >
+                id="teilnehmer-suchergebnisse"
+                style="margin-top: 15px;"
+            ></div>
 
-                <p>
-                    Bitte Namen eingeben.
-                </p>
-
-            </div>
 
         </section>
 
 
 
-        <!-- ==========================================
-             AUSGEWÄHLTER START
-             ========================================== -->
+        <!-- ==================================================
+             START AUSWÄHLEN
+             ================================================== -->
 
         <section
             class="card"
-            id="ausgewaehlter-start-bereich"
+            id="start-auswahl-bereich"
             style="display: none;"
         >
 
             <h2>
-                Ausgewählter Start
+                2. Start auswählen
             </h2>
 
 
-            <div
-                id="ausgewaehlter-start-info"
-            >
-            </div>
+            <p>
+
+                Teilnehmer:
+
+                <strong
+                    id="ausgewaehlter-teilnehmer"
+                ></strong>
+
+            </p>
 
 
-            <button
-                type="button"
-                id="start-wechseln"
-            >
-                Anderen Start auswählen
-            </button>
+            <label for="start-auswahl">
+                Start
+            </label>
+
+
+            <select id="start-auswahl">
+
+                <option value="">
+                    Start auswählen
+                </option>
+
+            </select>
+
 
         </section>
 
 
 
-        <!-- ==========================================
+        <!-- ==================================================
              ERGEBNISSE
-             ========================================== -->
+             ================================================== -->
 
         <section
             class="card"
@@ -186,31 +183,83 @@
         >
 
             <h2>
-                Ergebnisse
+                3. Ergebnisse eingeben
             </h2>
 
 
-            <p>
-                Trage die Ergebnisse für diesen
-                konkreten Start ein.
-            </p>
+            <form id="ergebnis-form">
 
 
-            <form
-                id="ergebnis-form"
-            >
+                <!-- Ergebnis 1 -->
 
-                <div
-                    id="ergebnis-felder"
-                >
+                <div class="form-group">
+
+                    <label for="ergebnis1">
+                        Ergebnis 1
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="ergebnis1"
+                        inputmode="decimal"
+                        placeholder="z. B. 12,40"
+                        required
+                    >
+
                 </div>
+
+
+
+                <!-- Ergebnis 2 -->
+
+                <div class="form-group">
+
+                    <label for="ergebnis2">
+                        Ergebnis 2
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="ergebnis2"
+                        inputmode="decimal"
+                        placeholder="z. B. 13,10"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- Ergebnis 3 -->
+
+                <div class="form-group">
+
+                    <label for="ergebnis3">
+                        Ergebnis 3
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="ergebnis3"
+                        inputmode="decimal"
+                        placeholder="z. B. 11,80"
+                        required
+                    >
+
+                </div>
+
 
 
                 <button
                     type="submit"
+                    id="ergebnis-speichern"
                 >
                     Ergebnisse speichern
                 </button>
+
 
             </form>
 
@@ -220,39 +269,16 @@
                 class="meldung"
             ></p>
 
-        </section>
-
-
-
-        <!-- ==========================================
-             BEREITS ERFASSTE ERGEBNISSE
-             ========================================== -->
-
-        <section
-            class="card"
-            id="vorhandene-ergebnisse-bereich"
-            style="display: none;"
-        >
-
-            <h2>
-                Bereits erfasste Ergebnisse
-            </h2>
-
-
-            <div
-                id="vorhandene-ergebnisse"
-            >
-            </div>
 
         </section>
 
 
 
-        <!-- ==========================================
+        <!-- ==================================================
              NAVIGATION
-             ========================================== -->
+             ================================================== -->
 
-        <section class="card">
+        <section class="card ergebnis-link">
 
             <h2>
                 Ergebnisliste
@@ -260,7 +286,7 @@
 
 
             <p>
-                Zur vollständigen Rangliste.
+                Bereits gespeicherte Ergebnisse anzeigen.
             </p>
 
 
@@ -278,9 +304,9 @@
 
 
 
-    <!-- ==========================================
+    <!-- ==================================================
          FOOTER
-         ========================================== -->
+         ================================================== -->
 
     <footer>
 
@@ -297,22 +323,21 @@
 
 
 
-    <!-- ==========================================
+    <!-- ==================================================
          SUPABASE
-         ========================================== -->
+         ================================================== -->
 
     <script
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
 
-
-    <!-- ==========================================
+    <!-- ==================================================
          JAVASCRIPT
-         ========================================== -->
+         ================================================== -->
 
     <script
-        src="app.js?v=4"
+        src="app.js?v=10"
     ></script>
 
 
