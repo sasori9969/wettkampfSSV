@@ -2,16 +2,14 @@
 // ==========================================
 // SUPABASE EINSTELLUNGEN
 // ==========================================
-//
-// Diese beiden Werte tragen wir später
-// gemeinsam aus deinem Supabase-Projekt ein.
-//
 
 const SUPABASE_URL = "https://pvvdbcvdhggqbembqrda.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
-// Supabase Verbindung herstellen
+// Supabase Verbindung
 const supabaseClient = supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
@@ -19,17 +17,15 @@ const supabaseClient = supabase.createClient(
 
 
 // ==========================================
-// HILFSFUNKTION
+// ZAHL UMWANDELN
 // ==========================================
 
 function zahlUmwandeln(wert) {
 
-    // Deutsches Komma in Punkt umwandeln
+    // Komma in Punkt umwandeln
     wert = wert.replace(",", ".");
 
-    const zahl = parseFloat(wert);
-
-    return zahl;
+    return parseFloat(wert);
 }
 
 
@@ -41,44 +37,65 @@ async function teilnehmerLaden() {
 
     const select = document.getElementById("teilnehmer");
 
+    // Wenn wir nicht auf der Eingabeseite sind,
+    // brauchen wir nichts zu tun.
     if (!select) {
         return;
     }
 
+
     const { data, error } = await supabaseClient
         .from("participants")
         .select("*")
-        .order("nachname", { ascending: true });
+        .order("nachname", {
+            ascending: true
+        });
+
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Fehler beim Laden der Teilnehmer:",
+            error
+        );
 
         return;
     }
 
 
-    // Alte Einträge entfernen
-    select.innerHTML = `
-        <option value="">
-            Bitte Teilnehmer auswählen
-        </option>
-    `;
+    // Auswahlfeld zurücksetzen
+    select.innerHTML = "";
 
 
-    // Teilnehmer hinzufügen
-    data.forEach(teilnehmer => {
+    // Standardauswahl
+    const standardOption =
+        document.createElement("option");
 
-        const option = document.createElement("option");
+    standardOption.value = "";
+
+    standardOption.textContent =
+        "Bitte Teilnehmer auswählen";
+
+    select.appendChild(standardOption);
+
+
+    // Teilnehmer einfügen
+    data.forEach(function(teilnehmer) {
+
+        const option =
+            document.createElement("option");
 
         option.value = teilnehmer.id;
 
         option.textContent =
-            `${teilnehmer.vorname} ${teilnehmer.nachname}`;
+            teilnehmer.vorname +
+            " " +
+            teilnehmer.nachname;
 
         select.appendChild(option);
 
     });
+
 }
 
 
@@ -100,33 +117,47 @@ if (teilnehmerForm) {
 
 
             const vorname =
-                document.getElementById("vorname").value.trim();
+                document
+                    .getElementById("vorname")
+                    .value
+                    .trim();
+
 
             const nachname =
-                document.getElementById("nachname").value.trim();
+                document
+                    .getElementById("nachname")
+                    .value
+                    .trim();
 
 
             if (!vorname || !nachname) {
 
-                alert("Bitte Vor- und Nachname eingeben.");
+                alert(
+                    "Bitte Vor- und Nachname eingeben."
+                );
 
                 return;
             }
 
 
-            const { error } = await supabaseClient
-                .from("participants")
-                .insert([
-                    {
-                        vorname: vorname,
-                        nachname: nachname
-                    }
-                ]);
+            const { error } =
+                await supabaseClient
+                    .from("participants")
+                    .insert([
+                        {
+                            vorname: vorname,
+                            nachname: nachname
+                        }
+                    ]);
 
 
             if (error) {
 
-                console.error(error);
+                console.error(
+                    "Fehler beim Speichern:",
+                    error
+                );
+
 
                 document.getElementById(
                     "teilnehmer-meldung"
@@ -147,7 +178,7 @@ if (teilnehmerForm) {
 
 
             // Teilnehmerliste aktualisieren
-            teilnehmerLaden();
+            await teilnehmerLaden();
 
         }
     );
@@ -173,34 +204,47 @@ if (ergebnisForm) {
 
 
             const participantId =
-                document.getElementById("teilnehmer").value;
+                document
+                    .getElementById("teilnehmer")
+                    .value;
 
 
             const wert1 =
                 zahlUmwandeln(
-                    document.getElementById("ergebnis1").value
+                    document
+                        .getElementById("ergebnis1")
+                        .value
                 );
+
 
             const wert2 =
                 zahlUmwandeln(
-                    document.getElementById("ergebnis2").value
+                    document
+                        .getElementById("ergebnis2")
+                        .value
                 );
+
 
             const wert3 =
                 zahlUmwandeln(
-                    document.getElementById("ergebnis3").value
+                    document
+                        .getElementById("ergebnis3")
+                        .value
                 );
 
 
-            // Prüfung
+            // Teilnehmer prüfen
             if (!participantId) {
 
-                alert("Bitte einen Teilnehmer auswählen.");
+                alert(
+                    "Bitte einen Teilnehmer auswählen."
+                );
 
                 return;
             }
 
 
+            // Zahlen prüfen
             if (
                 Number.isNaN(wert1) ||
                 Number.isNaN(wert2) ||
@@ -215,22 +259,34 @@ if (ergebnisForm) {
             }
 
 
-            // In Supabase speichern
-            const { error } = await supabaseClient
-                .from("results")
-                .insert([
-                    {
-                        participant_id: participantId,
-                        ergebnis1: wert1,
-                        ergebnis2: wert2,
-                        ergebnis3: wert3
-                    }
-                ]);
+            // Ergebnisse speichern
+            const { error } =
+                await supabaseClient
+                    .from("results")
+                    .insert([
+                        {
+                            participant_id:
+                                participantId,
+
+                            ergebnis1:
+                                wert1,
+
+                            ergebnis2:
+                                wert2,
+
+                            ergebnis3:
+                                wert3
+                        }
+                    ]);
 
 
             if (error) {
 
-                console.error(error);
+                console.error(
+                    "Fehler beim Speichern der Ergebnisse:",
+                    error
+                );
+
 
                 document.getElementById(
                     "ergebnis-meldung"
