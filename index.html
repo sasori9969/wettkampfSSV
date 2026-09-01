@@ -10,7 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Teilnehmer erfassen</title>
+    <title>
+        SSV 1928 Sulzbach e.V. – Wettkampfauswertung
+    </title>
 
     <link
         rel="stylesheet"
@@ -30,14 +32,14 @@
     <header>
 
         <h1>
-            Wettkampfauswertung
+            SSV 1928 Sulzbach e.V.
         </h1>
 
 
         <nav>
 
             <a href="index.html">
-                Teilnehmer
+                Startseite
             </a>
 
             <a href="ergebnisse-eingabe.html">
@@ -61,130 +63,124 @@
     <main>
 
 
+        <!-- ==========================================
+             WILLKOMMEN
+             ========================================== -->
+
         <section class="card">
 
             <h2>
-                Teilnehmer erfassen
+                Wettkampfauswertung
             </h2>
 
 
-            <form id="teilnehmer-form">
+            <p>
+                Willkommen bei der digitalen
+                Wettkampfauswertung des
+                SSV 1928 Sulzbach e.V.
+            </p>
 
 
-                <!-- Vorname -->
-
-                <div class="form-group">
-
-                    <label for="vorname">
-                        Vorname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="vorname"
-                        name="vorname"
-                        autocomplete="given-name"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- Nachname -->
-
-                <div class="form-group">
-
-                    <label for="nachname">
-                        Nachname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="nachname"
-                        name="nachname"
-                        autocomplete="family-name"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- Speichern -->
-
-                <button type="submit">
-                    Teilnehmer speichern
-                </button>
-
-
-            </form>
-
-
-            <!-- Rückmeldung -->
-
-            <p
-                id="teilnehmer-meldung"
-                class="meldung"
-            ></p>
-
+            <p>
+                Hier können Teilnehmer erfasst,
+                Wettkampfergebnisse eingetragen
+                und die aktuelle Ergebnisliste
+                eingesehen werden.
+            </p>
 
         </section>
 
 
 
         <!-- ==========================================
-             WEITER
+             FUNKTIONEN
              ========================================== -->
 
-        <section class="card ergebnis-link">
+        <section class="card">
 
             <h2>
-                Ergebnisse erfassen
+                Was möchtest du tun?
             </h2>
 
 
-            <p>
-                Hier kannst du die drei Ergebnisse
-                eines Teilnehmers eingeben.
-            </p>
+            <div class="startseite-buttons">
 
 
-            <a
-                class="button"
-                href="ergebnisse-eingabe.html"
-            >
-                Ergebnisse erfassen
-            </a>
+                <a
+                    href="index.html"
+                    class="start-button"
+                >
 
-        </section>
+                    <span class="start-button-icon">
+                        👤
+                    </span>
 
+                    <span class="start-button-text">
 
+                        <strong>
+                            Teilnehmer verwalten
+                        </strong>
 
-        <!-- ==========================================
-             ERGEBNISLISTE
-             ========================================== -->
+                        <small>
+                            Neue Teilnehmer erfassen
+                        </small>
 
-        <section class="card ergebnis-link">
+                    </span>
 
-            <h2>
-                Ergebnisliste
-            </h2>
-
-
-            <p>
-                Bereits gespeicherte Ergebnisse anzeigen.
-            </p>
+                </a>
 
 
-            <a
-                class="button"
-                href="ergebnisse.html"
-            >
-                Ergebnisse anzeigen
-            </a>
+
+                <a
+                    href="ergebnisse-eingabe.html"
+                    class="start-button"
+                >
+
+                    <span class="start-button-icon">
+                        📝
+                    </span>
+
+                    <span class="start-button-text">
+
+                        <strong>
+                            Ergebnisse erfassen
+                        </strong>
+
+                        <small>
+                            Wettkampfergebnisse eintragen
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+
+                <a
+                    href="ergebnisse.html"
+                    class="start-button"
+                >
+
+                    <span class="start-button-icon">
+                        🏆
+                    </span>
+
+                    <span class="start-button-text">
+
+                        <strong>
+                            Ergebnisse ansehen
+                        </strong>
+
+                        <small>
+                            Aktuelle Rangliste anzeigen
+                        </small>
+
+                    </span>
+
+                </a>
+
+
+            </div>
 
         </section>
 
@@ -200,30 +196,14 @@
     <footer>
 
         <p>
-            Wettkampfauswertung – Vereinsseite
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+        <p>
+            Wettkampfauswertung
         </p>
 
     </footer>
-
-
-
-    <!-- ==========================================
-         SUPABASE
-         ========================================== -->
-
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
-
-
-
-    <!-- ==========================================
-         ANWENDUNG
-         ========================================== -->
-
-    <script
-        src="app.js?v=2"
-    ></script>
 
 
 </body>
