@@ -30,17 +30,10 @@
 // SUPABASE
 // ==========================================================
 
-const SUPABASE_URL =
-    "https://pvvdbcvdhggqbembqrda.supabase.co";
-
-const SUPABASE_ANON_KEY =
-    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
-
-
 const ergebnisSupabase =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+    supabaseClient || supabase.createClient(
+        "https://pvvdbcvdhggqbembqrda.supabase.co",
+        "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL"
     );
 
 
@@ -262,7 +255,7 @@ function zahlFormatieren(
 // HTML SICHER MACHEN
 // ==========================================================
 
-function escapeHtml(
+function ergebnisEscapeHtml(
     wert
 ) {
 

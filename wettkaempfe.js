@@ -24,6 +24,9 @@
 // GLOBALE VARIABLEN
 // ==========================================================
 
+const wettkampfSupabaseClient =
+    supabaseClient;
+
 let alleWettkaempfe = [];
 
 
@@ -279,7 +282,7 @@ function wettkaempfeAnzeigen(
 
                     <h3>
 
-                        ${escapeHtml(
+                        ${wettkampfEscapeHtml(
                             wettkampf.name
                         )}
 
@@ -1078,7 +1081,7 @@ function statusFormatieren(
 
         default:
 
-            return escapeHtml(
+            return wettkampfEscapeHtml(
                 status || ""
             );
 
@@ -1092,7 +1095,7 @@ function statusFormatieren(
 // HTML SICHER MACHEN
 // ==========================================================
 
-function escapeHtml(
+function wettkampfEscapeHtml(
     wert
 ) {
 

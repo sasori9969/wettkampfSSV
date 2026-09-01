@@ -9,18 +9,8 @@
 // SUPABASE
 // ==========================================================
 
-const wettkampfSupabaseUrl =
-    "https://pvvdbcvdhggqbembqrda.supabase.co";
-
-const wettkampfSupabaseAnonKey =
-    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
-
-
 const wettkampfSupabaseClient =
-    window.supabase.createClient(
-        wettkampfSupabaseUrl,
-        wettkampfSupabaseAnonKey
-    );
+    supabaseClient;
 
 
 // ==========================================================

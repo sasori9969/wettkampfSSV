@@ -45,16 +45,10 @@
 // SUPABASE
 // ==========================================================
 
-const SUPABASE_URL =
-    "https://pvvdbcvdhggqbembqrda.supabase.co";
-
-const SUPABASE_ANON_KEY =
-    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
-
 const ergebnisseSupabase =
-    supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
+    supabaseClient || supabase.createClient(
+        "https://pvvdbcvdhggqbembqrda.supabase.co",
+        "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL"
     );
 
 
@@ -72,13 +66,13 @@ const tabelle =
 // URL-PARAMETER
 // ==========================================================
 
-const urlParameter =
+const ergebnisseUrlParameter =
     new URLSearchParams(
         window.location.search
     );
 
 const competitionId =
-    urlParameter.get(
+    ergebnisseUrlParameter.get(
         "competition_id"
     );
 
@@ -121,7 +115,7 @@ function zahlFormatieren(wert) {
 // HTML ESCAPEN
 // ==========================================================
 
-function escapeHtml(wert) {
+function ergebnisseEscapeHtml(wert) {
 
     if (
         wert === null ||

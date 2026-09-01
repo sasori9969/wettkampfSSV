@@ -9,18 +9,8 @@
 // SUPABASE
 // ==========================================================
 
-const teilnehmerSupabaseUrl =
-    "https://pvvdbcvdhggqbembqrda.supabase.co";
-
-const teilnehmerSupabaseAnonKey =
-    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
-
-
 const teilnehmerSupabaseClient =
-    window.supabase.createClient(
-        teilnehmerSupabaseUrl,
-        teilnehmerSupabaseAnonKey
-    );
+    supabaseClient;
 
 
 // ==========================================================
