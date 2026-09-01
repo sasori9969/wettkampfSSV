@@ -76,7 +76,7 @@
 
 
         <!-- ==========================================
-             WETTKAMPF AUSWÄHLEN
+             ÜBERSCHRIFT
              ========================================== -->
 
         <section class="card">
@@ -86,19 +86,42 @@
             </h2>
 
 
+            <p>
+                Hier werden die Ergebnisse aller
+                Wettkampfstarts angezeigt.
+            </p>
+
+
+            <p id="aktualisierungs-info">
+                Ergebnisse werden automatisch aktualisiert.
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             FILTER
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Filter
+            </h2>
+
+
             <div class="form-group">
 
-                <label for="wettkampf-auswahl">
+                <label for="wettkampf-filter">
                     Wettkampf
                 </label>
 
 
-                <select
-                    id="wettkampf-auswahl"
-                >
+                <select id="wettkampf-filter">
 
                     <option value="">
-                        Wettkampf auswählen ...
+                        Alle Wettkämpfe
                     </option>
 
                 </select>
@@ -106,47 +129,88 @@
             </div>
 
 
-            <div
-                id="wettkampf-information"
+            <div class="form-group">
+
+                <label for="team-filter">
+                    Team
+                </label>
+
+
+                <select id="team-filter">
+
+                    <option value="">
+                        Alle Teams
+                    </option>
+
+
+                    <option value="einzel">
+                        Einzelstarts
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label for="status-filter">
+                    Wertung
+                </label>
+
+
+                <select id="status-filter">
+
+                    <option value="">
+                        Alle
+                    </option>
+
+
+                    <option value="wertung">
+                        Wertung
+                    </option>
+
+
+                    <option value="ak">
+                        Außer Konkurrenz
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <button
+                type="button"
+                id="filter-zuruecksetzen"
             >
-
-                <p>
-                    Bitte einen Wettkampf auswählen.
-                </p>
-
-            </div>
+                Filter zurücksetzen
+            </button>
 
         </section>
 
 
 
         <!-- ==========================================
-             TEAMWERTUNG
+             ERGEBNISTABELLE
              ========================================== -->
 
-        <section
-            class="card"
-            id="teamwertung-bereich"
-            style="display: none;"
-        >
+        <section class="card">
 
             <h2>
-                🏆 Teamwertung
+                Rangliste
             </h2>
-
-
-            <p>
-                Die Teamwertung berücksichtigt nur
-                reguläre Teamstarter. AK-Starter werden
-                nicht berücksichtigt.
-            </p>
 
 
             <div class="table-container">
 
-                <table>
+                <table
+                    id="ergebnis-tabelle-komplett"
+                >
 
-                    <thead id="teamwertung-kopf">
+                    <thead
+                        id="ergebnis-kopf"
+                    >
 
                         <tr>
 
@@ -155,125 +219,19 @@
                             </th>
 
                             <th>
-                                Team
+                                Wettkampf
                             </th>
 
                             <th>
-                                Gesamt
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="teamwertung-tabelle">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ==========================================
-             EINZELWERTUNG
-             ========================================== -->
-
-        <section
-            class="card"
-            id="einzelwertung-bereich"
-            style="display: none;"
-        >
-
-            <h2>
-                👤 Einzelwertung
-            </h2>
-
-
-            <p>
-                Jeder Start wird separat gewertet.
-                Mehrere Starts derselben Person bleiben
-                eigenständige Wertungen.
-            </p>
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead id="einzelwertung-kopf">
-
-                        <tr>
-
-                            <th>
-                                Platz
+                                Datum
                             </th>
 
                             <th>
-                                Starter
+                                Vorname
                             </th>
 
                             <th>
-                                Wertung
-                            </th>
-
-                            <th>
-                                Gesamt
-                            </th>
-
-                        </tr>
-
-                    </thead>
-
-
-                    <tbody id="einzelwertung-tabelle">
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </section>
-
-
-
-        <!-- ==========================================
-             AK-STARTER
-             ========================================== -->
-
-        <section
-            class="card"
-            id="ak-bereich"
-            style="display: none;"
-        >
-
-            <h2>
-                Außer Konkurrenz (AK)
-            </h2>
-
-
-            <p>
-                AK-Starts fließen nicht in die Teamwertung
-                ein, behalten aber ihr eigenes
-                Einzelergebnis.
-            </p>
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead id="ak-kopf">
-
-                        <tr>
-
-                            <th>
-                                Starter
+                                Nachname
                             </th>
 
                             <th>
@@ -281,6 +239,14 @@
                             </th>
 
                             <th>
+                                Status
+                            </th>
+
+                            <th>
+                                Ergebnisse
+                            </th>
+
+                            <th>
                                 Gesamt
                             </th>
 
@@ -289,7 +255,17 @@
                     </thead>
 
 
-                    <tbody id="ak-tabelle">
+                    <tbody
+                        id="ergebnis-tabelle"
+                    >
+
+                        <tr>
+
+                            <td colspan="9">
+                                Ergebnisse werden geladen...
+                            </td>
+
+                        </tr>
 
                     </tbody>
 
@@ -302,23 +278,38 @@
 
 
         <!-- ==========================================
-             KEINE ERGEBNISSE
+             HINWEIS
              ========================================== -->
 
-        <section
-            class="card"
-            id="keine-ergebnisse"
-            style="display: none;"
-        >
+        <section class="card">
 
             <h2>
-                Noch keine Ergebnisse
+                Hinweis
             </h2>
 
 
             <p>
-                Für diesen Wettkampf wurden noch keine
-                Ergebnisse erfasst.
+                Ein Teilnehmer kann mehrere Starts
+                innerhalb eines Wettkampfs haben.
+            </p>
+
+
+            <p>
+                Jeder Start besitzt seine eigenen
+                Ergebnisse.
+            </p>
+
+
+            <p>
+                Ein Start kann als Einzelstart,
+                Teamstart oder außer Konkurrenz
+                geführt werden.
+            </p>
+
+
+            <p>
+                Die Zuordnung kann nachträglich
+                geändert werden.
             </p>
 
         </section>
