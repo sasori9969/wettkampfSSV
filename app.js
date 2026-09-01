@@ -1,6 +1,12 @@
-// ==========================================
+// ==========================================================
+// SSV 1928 SULZBACH E.V.
+// ERGEBNISSE ERFASSEN
+// ==========================================================
+
+
+// ==========================================================
 // SUPABASE EINSTELLUNGEN
-// ==========================================
+// ==========================================================
 
 const SUPABASE_URL =
     "https://pvvdbcvdhggqbembqrda.supabase.co";
@@ -9,6 +15,10 @@ const SUPABASE_ANON_KEY =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
+// ==========================================================
+// SUPABASE VERBINDUNG
+// ==========================================================
+
 const supabaseClient =
     supabase.createClient(
         SUPABASE_URL,
@@ -16,45 +26,387 @@ const supabaseClient =
     );
 
 
+// ==========================================================
+// GLOBALE VARIABLEN
+// ==========================================================
 
-// ==========================================
-// ZAHL UMWANDELN
-// ==========================================
+let aktuellerWettkampf = null;
 
-function zahlUmwandeln(wert) {
+let aktuellerTeilnehmer = null;
 
-    wert = wert.replace(",", ".");
+let aktuelleStarts = [];
 
-    return parseFloat(wert);
+let aktuellerStart = null;
+
+let alleTeilnehmer = [];
+
+let suchTimer = null;
+
+
+// ==========================================================
+// HILFSFUNKTIONEN
+// ==========================================================
+
+function element(id) {
+
+    return document.getElementById(id);
 
 }
 
 
+function escapeHtml(text) {
 
-// ==========================================
+    if (text === null || text === undefined) {
+        return "";
+    }
+
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+
+}
+
+
+function zahlAusEingabe(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        String(value).trim() === ""
+    ) {
+
+        return null;
+
+    }
+
+    let text =
+        String(value)
+            .trim()
+            .replace(",", ".");
+
+    const zahl =
+        Number(text);
+
+    if (!Number.isFinite(zahl)) {
+
+        return null;
+
+    }
+
+    return zahl;
+
+}
+
+
+function formatZahl(value) {
+
+    if (
+        value === null ||
+        value === undefined ||
+        value === ""
+    ) {
+
+        return "";
+
+    }
+
+    const zahl =
+        Number(value);
+
+    if (!Number.isFinite(zahl)) {
+
+        return "";
+
+    }
+
+    return zahl
+        .toFixed(2)
+        .replace(".", ",");
+
+}
+
+
+function setMeldung(id, text, typ = "") {
+
+    const el =
+        element(id);
+
+    if (!el) {
+        return;
+    }
+
+    el.textContent =
+        text || "";
+
+    el.className =
+        "meldung";
+
+    if (typ) {
+
+        el.classList.add(
+            typ
+        );
+
+    }
+
+}
+
+
+// ==========================================================
+// WETTKÄMPFE LADEN
+// ==========================================================
+
+async function wettkaempfeLaden() {
+
+    const select =
+        element("wettkampf-auswahl");
+
+    if (!select) {
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("competitions")
+
+        .select(`
+            id,
+            name,
+            datum,
+            anzahl_ergebnisse,
+            teamgroesse,
+            status
+        `)
+
+        .order(
+            "datum",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden der Wettkämpfe:",
+            error
+        );
+
+        setMeldung(
+            "wettkampf-info",
+            "Fehler beim Laden der Wettkämpfe.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    select.innerHTML = `
+        <option value="">
+            Wettkampf auswählen ...
+        </option>
+    `;
+
+
+    (data || []).forEach(
+        function(wettkampf) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                wettkampf.id;
+
+            option.textContent =
+                `${wettkampf.name} – ${formatDatum(wettkampf.datum)}`;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================================
+// DATUM FORMATIEREN
+// ==========================================================
+
+function formatDatum(datum) {
+
+    if (!datum) {
+        return "";
+    }
+
+    const teile =
+        String(datum).split("-");
+
+    if (teile.length !== 3) {
+        return datum;
+    }
+
+    return `${teile[2]}.${teile[1]}.${teile[0]}`;
+
+}
+
+
+// ==========================================================
+// WETTKAMPF AUSWÄHLEN
+// ==========================================================
+
+async function wettkampfAusgewaehlt() {
+
+    const select =
+        element("wettkampf-auswahl");
+
+    if (!select) {
+        return;
+    }
+
+
+    const wettkampfId =
+        select.value;
+
+
+    aktuellerWettkampf = null;
+
+    aktuellerTeilnehmer = null;
+
+    aktuelleStarts = [];
+
+    aktuellerStart = null;
+
+
+    bereichAusblenden(
+        "starter-suche-bereich"
+    );
+
+    bereichAusblenden(
+        "start-auswahl-bereich"
+    );
+
+    bereichAusblenden(
+        "ergebnis-bereich"
+    );
+
+    bereichAusblenden(
+        "gespeicherte-ergebnisse-bereich"
+    );
+
+
+    if (!wettkampfId) {
+
+        setMeldung(
+            "wettkampf-info",
+            "Bitte einen Wettkampf auswählen."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("competitions")
+
+        .select(`
+            id,
+            name,
+            datum,
+            anzahl_ergebnisse,
+            teamgroesse,
+            status
+        `)
+
+        .eq(
+            "id",
+            wettkampfId
+        )
+
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden des Wettkampfs:",
+            error
+        );
+
+        setMeldung(
+            "wettkampf-info",
+            "Wettkampf konnte nicht geladen werden.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    aktuellerWettkampf =
+        data;
+
+
+    setMeldung(
+        "wettkampf-info",
+        `${data.name} | ${formatDatum(data.datum)} | ${data.anzahl_ergebnisse} Ergebnisse`
+    );
+
+
+    bereichEinblenden(
+        "starter-suche-bereich"
+    );
+
+
+    const suche =
+        element("starter-suche");
+
+    if (suche) {
+
+        suche.value = "";
+
+        suche.focus();
+
+    }
+
+
+    const ergebnisse =
+        element("starter-suchergebnisse");
+
+    if (ergebnisse) {
+
+        ergebnisse.innerHTML = "";
+
+    }
+
+
+    await teilnehmerLaden();
+
+}
+
+
+// ==========================================================
 // TEILNEHMER LADEN
-// ==========================================
+// ==========================================================
 
 async function teilnehmerLaden() {
-
-    const ergebnisSelect =
-        document.getElementById(
-            "teilnehmer"
-        );
-
-
-    const bearbeitenSelect =
-        document.getElementById(
-            "teilnehmer-bearbeiten"
-        );
-
-
-    const teilnehmerListe =
-        document.getElementById(
-            "teilnehmer-liste"
-        );
-
-
 
     const {
         data,
@@ -63,7 +415,11 @@ async function teilnehmerLaden() {
 
         .from("participants")
 
-        .select("*")
+        .select(`
+            id,
+            vorname,
+            nachname
+        `)
 
         .order(
             "nachname",
@@ -80,7 +436,6 @@ async function teilnehmerLaden() {
         );
 
 
-
     if (error) {
 
         console.error(
@@ -88,223 +443,131 @@ async function teilnehmerLaden() {
             error
         );
 
+        return;
 
-        if (teilnehmerListe) {
+    }
 
-            teilnehmerListe.innerHTML =
-                "<p>Fehler beim Laden der Teilnehmer.</p>";
 
-        }
+    alleTeilnehmer =
+        data || [];
+
+}
+
+
+// ==========================================================
+// TEILNEHMER SUCHEN
+// ==========================================================
+
+function teilnehmerSuchen() {
+
+    const suche =
+        element("starter-suche");
+
+    const container =
+        element("starter-suchergebnisse");
+
+    if (!suche || !container) {
+        return;
+    }
+
+
+    const begriff =
+        suche.value
+            .trim()
+            .toLowerCase();
+
+
+    container.innerHTML = "";
+
+
+    if (!begriff) {
+        return;
+    }
+
+
+    const treffer =
+        alleTeilnehmer.filter(
+            function(teilnehmer) {
+
+                const vollerName =
+                    `${teilnehmer.vorname} ${teilnehmer.nachname}`
+                        .toLowerCase();
+
+                const nachname =
+                    String(
+                        teilnehmer.nachname || ""
+                    ).toLowerCase();
+
+                const vorname =
+                    String(
+                        teilnehmer.vorname || ""
+                    ).toLowerCase();
+
+
+                return (
+                    vollerName.includes(begriff) ||
+                    nachname.startsWith(begriff) ||
+                    vorname.startsWith(begriff)
+                );
+
+            }
+        );
+
+
+    if (treffer.length === 0) {
+
+        container.innerHTML = `
+            <p>
+                Kein Teilnehmer gefunden.
+            </p>
+        `;
 
         return;
 
     }
 
 
-
-    // ==========================================
-    // ERGEBNIS-AUSWAHL
-    // ==========================================
-
-    if (ergebnisSelect) {
-
-        ergebnisSelect.innerHTML = "";
-
-
-        const standardOption =
-            document.createElement("option");
-
-
-        standardOption.value = "";
-
-
-        standardOption.textContent =
-            "Bitte Teilnehmer auswählen";
-
-
-        ergebnisSelect.appendChild(
-            standardOption
-        );
-
-
-        data.forEach(
+    treffer
+        .slice(0, 20)
+        .forEach(
             function(teilnehmer) {
 
-                const option =
-                    document.createElement(
-                        "option"
-                    );
+                const button =
+                    document.createElement("button");
 
-
-                option.value =
-                    teilnehmer.id;
-
-
-                option.textContent =
-                    teilnehmer.vorname +
-                    " " +
-                    teilnehmer.nachname;
-
-
-                ergebnisSelect.appendChild(
-                    option
-                );
-
-            }
-        );
-
-    }
-
-
-
-    // ==========================================
-    // ALTE BEARBEITUNGSAUSWAHL
-    // ==========================================
-
-    if (bearbeitenSelect) {
-
-        bearbeitenSelect.innerHTML = "";
-
-
-        const standardOption =
-            document.createElement("option");
-
-
-        standardOption.value = "";
-
-
-        standardOption.textContent =
-            "Bitte Teilnehmer auswählen";
-
-
-        bearbeitenSelect.appendChild(
-            standardOption
-        );
-
-
-        data.forEach(
-            function(teilnehmer) {
-
-                const option =
-                    document.createElement(
-                        "option"
-                    );
-
-
-                option.value =
-                    teilnehmer.id;
-
-
-                option.textContent =
-                    teilnehmer.vorname +
-                    " " +
-                    teilnehmer.nachname;
-
-
-                option.dataset.vorname =
-                    teilnehmer.vorname;
-
-
-                option.dataset.nachname =
-                    teilnehmer.nachname;
-
-
-                bearbeitenSelect.appendChild(
-                    option
-                );
-
-            }
-        );
-
-    }
-
-
-
-    // ==========================================
-    // TEILNEHMERLISTE
-    // ==========================================
-
-    if (teilnehmerListe) {
-
-        teilnehmerListe.innerHTML = "";
-
-
-        if (data.length === 0) {
-
-            teilnehmerListe.innerHTML =
-                "<p>Noch keine Teilnehmer vorhanden.</p>";
-
-        }
-
-
-        data.forEach(
-            function(teilnehmer) {
-
-                const zeile =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                zeile.className =
-                    "teilnehmer-zeile";
-
-
-                const name =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                name.className =
-                    "teilnehmer-name";
-
-
-                name.textContent =
-                    teilnehmer.vorname +
-                    " " +
-                    teilnehmer.nachname;
-
-
-
-                const aktionen =
-                    document.createElement(
-                        "div"
-                    );
-
-
-                aktionen.className =
-                    "teilnehmer-aktionen";
-
-
-
-                // ==================================
-                // BEARBEITEN BUTTON
-                // ==================================
-
-                const bearbeitenButton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                bearbeitenButton.type =
+                button.type =
                     "button";
 
+                button.className =
+                    "start-button";
 
-                bearbeitenButton.className =
-                    "button-secondary";
+                button.innerHTML = `
+
+                    <span class="start-button-icon">
+                        👤
+                    </span>
+
+                    <span class="start-button-text">
+
+                        <strong>
+                            ${escapeHtml(teilnehmer.vorname)}
+                            ${escapeHtml(teilnehmer.nachname)}
+                        </strong>
+
+                        <small>
+                            Teilnehmer auswählen
+                        </small>
+
+                    </span>
+
+                `;
 
 
-                bearbeitenButton.textContent =
-                    "Bearbeiten";
-
-
-                bearbeitenButton.addEventListener(
+                button.addEventListener(
                     "click",
                     function() {
 
-                        teilnehmerBearbeiten(
+                        teilnehmerAuswaehlen(
                             teilnehmer
                         );
 
@@ -312,396 +575,393 @@ async function teilnehmerLaden() {
                 );
 
 
-
-                // ==================================
-                // LÖSCHEN BUTTON
-                // ==================================
-
-                const loeschenButton =
-                    document.createElement(
-                        "button"
-                    );
-
-
-                loeschenButton.type =
-                    "button";
-
-
-                loeschenButton.className =
-                    "button-danger";
-
-
-                loeschenButton.textContent =
-                    "Löschen";
-
-
-                loeschenButton.addEventListener(
-                    "click",
-                    function() {
-
-                        teilnehmerLoeschen(
-                            teilnehmer
-                        );
-
-                    }
-                );
-
-
-
-                aktionen.appendChild(
-                    bearbeitenButton
-                );
-
-
-                aktionen.appendChild(
-                    loeschenButton
-                );
-
-
-                zeile.appendChild(
-                    name
-                );
-
-
-                zeile.appendChild(
-                    aktionen
-                );
-
-
-                teilnehmerListe.appendChild(
-                    zeile
+                container.appendChild(
+                    button
                 );
 
             }
         );
 
-    }
-
 }
 
 
+// ==========================================================
+// TEILNEHMER AUSWÄHLEN
+// ==========================================================
 
-// ==========================================
-// TEILNEHMER ANLEGEN
-// ==========================================
-
-const teilnehmerForm =
-    document.getElementById(
-        "teilnehmer-form"
-    );
-
-
-if (teilnehmerForm) {
-
-    teilnehmerForm.addEventListener(
-        "submit",
-        async function(event) {
-
-            event.preventDefault();
-
-
-            const vorname =
-                document
-                    .getElementById(
-                        "vorname"
-                    )
-                    .value
-                    .trim();
-
-
-            const nachname =
-                document
-                    .getElementById(
-                        "nachname"
-                    )
-                    .value
-                    .trim();
-
-
-
-            if (!vorname || !nachname) {
-
-                alert(
-                    "Bitte Vor- und Nachname eingeben."
-                );
-
-                return;
-
-            }
-
-
-
-            const {
-                error
-            } = await supabaseClient
-
-                .from("participants")
-
-                .insert([
-                    {
-                        vorname: vorname,
-                        nachname: nachname
-                    }
-                ]);
-
-
-
-            if (error) {
-
-                console.error(
-                    "Fehler beim Speichern:",
-                    error
-                );
-
-
-                document.getElementById(
-                    "teilnehmer-meldung"
-                ).textContent =
-                    "Fehler beim Speichern.";
-
-
-                return;
-
-            }
-
-
-
-            document.getElementById(
-                "teilnehmer-meldung"
-            ).textContent =
-                "Teilnehmer wurde gespeichert.";
-
-
-            teilnehmerForm.reset();
-
-
-            await teilnehmerLaden();
-
-        }
-    );
-
-}
-
-
-
-// ==========================================
-// TEILNEHMER BEARBEITEN
-// ==========================================
-
-async function teilnehmerBearbeiten(
+async function teilnehmerAuswaehlen(
     teilnehmer
 ) {
 
-    const neuerVorname =
-        prompt(
-            "Vorname:",
-            teilnehmer.vorname
-        );
+    aktuellerTeilnehmer =
+        teilnehmer;
 
 
-    if (neuerVorname === null) {
+    const suche =
+        element("starter-suche");
 
-        return;
+    if (suche) {
 
-    }
-
-
-    const neuerNachname =
-        prompt(
-            "Nachname:",
-            teilnehmer.nachname
-        );
-
-
-    if (neuerNachname === null) {
-
-        return;
+        suche.value =
+            `${teilnehmer.vorname} ${teilnehmer.nachname}`;
 
     }
 
 
-    const vorname =
-        neuerVorname.trim();
+    const suchergebnisse =
+        element("starter-suchergebnisse");
 
+    if (suchergebnisse) {
 
-    const nachname =
-        neuerNachname.trim();
-
-
-
-    if (!vorname || !nachname) {
-
-        alert(
-            "Vor- und Nachname dürfen nicht leer sein."
-        );
-
-        return;
+        suchergebnisse.innerHTML = "";
 
     }
 
 
-
-    const {
-        error
-    } = await supabaseClient
-
-        .from("participants")
-
-        .update({
-            vorname: vorname,
-            nachname: nachname
-        })
-
-        .eq(
-            "id",
-            teilnehmer.id
-        );
-
-
-
-    if (error) {
-
-        console.error(
-            "Fehler beim Ändern:",
-            error
-        );
-
-
-        alert(
-            "Der Teilnehmer konnte nicht geändert werden."
-        );
-
-        return;
-
-    }
-
-
-
-    await teilnehmerLaden();
+    await startsFuerTeilnehmerLaden();
 
 }
 
 
+// ==========================================================
+// STARTS DES TEILNEHMERS LADEN
+// ==========================================================
 
-// ==========================================
-// TEILNEHMER LÖSCHEN
-// ==========================================
+async function startsFuerTeilnehmerLaden() {
 
-async function teilnehmerLoeschen(
-    teilnehmer
-) {
-
-    const name =
-        teilnehmer.vorname +
-        " " +
-        teilnehmer.nachname;
-
-
-
-    const bestaetigt =
-        confirm(
-            "ACHTUNG!\n\n" +
-            "Soll \"" +
-            name +
-            "\" wirklich gelöscht werden?\n\n" +
-            "Dabei werden auch ALLE Ergebnisse " +
-            "dieses Teilnehmers endgültig gelöscht."
-        );
-
-
-
-    if (!bestaetigt) {
+    if (
+        !aktuellerWettkampf ||
+        !aktuellerTeilnehmer
+    ) {
 
         return;
 
     }
-
 
 
     const {
+        data,
         error
     } = await supabaseClient
 
-        .from("participants")
+        .from("starts")
 
-        .delete()
-
-        .eq(
-            "id",
-            teilnehmer.id
-        );
-
-
-
-    if (error) {
-
-        console.error(
-            "Fehler beim Löschen:",
-            error
-        );
-
-
-        alert(
-            "Der Teilnehmer konnte nicht gelöscht werden."
-        );
-
-        return;
-
-    }
-
-
-
-    await teilnehmerLaden();
-
-}
-
-
-
-// ==========================================
-// VORHANDENE ERGEBNISSE LADEN
-// ==========================================
-
-async function vorhandeneErgebnisseLaden() {
-
-    const participantId =
-        document
-            .getElementById(
-                "teilnehmer"
+        .select(`
+            id,
+            participant_id,
+            team_id,
+            ak,
+            created_at,
+            teams (
+                id,
+                name
             )
-            .value;
+        `)
 
+        .eq(
+            "competition_id",
+            aktuellerWettkampf.id
+        )
 
-    const ergebnis1 =
-        document.getElementById(
-            "ergebnis1"
+        .eq(
+            "participant_id",
+            aktuellerTeilnehmer.id
+        )
+
+        .order(
+            "created_at",
+            {
+                ascending: true
+            }
         );
 
 
-    const ergebnis2 =
-        document.getElementById(
-            "ergebnis2"
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden der Starts:",
+            error
         );
 
-
-    const ergebnis3 =
-        document.getElementById(
-            "ergebnis3"
+        setMeldung(
+            "wettkampf-info",
+            "Fehler beim Laden der Starts.",
+            "fehler"
         );
-
-
-
-    if (!participantId) {
-
-        ergebnis1.value = "";
-
-        ergebnis2.value = "";
-
-        ergebnis3.value = "";
 
         return;
 
     }
 
+
+    aktuelleStarts =
+        data || [];
+
+
+    startAuswahlAnzeigen();
+
+}
+
+
+// ==========================================================
+// STARTAUSWAHL ANZEIGEN
+// ==========================================================
+
+function startAuswahlAnzeigen() {
+
+    const bereich =
+        element("start-auswahl-bereich");
+
+    const select =
+        element("start-auswahl");
+
+    const starter =
+        element("ausgewaehlter-starter");
+
+    if (
+        !bereich ||
+        !select ||
+        !starter
+    ) {
+
+        return;
+
+    }
+
+
+    bereichEinblenden(
+        "start-auswahl-bereich"
+    );
+
+
+    starter.innerHTML = `
+
+        <div class="ausgewaehlter-starter">
+
+            <strong>
+                ${escapeHtml(aktuellerTeilnehmer.vorname)}
+                ${escapeHtml(aktuellerTeilnehmer.nachname)}
+            </strong>
+
+            <span>
+                ${aktuelleStarts.length}
+                ${aktuelleStarts.length === 1 ? "Start" : "Starts"}
+                in diesem Wettkampf
+            </span>
+
+        </div>
+
+    `;
+
+
+    select.innerHTML = `
+        <option value="">
+            Start auswählen ...
+        </option>
+    `;
+
+
+    if (aktuelleStarts.length === 0) {
+
+        const option =
+            document.createElement("option");
+
+        option.value =
+            "";
+
+        option.textContent =
+            "Für diesen Teilnehmer existiert kein Start.";
+
+        option.disabled =
+            true;
+
+        select.appendChild(
+            option
+        );
+
+        bereichAusblenden(
+            "ergebnis-bereich"
+        );
+
+        bereichAusblenden(
+            "gespeicherte-ergebnisse-bereich"
+        );
+
+        return;
+
+    }
+
+
+    aktuelleStarts.forEach(
+        function(start, index) {
+
+            const option =
+                document.createElement("option");
+
+            option.value =
+                start.id;
+
+
+            let text =
+                `Start ${index + 1}`;
+
+
+            if (start.team_id && start.teams) {
+
+                text +=
+                    ` – ${start.teams.name}`;
+
+            } else {
+
+                text +=
+                    " – Einzel";
+
+            }
+
+
+            if (start.ak) {
+
+                text +=
+                    " – AK";
+
+            }
+
+
+            option.textContent =
+                text;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+
+    if (aktuelleStarts.length === 1) {
+
+        select.value =
+            aktuelleStarts[0].id;
+
+        startAusgewaehlt();
+
+    }
+
+}
+
+
+// ==========================================================
+// START AUSWÄHLEN
+// ==========================================================
+
+async function startAusgewaehlt() {
+
+    const select =
+        element("start-auswahl");
+
+    if (!select) {
+        return;
+    }
+
+
+    const startId =
+        select.value;
+
+
+    aktuellerStart =
+        aktuelleStarts.find(
+            function(start) {
+
+                return start.id === startId;
+
+            }
+        ) || null;
+
+
+    bereichAusblenden(
+        "ergebnis-bereich"
+    );
+
+    bereichAusblenden(
+        "gespeicherte-ergebnisse-bereich"
+    );
+
+
+    if (!aktuellerStart) {
+
+        return;
+
+    }
+
+
+    startInformationAnzeigen();
+
+
+    await ergebnisseDesStartsLaden();
+
+}
+
+
+// ==========================================================
+// START INFORMATIONEN
+// ==========================================================
+
+function startInformationAnzeigen() {
+
+    const info =
+        element("start-information");
+
+    if (!info || !aktuellerStart) {
+        return;
+    }
+
+
+    let wertung =
+        "Einzelstart";
+
+
+    if (aktuellerStart.team_id) {
+
+        wertung =
+            aktuellerStart.teams?.name ||
+            "Team";
+
+    }
+
+
+    if (aktuellerStart.ak) {
+
+        wertung +=
+            " – AK";
+
+    }
+
+
+    info.innerHTML = `
+
+        <div class="start-information">
+
+            <strong>
+                ${escapeHtml(wertung)}
+            </strong>
+
+        </div>
+
+    `;
+
+}
+
+
+// ==========================================================
+// ERGEBNISSE DES STARTS LADEN
+// ==========================================================
+
+async function ergebnisseDesStartsLaden() {
+
+    if (!aktuellerStart) {
+        return;
+    }
 
 
     const {
@@ -711,17 +971,25 @@ async function vorhandeneErgebnisseLaden() {
 
         .from("results")
 
-        .select(
-            "ergebnis1, ergebnis2, ergebnis3"
-        )
+        .select(`
+            id,
+            start_id,
+            nummer,
+            wert,
+            created_at
+        `)
 
         .eq(
-            "participant_id",
-            participantId
+            "start_id",
+            aktuellerStart.id
         )
 
-        .maybeSingle();
-
+        .order(
+            "nummer",
+            {
+                ascending: true
+            }
+        );
 
 
     if (error) {
@@ -731,224 +999,664 @@ async function vorhandeneErgebnisseLaden() {
             error
         );
 
-        return;
-
-    }
-
-
-
-    if (!data) {
-
-        ergebnis1.value = "";
-
-        ergebnis2.value = "";
-
-        ergebnis3.value = "";
+        setMeldung(
+            "ergebnis-meldung",
+            "Fehler beim Laden der Ergebnisse.",
+            "fehler"
+        );
 
         return;
 
     }
 
 
-
-    ergebnis1.value =
-        Number(
-            data.ergebnis1
-        )
-            .toFixed(1)
-            .replace(".", ",");
-
-
-    ergebnis2.value =
-        Number(
-            data.ergebnis2
-        )
-            .toFixed(1)
-            .replace(".", ",");
-
-
-    ergebnis3.value =
-        Number(
-            data.ergebnis3
-        )
-            .toFixed(1)
-            .replace(".", "");
-
-}
-
-
-
-// ==========================================
-// ERGEBNIS-TEILNEHMER AUSWAHL
-// ==========================================
-
-const teilnehmerSelect =
-    document.getElementById(
-        "teilnehmer"
-    );
-
-
-if (teilnehmerSelect) {
-
-    teilnehmerSelect.addEventListener(
-        "change",
-        vorhandeneErgebnisseLaden
+    ergebnisFormularAnzeigen(
+        data || []
     );
 
 }
 
 
+// ==========================================================
+// ERGEBNISFORMULAR
+// ==========================================================
 
-// ==========================================
-// ERGEBNISSE SPEICHERN
-// ==========================================
+function ergebnisFormularAnzeigen(
+    vorhandeneErgebnisse
+) {
 
-const ergebnisForm =
-    document.getElementById(
-        "ergebnis-form"
+    const bereich =
+        element("ergebnis-bereich");
+
+    const felder =
+        element("ergebnis-felder");
+
+    const hinweis =
+        element("ergebnis-hinweis");
+
+    if (
+        !bereich ||
+        !felder
+    ) {
+
+        return;
+
+    }
+
+
+    const anzahl =
+        Number(
+            aktuellerWettkampf?.anzahl_ergebnisse
+        ) || 3;
+
+
+    const maximum =
+        Math.min(
+            Math.max(
+                anzahl,
+                1
+            ),
+            10
+        );
+
+
+    bereichEinblenden(
+        "ergebnis-bereich"
     );
 
 
-if (ergebnisForm) {
+    if (hinweis) {
 
-    ergebnisForm.addEventListener(
-        "submit",
-        async function(event) {
+        hinweis.textContent =
+            `Bitte ${maximum} Ergebnisse erfassen. Bereits gespeicherte Werte können jederzeit geändert werden.`;
 
-            event.preventDefault();
-
+    }
 
 
-            const participantId =
-                document
-                    .getElementById(
-                        "teilnehmer"
-                    )
-                    .value;
+    felder.innerHTML = "";
 
 
-
-            const wert1 =
-                zahlUmwandeln(
-                    document
-                        .getElementById(
-                            "ergebnis1"
-                        )
-                        .value
-                );
+    const werte =
+        {};
 
 
-            const wert2 =
-                zahlUmwandeln(
-                    document
-                        .getElementById(
-                            "ergebnis2"
-                        )
-                        .value
-                );
+    vorhandeneErgebnisse.forEach(
+        function(ergebnis) {
 
-
-            const wert3 =
-                zahlUmwandeln(
-                    document
-                        .getElementById(
-                            "ergebnis3"
-                        )
-                        .value
-                );
-
-
-
-            if (!participantId) {
-
-                alert(
-                    "Bitte einen Teilnehmer auswählen."
-                );
-
-                return;
-
-            }
-
-
-
-            if (
-                Number.isNaN(wert1) ||
-                Number.isNaN(wert2) ||
-                Number.isNaN(wert3)
-            ) {
-
-                alert(
-                    "Bitte bei allen drei Ergebnissen Zahlen eingeben."
-                );
-
-                return;
-
-            }
-
-
-
-            const {
-                error
-            } = await supabaseClient
-
-                .from("results")
-
-                .upsert(
-                    {
-                        participant_id:
-                            participantId,
-
-                        ergebnis1:
-                            wert1,
-
-                        ergebnis2:
-                            wert2,
-
-                        ergebnis3:
-                            wert3
-                    },
-                    {
-                        onConflict:
-                            "participant_id"
-                    }
-                );
-
-
-
-            if (error) {
-
-                console.error(
-                    "Fehler beim Speichern der Ergebnisse:",
-                    error
-                );
-
-
-                document.getElementById(
-                    "ergebnis-meldung"
-                ).textContent =
-                    "Fehler beim Speichern.";
-
-
-                return;
-
-            }
-
-
-
-            document.getElementById(
-                "ergebnis-meldung"
-            ).textContent =
-                "Ergebnisse wurden gespeichert.";
+            werte[
+                ergebnis.nummer
+            ] =
+                ergebnis.wert;
 
         }
     );
 
+
+    for (
+        let nummer = 1;
+        nummer <= maximum;
+        nummer++
+    ) {
+
+        const gruppe =
+            document.createElement("div");
+
+        gruppe.className =
+            "form-group";
+
+
+        const label =
+            document.createElement("label");
+
+        label.setAttribute(
+            "for",
+            `ergebnis-${nummer}`
+        );
+
+        label.textContent =
+            `Ergebnis ${nummer}`;
+
+
+        const input =
+            document.createElement("input");
+
+        input.type =
+            "text";
+
+        input.id =
+            `ergebnis-${nummer}`;
+
+        input.name =
+            `ergebnis-${nummer}`;
+
+        input.inputMode =
+            "decimal";
+
+        input.placeholder =
+            "z. B. 12,40";
+
+
+        if (
+            werte[nummer] !== undefined
+        ) {
+
+            input.value =
+                formatZahl(
+                    werte[nummer]
+                );
+
+        }
+
+
+        gruppe.appendChild(
+            label
+        );
+
+        gruppe.appendChild(
+            input
+        );
+
+
+        felder.appendChild(
+            gruppe
+        );
+
+    }
+
+
+    gespeicherteErgebnisseAnzeigen(
+        vorhandeneErgebnisse
+    );
+
 }
 
 
+// ==========================================================
+// GESPEICHERTE ERGEBNISSE
+// ==========================================================
 
-// ==========================================
+function gespeicherteErgebnisseAnzeigen(
+    ergebnisse
+) {
+
+    const bereich =
+        element("gespeicherte-ergebnisse-bereich");
+
+    const container =
+        element("gespeicherte-ergebnisse");
+
+    if (
+        !bereich ||
+        !container
+    ) {
+
+        return;
+
+    }
+
+
+    if (!ergebnisse.length) {
+
+        bereichAusblenden(
+            "gespeicherte-ergebnisse-bereich"
+        );
+
+        container.innerHTML =
+            "";
+
+        return;
+
+    }
+
+
+    bereichEinblenden(
+        "gespeicherte-ergebnisse-bereich"
+    );
+
+
+    container.innerHTML =
+        ergebnisse
+            .map(
+                function(ergebnis) {
+
+                    return `
+
+                        <div class="gespeichertes-ergebnis">
+
+                            <strong>
+                                Ergebnis ${ergebnis.nummer}
+                            </strong>
+
+                            <span>
+                                ${formatZahl(ergebnis.wert)}
+                            </span>
+
+                        </div>
+
+                    `;
+
+                }
+            )
+            .join("");
+
+}
+
+
+// ==========================================================
+// ERGEBNISSE SPEICHERN
+// ==========================================================
+
+async function ergebnisseSpeichern(
+    event
+) {
+
+    event.preventDefault();
+
+
+    if (
+        !aktuellerWettkampf ||
+        !aktuellerStart
+    ) {
+
+        setMeldung(
+            "ergebnis-meldung",
+            "Bitte zuerst einen Start auswählen.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    const anzahl =
+        Number(
+            aktuellerWettkampf.anzahl_ergebnisse
+        ) || 3;
+
+
+    const maximum =
+        Math.min(
+            Math.max(
+                anzahl,
+                1
+            ),
+            10
+        );
+
+
+    const zuSpeichern =
+        [];
+
+
+    for (
+        let nummer = 1;
+        nummer <= maximum;
+        nummer++
+    ) {
+
+        const input =
+            element(
+                `ergebnis-${nummer}`
+            );
+
+
+        if (!input) {
+            continue;
+        }
+
+
+        const text =
+            input.value.trim();
+
+
+        // Leeres Feld = kein Ergebnis.
+        if (!text) {
+            continue;
+        }
+
+
+        const wert =
+            zahlAusEingabe(
+                text
+            );
+
+
+        if (
+            wert === null
+        ) {
+
+            setMeldung(
+                "ergebnis-meldung",
+                `Ergebnis ${nummer} ist keine gültige Zahl.`,
+                "fehler"
+            );
+
+            input.focus();
+
+            return;
+
+        }
+
+
+        zuSpeichern.push({
+
+            start_id:
+                aktuellerStart.id,
+
+            nummer:
+                nummer,
+
+            wert:
+                wert
+
+        });
+
+    }
+
+
+    if (
+        zuSpeichern.length === 0
+    ) {
+
+        setMeldung(
+            "ergebnis-meldung",
+            "Bitte mindestens ein Ergebnis eingeben.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    setMeldung(
+        "ergebnis-meldung",
+        "Ergebnisse werden gespeichert ..."
+    );
+
+
+    // ======================================================
+    // ALTE ERGEBNISSE DES STARTS LÖSCHEN
+    // ======================================================
+
+    const {
+        error: deleteError
+    } = await supabaseClient
+
+        .from("results")
+
+        .delete()
+
+        .eq(
+            "start_id",
+            aktuellerStart.id
+        );
+
+
+    if (deleteError) {
+
+        console.error(
+            "Fehler beim Löschen alter Ergebnisse:",
+            deleteError
+        );
+
+        setMeldung(
+            "ergebnis-meldung",
+            "Die bisherigen Ergebnisse konnten nicht aktualisiert werden.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    // ======================================================
+    // NEUE ERGEBNISSE SPEICHERN
+    // ======================================================
+
+    const {
+        error: insertError
+    } = await supabaseClient
+
+        .from("results")
+
+        .insert(
+            zuSpeichern
+        );
+
+
+    if (insertError) {
+
+        console.error(
+            "Fehler beim Speichern:",
+            insertError
+        );
+
+
+        setMeldung(
+            "ergebnis-meldung",
+            "Fehler beim Speichern der Ergebnisse.",
+            "fehler"
+        );
+
+        return;
+
+    }
+
+
+    setMeldung(
+        "ergebnis-meldung",
+        "Ergebnisse erfolgreich gespeichert.",
+        "erfolg"
+    );
+
+
+    await ergebnisseDesStartsLaden();
+
+}
+
+
+// ==========================================================
+// BEREICH EINBLENDEN
+// ==========================================================
+
+function bereichEinblenden(id) {
+
+    const el =
+        element(id);
+
+    if (!el) {
+        return;
+    }
+
+    el.style.display =
+        "";
+
+}
+
+
+// ==========================================================
+// BEREICH AUSBLENDEN
+// ==========================================================
+
+function bereichAusblenden(id) {
+
+    const el =
+        element(id);
+
+    if (!el) {
+        return;
+    }
+
+    el.style.display =
+        "none";
+
+}
+
+
+// ==========================================================
+// EVENT LISTENER
+// ==========================================================
+
+function eventsEinrichten() {
+
+
+    // ------------------------------------------------------
+    // WETTKAMPF
+    // ------------------------------------------------------
+
+    const wettkampfSelect =
+        element(
+            "wettkampf-auswahl"
+        );
+
+
+    if (wettkampfSelect) {
+
+        wettkampfSelect.addEventListener(
+            "change",
+            wettkampfAusgewaehlt
+        );
+
+    }
+
+
+    // ------------------------------------------------------
+    // TEILNEHMERSUCHE
+    // ------------------------------------------------------
+
+    const suche =
+        element(
+            "starter-suche"
+        );
+
+
+    if (suche) {
+
+        suche.addEventListener(
+            "input",
+            function() {
+
+                clearTimeout(
+                    suchTimer
+                );
+
+
+                suchTimer =
+                    setTimeout(
+                        teilnehmerSuchen,
+                        100
+                    );
+
+            }
+        );
+
+    }
+
+
+    // ------------------------------------------------------
+    // STARTAUSWAHL
+    // ------------------------------------------------------
+
+    const startSelect =
+        element(
+            "start-auswahl"
+        );
+
+
+    if (startSelect) {
+
+        startSelect.addEventListener(
+            "change",
+            startAusgewaehlt
+        );
+
+    }
+
+
+    // ------------------------------------------------------
+    // ERGEBNISFORMULAR
+    // ------------------------------------------------------
+
+    const form =
+        element(
+            "ergebnis-form"
+        );
+
+
+    if (form) {
+
+        form.addEventListener(
+            "submit",
+            ergebnisseSpeichern
+        );
+
+    }
+
+}
+
+
+// ==========================================================
 // START
-// ==========================================
+// ==========================================================
 
-teilnehmerLaden();
+async function startApp() {
+
+    eventsEinrichten();
+
+    await wettkaempfeLaden();
+
+
+    // ------------------------------------------------------
+    // OPTIONAL:
+    // WETTKAMPF AUS URL ÜBERNEHMEN
+    // ------------------------------------------------------
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    const wettkampfId =
+        params.get(
+            "wettkampf"
+        );
+
+
+    if (wettkampfId) {
+
+        const select =
+            element(
+                "wettkampf-auswahl"
+            );
+
+
+        if (select) {
+
+            select.value =
+                wettkampfId;
+
+
+            if (
+                select.value === wettkampfId
+            ) {
+
+                await wettkampfAusgewaehlt();
+
+            }
+
+        }
+
+    }
+
+}
+
+
+// ==========================================================
+// ANWENDUNG STARTEN
+// ==========================================================
+
+startApp();
