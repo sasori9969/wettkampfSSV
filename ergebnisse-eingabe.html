@@ -10,7 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Ergebnisse erfassen</title>
+    <title>
+        SSV 1928 Sulzbach e.V. – Ergebnisse erfassen
+    </title>
 
     <link
         rel="stylesheet"
@@ -30,19 +32,31 @@
     <header>
 
         <h1>
-            Wettkampfauswertung
+            SSV 1928 Sulzbach e.V.
         </h1>
 
 
         <nav>
 
             <a href="index.html">
+                Startseite
+            </a>
+
+
+            <a href="wettkaempfe.html">
+                Wettkämpfe
+            </a>
+
+
+            <a href="teilnehmer.html">
                 Teilnehmer
             </a>
+
 
             <a href="ergebnisse-eingabe.html">
                 Ergebnisse erfassen
             </a>
+
 
             <a href="ergebnisse.html">
                 Ergebnisse
@@ -61,6 +75,10 @@
     <main>
 
 
+        <!-- ==========================================
+             WETTKAMPF AUSWÄHLEN
+             ========================================== -->
+
         <section class="card">
 
             <h2>
@@ -68,113 +86,198 @@
             </h2>
 
 
+            <div class="form-group">
+
+                <label for="wettkampf-auswahl">
+                    Wettkampf
+                </label>
+
+
+                <select
+                    id="wettkampf-auswahl"
+                >
+
+                    <option value="">
+                        Wettkampf auswählen ...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <p id="wettkampf-info">
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             STARTER AUSWÄHLEN
+             ========================================== -->
+
+        <section
+            class="card"
+            id="starter-auswahl-bereich"
+            style="display: none;"
+        >
+
+            <h2>
+                Starter auswählen
+            </h2>
+
+
+            <div class="form-group">
+
+                <label for="starter-suche">
+                    Starter suchen
+                </label>
+
+
+                <input
+                    type="text"
+                    id="starter-suche"
+                    placeholder="Name oder Anfangsbuchstaben ..."
+                    autocomplete="off"
+                >
+
+            </div>
+
+
+            <div
+                id="starter-suchergebnisse"
+                class="suchergebnisse"
+            >
+            </div>
+
+
+            <div
+                class="form-group"
+            >
+
+                <label for="starter-auswahl">
+                    Starter
+                </label>
+
+
+                <select
+                    id="starter-auswahl"
+                >
+
+                    <option value="">
+                        Starter auswählen ...
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div
+                id="starter-information"
+                class="starter-information"
+                style="display: none;"
+            >
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             ERGEBNISSE EINGEBEN
+             ========================================== -->
+
+        <section
+            class="card"
+            id="ergebnis-bereich"
+            style="display: none;"
+        >
+
+            <h2 id="ergebnis-titel">
+                Ergebnisse
+            </h2>
+
+
+            <p id="ergebnis-hinweis">
+            </p>
+
+
             <form id="ergebnis-form">
 
 
-                <!-- Teilnehmer -->
-
-                <div class="form-group">
-
-                    <label for="teilnehmer">
-                        Teilnehmer
-                    </label>
-
-
-                    <select
-                        id="teilnehmer"
-                        required
-                    >
-
-                        <option value="">
-                            Teilnehmer auswählen
-                        </option>
-
-                    </select>
-
+                <div
+                    id="ergebnis-felder"
+                >
                 </div>
 
 
 
-                <!-- Ergebnis 1 -->
+                <!-- ==================================
+                     SPEICHERN
+                     ================================== -->
 
-                <div class="form-group">
-
-                    <label for="ergebnis1">
-                        Ergebnis 1
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="ergebnis1"
-                        inputmode="decimal"
-                        placeholder="z. B. 12,5"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- Ergebnis 2 -->
-
-                <div class="form-group">
-
-                    <label for="ergebnis2">
-                        Ergebnis 2
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="ergebnis2"
-                        inputmode="decimal"
-                        placeholder="z. B. 13,2"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- Ergebnis 3 -->
-
-                <div class="form-group">
-
-                    <label for="ergebnis3">
-                        Ergebnis 3
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="ergebnis3"
-                        inputmode="decimal"
-                        placeholder="z. B. 11,8"
-                        required
-                    >
-
-                </div>
-
-
-
-                <!-- Speichern -->
-
-                <button type="submit">
+                <button
+                    type="submit"
+                    id="ergebnisse-speichern"
+                >
                     Ergebnisse speichern
+                </button>
+
+
+                <button
+                    type="button"
+                    id="ergebnisse-loeschen"
+                    style="display: none;"
+                >
+                    Eingaben zurücksetzen
                 </button>
 
 
             </form>
 
 
-            <!-- Rückmeldung -->
-
             <p
                 id="ergebnis-meldung"
                 class="meldung"
             ></p>
 
+        </section>
+
+
+
+        <!-- ==========================================
+             BEREITS ERFASSTE STARTS
+             ========================================== -->
+
+        <section
+            class="card"
+            id="erfasste-starts-bereich"
+            style="display: none;"
+        >
+
+            <h2>
+                Bereits erfasste Ergebnisse
+            </h2>
+
+
+            <p>
+                Hier kannst du bereits erfasste Starts
+                auswählen und die Ergebnisse jederzeit
+                korrigieren.
+            </p>
+
+
+            <div
+                id="erfasste-starts"
+            >
+
+                <p>
+                    Ergebnisse werden geladen ...
+                </p>
+
+            </div>
 
         </section>
 
@@ -192,7 +295,8 @@
 
 
             <p>
-                Bereits gespeicherte Ergebnisse anzeigen.
+                Die vollständige Auswertung des
+                Wettkampfs anzeigen.
             </p>
 
 
@@ -217,7 +321,12 @@
     <footer>
 
         <p>
-            Wettkampfauswertung – Vereinsseite
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+
+        <p>
+            Wettkampfauswertung
         </p>
 
     </footer>
@@ -239,7 +348,7 @@
          ========================================== -->
 
     <script
-        src="app.js?v=2"
+        src="ergebnisse-eingabe.js?v=1"
     ></script>
 
 
