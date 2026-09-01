@@ -42,13 +42,21 @@
                 Startseite
             </a>
 
+
             <a href="wettkaempfe.html">
                 Wettkämpfe
             </a>
 
+
             <a href="teilnehmer.html">
                 Teilnehmer
             </a>
+
+
+            <a href="ergebnisse-eingabe.html">
+                Ergebnisse erfassen
+            </a>
+
 
             <a href="ergebnisse.html">
                 Ergebnisse
@@ -74,115 +82,37 @@
         <section class="card">
 
             <h2>
-                Wettkampfauswertung
+                Ergebnisse
             </h2>
 
 
-            <label for="wettkampf-auswahl">
-                Wettkampf
-            </label>
+            <div class="form-group">
+
+                <label for="wettkampf-auswahl">
+                    Wettkampf
+                </label>
 
 
-            <select id="wettkampf-auswahl">
-
-                <option value="">
-                    Wettkampf auswählen ...
-                </option>
-
-            </select>
-
-
-            <p id="wettkampf-info">
-            </p>
-
-        </section>
-
-
-
-        <!-- ==========================================
-             AUSWERTUNGSART
-             ========================================== -->
-
-        <section
-            class="card"
-            id="auswertung-bereich"
-            style="display: none;"
-        >
-
-            <h2>
-                Auswertung
-            </h2>
-
-
-            <div class="auswertung-buttons">
-
-                <button
-                    type="button"
-                    id="button-einzelwertung"
-                    class="auswertung-button aktiv"
+                <select
+                    id="wettkampf-auswahl"
                 >
-                    Einzelwertung
-                </button>
 
+                    <option value="">
+                        Wettkampf auswählen ...
+                    </option>
 
-                <button
-                    type="button"
-                    id="button-teamwertung"
-                    class="auswertung-button"
-                >
-                    Teamwertung
-                </button>
+                </select>
 
             </div>
 
-        </section>
 
+            <div
+                id="wettkampf-information"
+            >
 
-
-        <!-- ==========================================
-             EINZELWERTUNG
-             ========================================== -->
-
-        <section
-            class="card"
-            id="einzelwertung"
-            style="display: none;"
-        >
-
-            <h2>
-                Einzelwertung
-            </h2>
-
-
-            <p>
-                Für die persönliche Wertung zählt
-                innerhalb dieses Wettkampfs das beste
-                Ergebnis eines Teilnehmers.
-            </p>
-
-
-            <div class="table-container">
-
-                <table>
-
-                    <thead id="einzel-tabelle-kopf">
-
-                    </thead>
-
-
-                    <tbody id="einzel-tabelle">
-
-                        <tr>
-
-                            <td>
-                                Ergebnisse werden geladen...
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
+                <p>
+                    Bitte einen Wettkampf auswählen.
+                </p>
 
             </div>
 
@@ -196,16 +126,19 @@
 
         <section
             class="card"
-            id="teamwertung"
+            id="teamwertung-bereich"
             style="display: none;"
         >
 
             <h2>
-                Teamwertung
+                🏆 Teamwertung
             </h2>
 
 
-            <p id="teamwertung-info">
+            <p>
+                Die Teamwertung berücksichtigt nur
+                reguläre Teamstarter. AK-Starter werden
+                nicht berücksichtigt.
             </p>
 
 
@@ -213,20 +146,28 @@
 
                 <table>
 
-                    <thead id="team-tabelle-kopf">
+                    <thead id="teamwertung-kopf">
+
+                        <tr>
+
+                            <th>
+                                Platz
+                            </th>
+
+                            <th>
+                                Team
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
+                        </tr>
 
                     </thead>
 
 
-                    <tbody id="team-tabelle">
-
-                        <tr>
-
-                            <td>
-                                Ergebnisse werden geladen...
-                            </td>
-
-                        </tr>
+                    <tbody id="teamwertung-tabelle">
 
                     </tbody>
 
@@ -239,16 +180,145 @@
 
 
         <!-- ==========================================
-             HINWEIS
+             EINZELWERTUNG
              ========================================== -->
 
         <section
             class="card"
-            id="keine-auswertung"
+            id="einzelwertung-bereich"
+            style="display: none;"
         >
 
+            <h2>
+                👤 Einzelwertung
+            </h2>
+
+
             <p>
-                Bitte oben einen Wettkampf auswählen.
+                Jeder Start wird separat gewertet.
+                Mehrere Starts derselben Person bleiben
+                eigenständige Wertungen.
+            </p>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead id="einzelwertung-kopf">
+
+                        <tr>
+
+                            <th>
+                                Platz
+                            </th>
+
+                            <th>
+                                Starter
+                            </th>
+
+                            <th>
+                                Wertung
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="einzelwertung-tabelle">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             AK-STARTER
+             ========================================== -->
+
+        <section
+            class="card"
+            id="ak-bereich"
+            style="display: none;"
+        >
+
+            <h2>
+                Außer Konkurrenz (AK)
+            </h2>
+
+
+            <p>
+                AK-Starts fließen nicht in die Teamwertung
+                ein, behalten aber ihr eigenes
+                Einzelergebnis.
+            </p>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead id="ak-kopf">
+
+                        <tr>
+
+                            <th>
+                                Starter
+                            </th>
+
+                            <th>
+                                Team
+                            </th>
+
+                            <th>
+                                Gesamt
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody id="ak-tabelle">
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             KEINE ERGEBNISSE
+             ========================================== -->
+
+        <section
+            class="card"
+            id="keine-ergebnisse"
+            style="display: none;"
+        >
+
+            <h2>
+                Noch keine Ergebnisse
+            </h2>
+
+
+            <p>
+                Für diesen Wettkampf wurden noch keine
+                Ergebnisse erfasst.
             </p>
 
         </section>
@@ -268,6 +338,7 @@
             SSV 1928 Sulzbach e.V.
         </p>
 
+
         <p>
             Wettkampfauswertung
         </p>
@@ -284,6 +355,11 @@
         src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
     ></script>
 
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+         ========================================== -->
 
     <script
         src="ergebnisse.js?v=4"
