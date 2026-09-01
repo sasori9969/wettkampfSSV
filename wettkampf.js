@@ -16,7 +16,7 @@ const supabaseClient =
 
 
 // ==========================================
-// WETTKAMPF-ID AUS URL
+// WETTKAMPF-ID
 // ==========================================
 
 const urlParameter =
@@ -82,8 +82,7 @@ async function wettkampfLaden() {
 
     const datum =
         new Date(
-            data.datum +
-            "T00:00:00"
+            data.datum + "T00:00:00"
         );
 
 
@@ -145,102 +144,14 @@ async function teamsLaden() {
         data || [];
 
 
-    const liste =
-        document.getElementById(
-            "teams-liste"
-        );
-
-
-    liste.innerHTML = "";
-
-
-    if (
-        !data ||
-        data.length === 0
-    ) {
-
-        liste.innerHTML =
-            "<p>Noch keine Teams vorhanden.</p>";
-
-        teamsAuswahlAktualisieren();
-
-        return;
-    }
-
-
-    data.forEach(
-        function(team) {
-
-            const box =
-                document.createElement(
-                    "div"
-                );
-
-
-            box.className =
-                "wettkampf-eintrag";
-
-
-            const titel =
-                document.createElement(
-                    "h3"
-                );
-
-
-            titel.textContent =
-                team.name;
-
-
-            const button =
-                document.createElement(
-                    "button"
-                );
-
-
-            button.type =
-                "button";
-
-
-            button.textContent =
-                "Team löschen";
-
-
-            button.addEventListener(
-                "click",
-                function() {
-
-                    teamLoeschen(
-                        team.id,
-                        team.name
-                    );
-
-                }
-            );
-
-
-            box.appendChild(
-                titel
-            );
-
-            box.appendChild(
-                button
-            );
-
-            liste.appendChild(
-                box
-            );
-
-        }
-    );
-
-
     teamsAuswahlAktualisieren();
 
+    await teamAnzeigeLaden();
 }
 
 
 // ==========================================
-// TEAM AUSWAHL AKTUALISIEREN
+// TEAM-AUSWAHL AKTUALISIEREN
 // ==========================================
 
 function teamsAuswahlAktualisieren() {
@@ -298,6 +209,359 @@ function teamsAuswahlAktualisieren() {
 
             select.appendChild(
                 option
+            );
+
+        }
+    );
+
+}
+
+
+// ==========================================
+// TEAM-ANZEIGE
+// ==========================================
+
+async function teamAnzeigeLaden() {
+
+    const liste =
+        document.getElementById(
+            "teams-liste"
+        );
+
+
+    if (!liste) {
+
+        return;
+    }
+
+
+    liste.innerHTML = "";
+
+
+    if (
+        aktuelleTeams.length === 0
+    ) {
+
+        liste.innerHTML =
+            "<p>Noch keine Teams vorhanden.</p>";
+
+        return;
+    }
+
+
+    // ======================================
+    // ALLE STARTS DES WETTKAMPFS LADEN
+    // ======================================
+
+    const {
+        data: starts,
+        error
+    } = await supabaseClient
+        .from("starts")
+        .select(`
+            id,
+            participant_id,
+            team_id,
+            ak,
+            participants (
+                vorname,
+                nachname
+            )
+        `)
+        .eq(
+            "competition_id",
+            wettkampfId
+        )
+        .order(
+            "created_at",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden der Teamstarter:",
+            error
+        );
+
+        liste.innerHTML =
+            "<p>Die Teamstarter konnten nicht geladen werden.</p>";
+
+        return;
+    }
+
+
+    const alleStarts =
+        starts || [];
+
+
+    // ======================================
+    // TEAMS AUFBAUEN
+    // ======================================
+
+    aktuelleTeams.forEach(
+        function(team) {
+
+            const teamStarts =
+                alleStarts.filter(
+                    function(start) {
+
+                        return (
+                            start.team_id ===
+                            team.id
+                        );
+
+                    }
+                );
+
+
+            const regulareStarts =
+                teamStarts.filter(
+                    function(start) {
+
+                        return (
+                            start.ak === false
+                        );
+
+                    }
+                );
+
+
+            const akStarts =
+                teamStarts.filter(
+                    function(start) {
+
+                        return (
+                            start.ak === true
+                        );
+
+                    }
+                );
+
+
+            const box =
+                document.createElement(
+                    "div"
+                );
+
+
+            box.className =
+                "wettkampf-eintrag";
+
+
+            // ==================================
+            // TEAMKOPF
+            // ==================================
+
+            const titel =
+                document.createElement(
+                    "h3"
+                );
+
+
+            titel.textContent =
+                team.name;
+
+
+            box.appendChild(
+                titel
+            );
+
+
+            const status =
+                document.createElement(
+                    "p"
+                );
+
+
+            status.textContent =
+                regulareStarts.length +
+                " / " +
+                aktuellerWettkampf.teamgroesse +
+                " reguläre Starter";
+
+
+            box.appendChild(
+                status
+            );
+
+
+            // ==================================
+            // REGULÄRE STARTER
+            // ==================================
+
+            if (
+                regulareStarts.length > 0
+            ) {
+
+                const starterTitel =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                starterTitel.textContent =
+                    "Reguläre Starter";
+
+
+                box.appendChild(
+                    starterTitel
+                );
+
+
+                const ul =
+                    document.createElement(
+                        "ul"
+                    );
+
+
+                regulareStarts.forEach(
+                    function(start) {
+
+                        const li =
+                            document.createElement(
+                                "li"
+                            );
+
+
+                        li.textContent =
+                            start.participants.vorname +
+                            " " +
+                            start.participants.nachname;
+
+
+                        ul.appendChild(
+                            li
+                        );
+
+                    }
+                );
+
+
+                box.appendChild(
+                    ul
+                );
+
+            } else {
+
+                const leer =
+                    document.createElement(
+                        "p"
+                    );
+
+
+                leer.textContent =
+                    "Noch keine regulären Starter.";
+
+
+                box.appendChild(
+                    leer
+                );
+
+            }
+
+
+            // ==================================
+            // AK-STARTER
+            // ==================================
+
+            if (
+                akStarts.length > 0
+            ) {
+
+                const akTitel =
+                    document.createElement(
+                        "strong"
+                    );
+
+
+                akTitel.textContent =
+                    "AK-Starter";
+
+
+                box.appendChild(
+                    akTitel
+                );
+
+
+                const akListe =
+                    document.createElement(
+                        "ul"
+                    );
+
+
+                akStarts.forEach(
+                    function(start) {
+
+                        const li =
+                            document.createElement(
+                                "li"
+                            );
+
+
+                        li.textContent =
+                            start.participants.vorname +
+                            " " +
+                            start.participants.nachname +
+                            " · AK";
+
+
+                        akListe.appendChild(
+                            li
+                        );
+
+                    }
+                );
+
+
+                box.appendChild(
+                    akListe
+                );
+
+            }
+
+
+            // ==================================
+            // TEAM LÖSCHEN
+            // ==================================
+
+            const loeschenButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            loeschenButton.type =
+                "button";
+
+
+            loeschenButton.textContent =
+                "Team löschen";
+
+
+            loeschenButton.addEventListener(
+                "click",
+                function() {
+
+                    teamLoeschen(
+                        team.id,
+                        team.name
+                    );
+
+                }
+            );
+
+
+            box.appendChild(
+                loeschenButton
+            );
+
+
+            liste.appendChild(
+                box
             );
 
         }
@@ -405,7 +669,7 @@ async function teamLoeschen(
             'Team "' +
             teamName +
             '" wirklich löschen?\n\n' +
-            "Die Starter bleiben erhalten und werden zu Einzelstarts."
+            "Die Starts bleiben erhalten und werden zu Einzelstarts."
         );
 
 
@@ -416,7 +680,7 @@ async function teamLoeschen(
 
 
     // ======================================
-    // ZUERST STARTER ZU EINZELSTART MACHEN
+    // STARTS VOM TEAM TRENNEN
     // ======================================
 
     const {
@@ -426,7 +690,10 @@ async function teamLoeschen(
         .update({
             team_id: null
         })
-        .eq("team_id", teamId);
+        .eq(
+            "team_id",
+            teamId
+        );
 
 
     if (startError) {
@@ -453,7 +720,10 @@ async function teamLoeschen(
     } = await supabaseClient
         .from("teams")
         .delete()
-        .eq("id", teamId);
+        .eq(
+            "id",
+            teamId
+        );
 
 
     if (error) {
@@ -501,8 +771,7 @@ if (teilnehmerSuche) {
 async function teilnehmerSuchen() {
 
     const suchtext =
-        teilnehmerSuche.value
-            .trim();
+        teilnehmerSuche.value.trim();
 
 
     const ergebnisBereich =
@@ -685,7 +954,7 @@ async function starterHinzufuegen() {
         ).value || null;
 
 
-    const ak =
+    let ak =
         document.getElementById(
             "starter-ak"
         ).checked;
@@ -695,7 +964,10 @@ async function starterHinzufuegen() {
     // TEAMGRÖSSE PRÜFEN
     // ======================================
 
-    if (teamId && !ak) {
+    if (
+        teamId &&
+        !ak
+    ) {
 
         const {
             count,
@@ -758,22 +1030,19 @@ async function starterHinzufuegen() {
                     : "Dieses Team";
 
 
-            const akBestaetigung =
+            const bestaetigung =
                 confirm(
                     teamName +
                     " hat bereits " +
                     count +
                     " reguläre Starter.\n\n" +
-                    "Soll der neue Starter als AK aufgenommen werden?"
+                    "Soll der neue Start als AK aufgenommen werden?"
                 );
 
 
-            if (akBestaetigung) {
+            if (bestaetigung) {
 
-                document.getElementById(
-                    "starter-ak"
-                ).checked =
-                    true;
+                ak = true;
 
             } else {
 
@@ -783,12 +1052,6 @@ async function starterHinzufuegen() {
         }
 
     }
-
-
-    const finaleAk =
-        document.getElementById(
-            "starter-ak"
-        ).checked;
 
 
     const {
@@ -807,7 +1070,7 @@ async function starterHinzufuegen() {
                     teamId,
 
                 ak:
-                    finaleAk
+                    ak
             }
         ]);
 
@@ -859,6 +1122,8 @@ async function starterHinzufuegen() {
 
     await starterLaden();
 
+    await teamAnzeigeLaden();
+
 }
 
 
@@ -886,7 +1151,7 @@ async function starterLaden() {
             teams (
                 name
             ),
-            start_results (
+            results (
                 id,
                 nummer,
                 wert
@@ -952,7 +1217,7 @@ async function starterLaden() {
 
 
 // ==========================================
-// STARTER-ANZEIGE ERSTELLEN
+// STARTER-ANZEIGE
 // ==========================================
 
 function starterAnzeigeErstellen(
@@ -987,7 +1252,7 @@ function starterAnzeigeErstellen(
 
 
     // ======================================
-    // INFO
+    // ZUORDNUNG
     // ======================================
 
     const info =
@@ -1205,7 +1470,7 @@ function ergebnisContainerErstellen(
 
 
     const vorhandeneErgebnisse =
-        start.start_results || [];
+        start.results || [];
 
 
     for (
@@ -1339,10 +1604,6 @@ async function startBearbeiten(
         start.participants.nachname;
 
 
-    // ======================================
-    // TEAM AUSWAHL
-    // ======================================
-
     const teamLabel =
         document.createElement(
             "label"
@@ -1414,10 +1675,6 @@ async function startBearbeiten(
     );
 
 
-    // ======================================
-    // AK
-    // ======================================
-
     const akLabel =
         document.createElement(
             "label"
@@ -1450,10 +1707,6 @@ async function startBearbeiten(
     );
 
 
-    // ======================================
-    // SPEICHERN
-    // ======================================
-
     const speichernButton =
         document.createElement(
             "button"
@@ -1472,18 +1725,14 @@ async function startBearbeiten(
         "click",
         async function() {
 
-            const neueTeamId =
+            let neueTeamId =
                 teamSelect.value ||
                 null;
 
 
-            const neueAk =
+            let neueAk =
                 akCheckbox.checked;
 
-
-            // ==================================
-            // TEAMGRÖSSE PRÜFEN
-            // ==================================
 
             if (
                 neueTeamId &&
@@ -1536,53 +1785,29 @@ async function startBearbeiten(
                     aktuellerWettkampf.teamgroesse
                 ) {
 
-                    const team =
-                        aktuelleTeams.find(
-                            function(item) {
-
-                                return (
-                                    item.id ===
-                                    neueTeamId
-                                );
-
-                            }
-                        );
-
-
-                    const teamName =
-                        team
-                            ? team.name
-                            : "Dieses Team";
-
-
-                    const akBestaetigung =
+                    const bestaetigung =
                         confirm(
-                            teamName +
-                            " hat bereits " +
+                            "Das Team hat bereits " +
                             count +
                             " reguläre Starter.\n\n" +
-                            "Soll dieser Start als AK geführt werden?"
+                            "Soll dieser Start stattdessen als AK geführt werden?"
                         );
 
 
                     if (
-                        !akBestaetigung
+                        !bestaetigung
                     ) {
 
                         return;
                     }
 
 
-                    akCheckbox.checked =
+                    neueAk =
                         true;
 
                 }
 
             }
-
-
-            const finaleAk =
-                akCheckbox.checked;
 
 
             const {
@@ -1594,7 +1819,7 @@ async function startBearbeiten(
                         neueTeamId,
 
                     ak:
-                        finaleAk
+                        neueAk
                 })
                 .eq(
                     "id",
@@ -1622,13 +1847,11 @@ async function startBearbeiten(
 
             await starterLaden();
 
+            await teamAnzeigeLaden();
+
         }
     );
 
-
-    // ======================================
-    // ABBRECHEN
-    // ======================================
 
     const abbrechenButton =
         document.createElement(
@@ -1809,7 +2032,7 @@ async function ergebnisseSpeichern(
     const {
         error: deleteError
     } = await supabaseClient
-        .from("start_results")
+        .from("results")
         .delete()
         .eq(
             "start_id",
@@ -1852,7 +2075,7 @@ async function ergebnisseSpeichern(
         const {
             error: insertError
         } = await supabaseClient
-            .from("start_results")
+            .from("results")
             .insert(
                 ergebnisse
             );
@@ -1958,11 +2181,13 @@ async function startLoeschen(
 
     await starterLaden();
 
+    await teamAnzeigeLaden();
+
 }
 
 
 // ==========================================
-// ABBRECHEN DER STARTER-AUSWAHL
+// STARTER-AUSWAHL ABBRECHEN
 // ==========================================
 
 const starterAbbrechen =
