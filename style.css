@@ -1,215 +1,491 @@
-```css
-/* Grundsätzliches */
+/* ==========================================
+   GRUNDEINSTELLUNGEN
+   ========================================== */
 
 * {
     box-sizing: border-box;
 }
 
+
+html {
+    margin: 0;
+    padding: 0;
+}
+
+
 body {
     margin: 0;
-    font-family: Arial, Helvetica, sans-serif;
+    padding: 0;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
     background: #f4f5f7;
+
     color: #222;
+
+    line-height: 1.5;
 }
 
 
-/* Kopfbereich */
+/* ==========================================
+   KOPFBEREICH
+   ========================================== */
 
 header {
-    background: #222;
+    background: #1f2937;
+
     color: white;
-    padding: 20px;
-    text-align: center;
+
+    padding: 24px 20px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.12);
 }
+
 
 header h1 {
-    margin: 0 0 15px 0;
+    max-width: 1100px;
+
+    margin: 0 auto 20px auto;
+
     font-size: 28px;
+
+    font-weight: 700;
 }
 
 
-/* Navigation */
+/* ==========================================
+   NAVIGATION
+   ========================================== */
 
 nav {
+    max-width: 1100px;
+
+    margin: 0 auto;
+
     display: flex;
-    justify-content: center;
+
+    flex-wrap: wrap;
+
     gap: 10px;
 }
 
+
 nav a {
+    display: inline-block;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
     color: white;
+
     text-decoration: none;
-    padding: 8px 14px;
-    border-radius: 5px;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    background: rgba(255, 255, 255, 0.10);
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
 }
+
 
 nav a:hover {
-    background: #444;
+    background: rgba(255, 255, 255, 0.20);
+
+    transform: translateY(-1px);
 }
 
 
-/* Hauptbereich */
+/* ==========================================
+   HAUPTBEREICH
+   ========================================== */
 
 main {
-    max-width: 900px;
-    margin: 30px auto;
-    padding: 0 15px;
+    width: 100%;
+
+    max-width: 1100px;
+
+    margin: 40px auto;
+
+    padding: 0 20px;
 }
 
 
-/* Karten */
+/* ==========================================
+   KARTEN
+   ========================================== */
 
 .card {
     background: white;
-    padding: 25px;
-    margin-bottom: 25px;
-    border-radius: 10px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+    border-radius: 14px;
+
+    padding: 28px;
+
+    margin-bottom: 24px;
+
+    box-shadow:
+        0 3px 14px rgba(0, 0, 0, 0.07);
 }
 
+
 .card h2 {
+    margin-top: 0;
+
+    margin-bottom: 10px;
+
+    font-size: 24px;
+
+    color: #1f2937;
+}
+
+
+.card p {
+    color: #6b7280;
+
     margin-top: 0;
 }
 
 
-/* Formulare */
+/* ==========================================
+   FORMULAR
+   ========================================== */
 
 .form-group {
-    margin-bottom: 18px;
+    margin-bottom: 20px;
 }
 
-label {
+
+.form-group label {
     display: block;
-    margin-bottom: 6px;
-    font-weight: bold;
+
+    margin-bottom: 7px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #374151;
 }
 
-input,
-select {
+
+.form-group input,
+.form-group select {
     width: 100%;
-    padding: 11px;
-    font-size: 16px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+
+    min-height: 48px;
+
+    padding: 11px 13px;
+
+    border: 1px solid #d1d5db;
+
+    border-radius: 8px;
+
     background: white;
-}
 
-input:focus,
-select:focus {
+    color: #111827;
+
+    font-size: 16px;
+
     outline: none;
-    border-color: #555;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 
-/* Buttons */
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #4b5563;
+
+    box-shadow:
+        0 0 0 3px rgba(75, 85, 99, 0.12);
+}
+
+
+/* ==========================================
+   BUTTONS
+   ========================================== */
 
 button,
 .button {
     display: inline-block;
+
+    min-height: 48px;
+
+    padding: 12px 20px;
+
     border: none;
-    background: #222;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
     color: white;
-    padding: 12px 18px;
-    border-radius: 5px;
+
     font-size: 16px;
+
+    font-weight: 700;
+
     text-decoration: none;
+
     cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
 }
+
 
 button:hover,
 .button:hover {
-    background: #444;
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 4px 10px rgba(37, 99, 235, 0.20);
 }
 
 
-/* Meldungen */
+button:active,
+.button:active {
+    transform: translateY(0);
+}
+
+
+/* ==========================================
+   MELDUNGEN
+   ========================================== */
 
 .meldung {
-    margin-top: 15px;
-    font-weight: bold;
+    margin-top: 18px;
+
+    padding: 12px 14px;
+
+    border-radius: 8px;
+
+    background: #f3f4f6;
+
+    color: #374151;
+
+    font-weight: 600;
 }
 
 
-/* Ergebnis-Tabelle */
+/* ==========================================
+   LINKS ZU ANDEREN BEREICHEN
+   ========================================== */
+
+.ergebnis-link {
+    text-align: left;
+}
+
+
+/* ==========================================
+   TABELLE
+   ========================================== */
 
 .table-container {
+    width: 100%;
+
     overflow-x: auto;
+
+    -webkit-overflow-scrolling: touch;
 }
+
 
 table {
     width: 100%;
+
+    min-width: 750px;
+
     border-collapse: collapse;
-    margin-top: 10px;
+
+    margin-top: 20px;
+
+    background: white;
 }
 
-th,
-td {
-    padding: 12px 10px;
-    border-bottom: 1px solid #ddd;
-    text-align: center;
+
+thead {
+    background: #1f2937;
+
+    color: white;
 }
+
 
 th {
-    background: #f0f0f0;
-    font-weight: bold;
+    padding: 14px 12px;
+
+    text-align: left;
+
+    font-size: 14px;
+
+    font-weight: 700;
+
+    white-space: nowrap;
 }
+
+
+td {
+    padding: 14px 12px;
+
+    border-bottom: 1px solid #e5e7eb;
+
+    font-size: 15px;
+
+    white-space: nowrap;
+}
+
 
 tbody tr:hover {
-    background: #f8f8f8;
+    background: #f9fafb;
 }
 
 
-/* Platzierung */
+/* ==========================================
+   GESAMTERGEBNIS
+   ========================================== */
 
-td.platz {
-    font-weight: bold;
+td:last-child {
+    font-size: 16px;
 }
 
 
-/* Link zur Ergebnisliste */
+/* ==========================================
+   PLATZ
+   ========================================== */
 
-.ergebnis-link {
-    text-align: center;
+td:first-child {
+    font-weight: 700;
 }
 
 
-/* Fußbereich */
+/* ==========================================
+   FOOTER
+   ========================================== */
 
 footer {
+    margin-top: 50px;
+
+    padding: 24px 20px;
+
     text-align: center;
-    padding: 25px;
-    color: #777;
+
+    color: #6b7280;
+
+    font-size: 14px;
 }
 
 
-/* Mobile Ansicht */
+/* ==========================================
+   MOBILE
+   ========================================== */
 
-@media (max-width: 600px) {
+@media (max-width: 700px) {
+
+    header {
+        padding: 20px 16px;
+    }
+
 
     header h1 {
-        font-size: 22px;
+        font-size: 23px;
+
+        margin-bottom: 16px;
     }
+
 
     nav {
-        flex-direction: column;
+        display: grid;
+
+        grid-template-columns: 1fr;
+
+        gap: 7px;
     }
+
+
+    nav a {
+        text-align: center;
+
+        padding: 11px 14px;
+    }
+
 
     main {
-        margin-top: 20px;
+        margin: 24px auto;
+
+        padding: 0 12px;
     }
+
 
     .card {
-        padding: 18px;
+        padding: 20px;
+
+        border-radius: 12px;
+
+        margin-bottom: 18px;
     }
 
-    table {
-        font-size: 14px;
+
+    .card h2 {
+        font-size: 21px;
     }
+
+
+    button,
+    .button {
+        width: 100%;
+
+        text-align: center;
+
+        min-height: 50px;
+    }
+
+
+    table {
+        min-width: 750px;
+    }
+
 
     th,
     td {
-        padding: 8px 6px;
+        padding: 12px 10px;
     }
 
 }
-```
+
+
+/* ==========================================
+   SEHR KLEINE BILDSCHIRME
+   ========================================== */
+
+@media (max-width: 400px) {
+
+    .card {
+        padding: 16px;
+    }
+
+
+    header h1 {
+        font-size: 21px;
+    }
+
+
+    .form-group input,
+    .form-group select {
+        font-size: 16px;
+    }
+
+}
