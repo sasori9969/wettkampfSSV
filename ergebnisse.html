@@ -1,0 +1,90 @@
+```html
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Wettkampfergebnisse</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <header>
+        <h1>Wettkampfergebnisse</h1>
+
+        <nav>
+            <a href="index.html">Eingabe</a>
+            <a href="ergebnisse.html">Ergebnisse</a>
+        </nav>
+    </header>
+
+
+    <main>
+
+        <section class="card">
+
+            <h2>Endergebnis</h2>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>Platz</th>
+                            <th>Vorname</th>
+                            <th>Nachname</th>
+                            <th>Ergebnis 1</th>
+                            <th>Ergebnis 2</th>
+                            <th>Ergebnis 3</th>
+                            <th>Gesamt</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="ergebnis-tabelle">
+
+                        <tr>
+                            <td colspan="7">
+                                Ergebnisse werden geladen...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+            <p id="lade-meldung" class="meldung"></p>
+
+        </section>
+
+
+        <section class="card">
+
+            <a class="button" href="index.html">
+                Neue Ergebnisse erfassen
+            </a>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+        <p>Wettkampfauswertung – Vereinsseite</p>
+    </footer>
+
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- Ergebnislogik -->
+    <script src="ergebnisse.js"></script>
+
+</body>
+</html>
+```
