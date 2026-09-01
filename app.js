@@ -37,11 +37,10 @@ function zahlUmwandeln(wert) {
 
 async function teilnehmerLaden() {
 
-    const selects = [];
-
-
     const ergebnisSelect =
-        document.getElementById("teilnehmer");
+        document.getElementById(
+            "teilnehmer"
+        );
 
 
     const bearbeitenSelect =
@@ -50,25 +49,10 @@ async function teilnehmerLaden() {
         );
 
 
-    if (ergebnisSelect) {
-
-        selects.push(ergebnisSelect);
-
-    }
-
-
-    if (bearbeitenSelect) {
-
-        selects.push(bearbeitenSelect);
-
-    }
-
-
-    if (selects.length === 0) {
-
-        return;
-
-    }
+    const teilnehmerListe =
+        document.getElementById(
+            "teilnehmer-liste"
+        );
 
 
 
@@ -104,6 +88,14 @@ async function teilnehmerLaden() {
             error
         );
 
+
+        if (teilnehmerListe) {
+
+            teilnehmerListe.innerHTML =
+                "<p>Fehler beim Laden der Teilnehmer.</p>";
+
+        }
+
         return;
 
     }
@@ -111,7 +103,7 @@ async function teilnehmerLaden() {
 
 
     // ==========================================
-    // ERGEBNIS-EINGABE
+    // ERGEBNIS-AUSWAHL
     // ==========================================
 
     if (ergebnisSelect) {
@@ -166,7 +158,7 @@ async function teilnehmerLaden() {
 
 
     // ==========================================
-    // TEILNEHMER BEARBEITEN
+    // ALTE BEARBEITUNGSAUSWAHL
     // ==========================================
 
     if (bearbeitenSelect) {
@@ -226,12 +218,171 @@ async function teilnehmerLaden() {
 
     }
 
+
+
+    // ==========================================
+    // TEILNEHMERLISTE
+    // ==========================================
+
+    if (teilnehmerListe) {
+
+        teilnehmerListe.innerHTML = "";
+
+
+        if (data.length === 0) {
+
+            teilnehmerListe.innerHTML =
+                "<p>Noch keine Teilnehmer vorhanden.</p>";
+
+        }
+
+
+        data.forEach(
+            function(teilnehmer) {
+
+                const zeile =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                zeile.className =
+                    "teilnehmer-zeile";
+
+
+                const name =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                name.className =
+                    "teilnehmer-name";
+
+
+                name.textContent =
+                    teilnehmer.vorname +
+                    " " +
+                    teilnehmer.nachname;
+
+
+
+                const aktionen =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                aktionen.className =
+                    "teilnehmer-aktionen";
+
+
+
+                // ==================================
+                // BEARBEITEN BUTTON
+                // ==================================
+
+                const bearbeitenButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                bearbeitenButton.type =
+                    "button";
+
+
+                bearbeitenButton.className =
+                    "button-secondary";
+
+
+                bearbeitenButton.textContent =
+                    "Bearbeiten";
+
+
+                bearbeitenButton.addEventListener(
+                    "click",
+                    function() {
+
+                        teilnehmerBearbeiten(
+                            teilnehmer
+                        );
+
+                    }
+                );
+
+
+
+                // ==================================
+                // LÖSCHEN BUTTON
+                // ==================================
+
+                const loeschenButton =
+                    document.createElement(
+                        "button"
+                    );
+
+
+                loeschenButton.type =
+                    "button";
+
+
+                loeschenButton.className =
+                    "button-danger";
+
+
+                loeschenButton.textContent =
+                    "Löschen";
+
+
+                loeschenButton.addEventListener(
+                    "click",
+                    function() {
+
+                        teilnehmerLoeschen(
+                            teilnehmer
+                        );
+
+                    }
+                );
+
+
+
+                aktionen.appendChild(
+                    bearbeitenButton
+                );
+
+
+                aktionen.appendChild(
+                    loeschenButton
+                );
+
+
+                zeile.appendChild(
+                    name
+                );
+
+
+                zeile.appendChild(
+                    aktionen
+                );
+
+
+                teilnehmerListe.appendChild(
+                    zeile
+                );
+
+            }
+        );
+
+    }
+
 }
 
 
 
 // ==========================================
-// TEILNEHMER SPEICHERN
+// TEILNEHMER ANLEGEN
 // ==========================================
 
 const teilnehmerForm =
@@ -334,202 +485,99 @@ if (teilnehmerForm) {
 
 
 // ==========================================
-// TEILNEHMER AUSWÄHLEN
-// ==========================================
-
-const bearbeitenSelect =
-    document.getElementById(
-        "teilnehmer-bearbeiten"
-    );
-
-
-if (bearbeitenSelect) {
-
-    bearbeitenSelect.addEventListener(
-        "change",
-        function() {
-
-            const option =
-                bearbeitenSelect
-                    .selectedOptions[0];
-
-
-            const vornameInput =
-                document.getElementById(
-                    "bearbeiten-vorname"
-                );
-
-
-            const nachnameInput =
-                document.getElementById(
-                    "bearbeiten-nachname"
-                );
-
-
-
-            if (
-                !option ||
-                !option.value
-            ) {
-
-                vornameInput.value = "";
-
-                nachnameInput.value = "";
-
-                return;
-
-            }
-
-
-
-            vornameInput.value =
-                option.dataset.vorname || "";
-
-
-            nachnameInput.value =
-                option.dataset.nachname || "";
-
-        }
-    );
-
-}
-
-
-
-// ==========================================
 // TEILNEHMER BEARBEITEN
 // ==========================================
 
-const bearbeitenForm =
-    document.getElementById(
-        "teilnehmer-bearbeiten-form"
-    );
+async function teilnehmerBearbeiten(
+    teilnehmer
+) {
+
+    const neuerVorname =
+        prompt(
+            "Vorname:",
+            teilnehmer.vorname
+        );
 
 
-if (bearbeitenForm) {
+    if (neuerVorname === null) {
 
-    bearbeitenForm.addEventListener(
-        "submit",
-        async function(event) {
+        return;
 
-            event.preventDefault();
+    }
 
 
-            const participantId =
-                bearbeitenSelect.value;
+    const neuerNachname =
+        prompt(
+            "Nachname:",
+            teilnehmer.nachname
+        );
 
 
-            const vorname =
-                document
-                    .getElementById(
-                        "bearbeiten-vorname"
-                    )
-                    .value
-                    .trim();
+    if (neuerNachname === null) {
+
+        return;
+
+    }
 
 
-            const nachname =
-                document
-                    .getElementById(
-                        "bearbeiten-nachname"
-                    )
-                    .value
-                    .trim();
+    const vorname =
+        neuerVorname.trim();
 
 
-
-            if (!participantId) {
-
-                alert(
-                    "Bitte zuerst einen Teilnehmer auswählen."
-                );
-
-                return;
-
-            }
+    const nachname =
+        neuerNachname.trim();
 
 
 
-            if (!vorname || !nachname) {
+    if (!vorname || !nachname) {
 
-                alert(
-                    "Bitte Vor- und Nachname eingeben."
-                );
+        alert(
+            "Vor- und Nachname dürfen nicht leer sein."
+        );
 
-                return;
+        return;
 
-            }
-
-
-
-            const {
-                error
-            } = await supabaseClient
-
-                .from("participants")
-
-                .update({
-                    vorname: vorname,
-                    nachname: nachname
-                })
-
-                .eq(
-                    "id",
-                    participantId
-                );
+    }
 
 
 
-            if (error) {
+    const {
+        error
+    } = await supabaseClient
 
-                console.error(
-                    "Fehler beim Ändern des Teilnehmers:",
-                    error
-                );
+        .from("participants")
 
+        .update({
+            vorname: vorname,
+            nachname: nachname
+        })
 
-                document.getElementById(
-                    "bearbeiten-meldung"
-                ).textContent =
-                    "Fehler beim Ändern des Teilnehmers.";
-
-
-                return;
-
-            }
+        .eq(
+            "id",
+            teilnehmer.id
+        );
 
 
 
-            document.getElementById(
-                "bearbeiten-meldung"
-            ).textContent =
-                "Teilnehmer wurde geändert.";
+    if (error) {
+
+        console.error(
+            "Fehler beim Ändern:",
+            error
+        );
 
 
-            await teilnehmerLaden();
+        alert(
+            "Der Teilnehmer konnte nicht geändert werden."
+        );
+
+        return;
+
+    }
 
 
-            bearbeitenSelect.value =
-                participantId;
 
-
-            const option =
-                bearbeitenSelect
-                    .selectedOptions[0];
-
-
-            if (option) {
-
-                option.dataset.vorname =
-                    vorname;
-
-                option.dataset.nachname =
-                    nachname;
-
-            }
-
-        }
-    );
+    await teilnehmerLaden();
 
 }
 
@@ -539,128 +587,71 @@ if (bearbeitenForm) {
 // TEILNEHMER LÖSCHEN
 // ==========================================
 
-const loeschenButton =
-    document.getElementById(
-        "teilnehmer-loeschen"
-    );
+async function teilnehmerLoeschen(
+    teilnehmer
+) {
 
-
-if (loeschenButton) {
-
-    loeschenButton.addEventListener(
-        "click",
-        async function() {
-
-            const participantId =
-                bearbeitenSelect.value;
+    const name =
+        teilnehmer.vorname +
+        " " +
+        teilnehmer.nachname;
 
 
 
-            if (!participantId) {
-
-                alert(
-                    "Bitte zuerst einen Teilnehmer auswählen."
-                );
-
-                return;
-
-            }
-
-
-
-            const option =
-                bearbeitenSelect
-                    .selectedOptions[0];
-
-
-            const name =
-                option
-                    ? option.textContent
-                    : "Dieser Teilnehmer";
+    const bestaetigt =
+        confirm(
+            "ACHTUNG!\n\n" +
+            "Soll \"" +
+            name +
+            "\" wirklich gelöscht werden?\n\n" +
+            "Dabei werden auch ALLE Ergebnisse " +
+            "dieses Teilnehmers endgültig gelöscht."
+        );
 
 
 
-            const bestaetigt =
-                confirm(
-                    "ACHTUNG!\n\n" +
-                    "Soll \"" +
-                    name +
-                    "\" wirklich gelöscht werden?\n\n" +
-                    "Dabei werden auch ALLE Ergebnisse " +
-                    "dieses Teilnehmers endgültig gelöscht."
-                );
+    if (!bestaetigt) {
+
+        return;
+
+    }
 
 
 
-            if (!bestaetigt) {
+    const {
+        error
+    } = await supabaseClient
 
-                return;
+        .from("participants")
 
-            }
+        .delete()
 
-
-
-            const {
-                error
-            } = await supabaseClient
-
-                .from("participants")
-
-                .delete()
-
-                .eq(
-                    "id",
-                    participantId
-                );
+        .eq(
+            "id",
+            teilnehmer.id
+        );
 
 
 
-            if (error) {
+    if (error) {
 
-                console.error(
-                    "Fehler beim Löschen:",
-                    error
-                );
-
-
-                document.getElementById(
-                    "loeschen-meldung"
-                ).textContent =
-                    "Fehler beim Löschen des Teilnehmers.";
+        console.error(
+            "Fehler beim Löschen:",
+            error
+        );
 
 
-                return;
+        alert(
+            "Der Teilnehmer konnte nicht gelöscht werden."
+        );
 
-            }
+        return;
+
+    }
 
 
 
-            document.getElementById(
-                "loeschen-meldung"
-            ).textContent =
-                "Teilnehmer und alle zugehörigen " +
-                "Ergebnisse wurden gelöscht.";
-
-
-
-            document.getElementById(
-                "bearbeiten-vorname"
-            ).value = "";
-
-
-            document.getElementById(
-                "bearbeiten-nachname"
-            ).value = "";
-
-
-
-            await teilnehmerLaden();
-
-
-            bearbeitenSelect.value = "";
-
-        }
-    );
+    await teilnehmerLaden();
 
 }
 
@@ -788,7 +779,7 @@ async function vorhandeneErgebnisseLaden() {
 
 
 // ==========================================
-// TEILNEHMER AUSWAHL ERGEBNISSE
+// ERGEBNIS-TEILNEHMER AUSWAHL
 // ==========================================
 
 const teilnehmerSelect =
