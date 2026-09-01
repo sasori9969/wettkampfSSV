@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Teilnehmer – SSV 1928 Sulzbach e.V.
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         KOPFBEREICH
+         ========================================== -->
+
+    <header>
+
+        <h1>
+            SSV 1928 Sulzbach e.V.
+        </h1>
+
+
+        <nav>
+
+            <a href="index.html">
+                Startseite
+            </a>
+
+            <a href="teilnehmer.html">
+                Teilnehmer
+            </a>
+
+            <a href="ergebnisse-eingabe.html">
+                Ergebnisse erfassen
+            </a>
+
+            <a href="ergebnisse.html">
+                Ergebnisse
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
+    <main>
+
+
+        <section class="card">
+
+            <h2>
+                Teilnehmer anlegen
+            </h2>
+
+
+            <p>
+                Hier können neue Teilnehmer für den
+                Wettkampf angelegt werden.
+            </p>
+
+
+            <form id="teilnehmer-form">
+
+
+                <!-- ==================================
+                     VORNAME
+                     ================================== -->
+
+                <div class="form-group">
+
+                    <label for="vorname">
+                        Vorname
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="vorname"
+                        name="vorname"
+                        placeholder="Vorname eingeben"
+                        autocomplete="given-name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- ==================================
+                     NACHNAME
+                     ================================== -->
+
+                <div class="form-group">
+
+                    <label for="nachname">
+                        Nachname
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="nachname"
+                        name="nachname"
+                        placeholder="Nachname eingeben"
+                        autocomplete="family-name"
+                        required
+                    >
+
+                </div>
+
+
+
+                <!-- ==================================
+                     SPEICHERN
+                     ================================== -->
+
+                <button
+                    type="submit"
+                >
+                    Teilnehmer speichern
+                </button>
+
+
+            </form>
+
+
+            <!-- ======================================
+                 MELDUNG
+                 ====================================== -->
+
+            <div
+                id="teilnehmer-meldung"
+                class="meldung"
+            ></div>
+
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+    <footer>
+
+        <p>
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+        <p>
+            Wettkampfauswertung
+        </p>
+
+    </footer>
+
+
+
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ==========================================
+         JAVASCRIPT
+         ========================================== -->
+
+    <script
+        src="app.js?v=3"
+    ></script>
+
+
+</body>
+
+</html>
