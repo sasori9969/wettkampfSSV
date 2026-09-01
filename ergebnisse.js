@@ -1704,6 +1704,9 @@ async function ergebnisseLaden() {
         const starts =
             await startsLaden();
 
+        initFilterControls();
+        filterOptionenAktualisieren(starts);
+
 
         // --------------------------------------------------
         // Ergebnisse laden
@@ -1797,6 +1800,11 @@ async function ergebnisseLaden() {
         tabelleAnzeigen(
             daten,
             maxNummer
+        );
+
+        teamWertungAnzeigen(
+            starts,
+            wettkampf
         );
 
 
