@@ -63,6 +63,31 @@ const tabelle =
         "ergebnis-tabelle"
     );
 
+const wettkampfFilter =
+    document.getElementById(
+        "wettkampf-filter"
+    );
+
+const teamFilter =
+    document.getElementById(
+        "team-filter"
+    );
+
+const statusFilter =
+    document.getElementById(
+        "status-filter"
+    );
+
+const filterZuruecksetzen =
+    document.getElementById(
+        "filter-zuruecksetzen"
+    );
+
+const teamErgebnisTabelle =
+    document.getElementById(
+        "team-ergebnis-tabelle"
+    );
+
 
 // ==========================================================
 // URL-PARAMETER
@@ -77,6 +102,290 @@ const competitionId =
     ergebnisseUrlParameter.get(
         "competition_id"
     );
+
+
+let filterInitialisiert = false;
+
+
+function filtereStarts(starts) {
+
+    if (!starts) {
+        return [];
+    }
+
+    const wettkampfWert =
+        wettkampfFilter?.value || "";
+
+    const teamWert =
+        teamFilter?.value || "";
+
+    const statusWert =
+        statusFilter?.value || "";
+
+    return starts.filter(
+        function(start) {
+
+            if (
+                wettkampfWert &&
+                String(start.competition_id) !== String(wettkampfWert)
+            ) {
+
+                return false;
+
+            }
+
+            if (
+                teamWert &&
+                String(start.team_id || "") !== String(teamWert)
+            ) {
+
+                return false;
+
+            }
+
+            if (
+                statusWert === "ak" &&
+                !start.ak
+            ) {
+
+                return false;
+
+            }
+
+            if (
+                statusWert === "wertung" &&
+                Boolean(start.ak)
+            ) {
+
+                return false;
+
+            }
+
+            return true;
+
+        }
+    );
+
+}
+
+
+function filterOptionenAktualisieren(starts) {
+
+    if (wettkampfFilter) {
+
+        const ausgewaehlt =
+            wettkampfFilter.value;
+
+        const wettkaempfe =
+            [...new Map(
+                starts
+                    .filter(
+                        function(start) {
+                            return Boolean(start.competitions);
+                        }
+                    )
+                    .map(
+                        function(start) {
+                            return [
+                                start.competition_id,
+                                {
+                                    id: start.competition_id,
+                                    name: start.competitions?.name || "Unbekannt"
+                                }
+                            ];
+                        }
+                    )
+            ).values()];
+
+        const bisherigeOptionen =
+            Array.from(
+                wettkampfFilter.options
+            ).map(
+                function(option) {
+                    return option.value;
+                }
+            );
+
+        wettkampfFilter.innerHTML = `
+            <option value="">Alle Wettkämpfe</option>
+        `;
+
+        wettkaempfe.forEach(
+            function(wettkampf) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    wettkampf.id;
+
+                option.textContent =
+                    wettkampf.name;
+
+                wettkampfFilter.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        if (
+            ausgewaehlt &&
+            wettkaempfe.some(
+                function(item) {
+                    return item.id === ausgewaehlt;
+                }
+            )
+        ) {
+
+            wettkampfFilter.value =
+                ausgewaehlt;
+
+        } else {
+
+            wettkampfFilter.value =
+                "";
+
+        }
+
+    }
+
+
+    if (teamFilter) {
+
+        const ausgewaehlt =
+            teamFilter.value;
+
+        const teams =
+            [...new Map(
+                starts
+                    .filter(
+                        function(start) {
+                            return (
+                                start.team_id &&
+                                start.teams
+                            );
+                        }
+                    )
+                    .map(
+                        function(start) {
+                            return [
+                                start.team_id,
+                                {
+                                    id: start.team_id,
+                                    name: start.teams?.name || "Unbekannt"
+                                }
+                            ];
+                        }
+                    )
+            ).values()];
+
+        teamFilter.innerHTML = `
+            <option value="">Alle Teams</option>
+        `;
+
+        teams.forEach(
+            function(team) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+                option.value =
+                    team.id;
+
+                option.textContent =
+                    team.name;
+
+                teamFilter.appendChild(
+                    option
+                );
+
+            }
+        );
+
+        if (
+            ausgewaehlt &&
+            teams.some(
+                function(item) {
+                    return item.id === ausgewaehlt;
+                }
+            )
+        ) {
+
+            teamFilter.value =
+                ausgewaehlt;
+
+        } else {
+
+            teamFilter.value =
+                "";
+
+        }
+
+    }
+
+}
+
+
+function initFilterControls() {
+
+    if (filterInitialisiert) {
+        return;
+    }
+
+    filterInitialisiert = true;
+
+    [
+        wettkampfFilter,
+        teamFilter,
+        statusFilter
+    ].forEach(
+        function(element) {
+
+            if (!element) {
+                return;
+            }
+
+            element.addEventListener(
+                "change",
+                function() {
+                    ergebnisseLaden();
+                }
+            );
+
+        }
+    );
+
+    if (filterZuruecksetzen) {
+
+        filterZuruecksetzen.addEventListener(
+            "click",
+            function() {
+
+                if (wettkampfFilter) {
+                    wettkampfFilter.value = "";
+                }
+
+                if (teamFilter) {
+                    teamFilter.value = "";
+                }
+
+                if (statusFilter) {
+                    statusFilter.value = "";
+                }
+
+                ergebnisseLaden();
+
+            }
+        );
+
+    }
+
+}
 
 
 // ==========================================================
@@ -264,6 +573,7 @@ async function startsLaden() {
                 participant_id,
                 team_id,
                 ak,
+                created_at,
                 participants (
                     id,
                     vorname,
@@ -272,6 +582,13 @@ async function startsLaden() {
                 teams (
                     id,
                     name
+                ),
+                competitions (
+                    id,
+                    name,
+                    datum,
+                    teamgroesse,
+                    status
                 )
             `);
 
@@ -789,7 +1106,7 @@ function tabelleAnzeigen(
 
 
         zelle.colSpan =
-            4 + maxNummer;
+            9 + maxNummer;
 
 
         zelle.textContent =
@@ -811,65 +1128,12 @@ function tabelleAnzeigen(
     }
 
 
-    // ------------------------------------------------------
-    // Platz bestimmen
-    // ------------------------------------------------------
-
-    let platz =
-        0;
-
-
-    let letztesErgebnis =
-        null;
-
-
-    daten.forEach(
-        function(eintrag, index) {
-
-            const hatErgebnis =
-                eintrag.anzahl > 0;
-
-
-            if (
-                !eintrag.ak &&
-                hatErgebnis
-            ) {
-
-                if (
-                    letztesErgebnis === null ||
-                    eintrag.gesamt !==
-                    letztesErgebnis
-                ) {
-
-                    platz =
-                        index + 1;
-
-                }
-
-
-                letztesErgebnis =
-                    eintrag.gesamt;
-
-            }
-
-        }
-    );
-
-
-    // ------------------------------------------------------
-    // Eigentliche Ausgabe
-    // ------------------------------------------------------
-
     let normalPlatz =
         0;
 
 
     let vorherigeGesamt =
         null;
-
-
-    let vorherigeNummer =
-        0;
 
 
     daten.forEach(
@@ -901,6 +1165,18 @@ function tabelleAnzeigen(
                 "Einzelstart";
 
 
+            const wettkampfName =
+                eintrag.competitions?.name ||
+                "-";
+
+
+            const wettkampfDatum =
+                datumFormatieren(
+                    eintrag.competitions?.datum
+                ) ||
+                "-";
+
+
             const ak =
                 Boolean(
                     eintrag.ak
@@ -911,10 +1187,6 @@ function tabelleAnzeigen(
                 eintrag.anzahl >
                 0;
 
-
-            // ------------------------------------------------
-            // Platz
-            // ------------------------------------------------
 
             let platzText =
                 "–";
@@ -958,93 +1230,104 @@ function tabelleAnzeigen(
             }
 
 
-            // ------------------------------------------------
-            // Platz-Zelle
-            // ------------------------------------------------
-
             const platzZelle =
                 document.createElement(
                     "td"
                 );
-
 
             platzZelle.innerHTML =
                 ak
                     ? '<span class="ak-badge">AK</span>'
                     : (
                         hatErgebnis
-                            ? "<strong>" +
-                              platzText +
-                              "</strong>"
+                            ? "<strong>" + platzText + "</strong>"
                             : "–"
                     );
-
 
             zeile.appendChild(
                 platzZelle
             );
 
 
-            // ------------------------------------------------
-            // Vorname
-            // ------------------------------------------------
+            const wettkampfZelle =
+                document.createElement(
+                    "td"
+                );
+
+            wettkampfZelle.textContent =
+                wettkampfName;
+
+            zeile.appendChild(
+                wettkampfZelle
+            );
+
+
+            const datumZelle =
+                document.createElement(
+                    "td"
+                );
+
+            datumZelle.textContent =
+                wettkampfDatum;
+
+            zeile.appendChild(
+                datumZelle
+            );
+
 
             const vornameZelle =
                 document.createElement(
                     "td"
                 );
 
-
             vornameZelle.textContent =
                 vorname;
-
 
             zeile.appendChild(
                 vornameZelle
             );
 
 
-            // ------------------------------------------------
-            // Nachname
-            // ------------------------------------------------
-
             const nachnameZelle =
                 document.createElement(
                     "td"
                 );
 
-
             nachnameZelle.textContent =
                 nachname;
-
 
             zeile.appendChild(
                 nachnameZelle
             );
 
 
-            // ------------------------------------------------
-            // Team
-            // ------------------------------------------------
-
             const teamZelle =
                 document.createElement(
                     "td"
                 );
 
-
             teamZelle.textContent =
                 team;
-
 
             zeile.appendChild(
                 teamZelle
             );
 
 
-            // ------------------------------------------------
-            // Ergebnisse
-            // ------------------------------------------------
+            const statusZelle =
+                document.createElement(
+                    "td"
+                );
+
+            statusZelle.textContent =
+                ak
+                    ? "AK"
+                    : "Wertung";
+
+            zeile.appendChild(
+                statusZelle
+            );
+
 
             for (
                 let nummer = 1;
@@ -1057,10 +1340,8 @@ function tabelleAnzeigen(
                         "td"
                     );
 
-
                 zelle.className =
                     "dynamische-ergebnis-zelle";
-
 
                 if (
                     eintrag.werte[
@@ -1082,7 +1363,6 @@ function tabelleAnzeigen(
 
                 }
 
-
                 zeile.appendChild(
                     zelle
                 );
@@ -1090,45 +1370,221 @@ function tabelleAnzeigen(
             }
 
 
-            // ------------------------------------------------
-            // Gesamt
-            // ------------------------------------------------
-
             const gesamtZelle =
                 document.createElement(
                     "td"
                 );
 
-
             gesamtZelle.innerHTML =
                 hatErgebnis
-                    ? "<strong>" +
-                      zahlFormatieren(
-                          eintrag.gesamt
-                      ) +
-                      "</strong>"
+                    ? "<strong>" + zahlFormatieren(eintrag.gesamt) + "</strong>"
                     : "–";
-
 
             zeile.appendChild(
                 gesamtZelle
             );
 
 
-            // ------------------------------------------------
-            // AK Klasse
-            // ------------------------------------------------
-
             if (ak) {
-
                 zeile.classList.add(
                     "ak-zeile"
                 );
-
             }
 
 
             tabelle.appendChild(
+                zeile
+            );
+
+        }
+    );
+
+}
+
+
+function teamWertungAnzeigen(
+    starts,
+    wettkampf
+) {
+
+    const tbody =
+        teamErgebnisTabelle;
+
+    if (!tbody) {
+        return;
+    }
+
+
+    const gefilterteStarts =
+        filtereStarts(
+            starts || []
+        );
+
+
+    const teams =
+        [...new Map(
+            gefilterteStarts
+                .filter(
+                    function(start) {
+                        return (
+                            start.team_id &&
+                            start.teams
+                        );
+                    }
+                )
+                .map(
+                    function(start) {
+                        return [
+                            start.team_id,
+                            {
+                                id: start.team_id,
+                                name: start.teams?.name || "Unbekannt"
+                            }
+                        ];
+                    }
+                )
+        ).values()];
+
+
+    if (
+        !teams ||
+        teams.length === 0
+    ) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    Keine Teamwertung verfügbar.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    if (
+        typeof window.Rangliste === "undefined" ||
+        typeof window.Rangliste.alleTeamwertungen !== "function"
+    ) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7">
+                    Teamwertung konnte nicht geladen werden.
+                </td>
+            </tr>
+        `;
+
+        return;
+
+    }
+
+
+    const teamgroesse =
+        Number(
+            wettkampf?.teamgroesse ||
+            3
+        );
+
+    const wertungen =
+        window.Rangliste.alleTeamwertungen(
+            gefilterteStarts,
+            teams,
+            teamgroesse
+        );
+
+
+    tbody.innerHTML =
+        "";
+
+    wertungen.forEach(
+        function(wertung) {
+
+            const zeile =
+                document.createElement(
+                    "tr"
+                );
+
+            const platzZelle =
+                document.createElement(
+                    "td"
+                );
+
+            platzZelle.textContent =
+                wertung.platz + ".";
+
+            const teamZelle =
+                document.createElement(
+                    "td"
+                );
+
+            teamZelle.textContent =
+                wertung.team_name;
+
+            const wettkampfZelle =
+                document.createElement(
+                    "td"
+                );
+
+            wettkampfZelle.textContent =
+                wettkampf?.name ||
+                "-";
+
+            const starterZelle =
+                document.createElement(
+                    "td"
+                );
+
+            starterZelle.textContent =
+                wertung.starts?.length || 0;
+
+            const gewerteteStarterZelle =
+                document.createElement(
+                    "td"
+                );
+
+            gewerteteStarterZelle.textContent =
+                wertung.gewertet?.length || 0;
+
+            const gesamtZelle =
+                document.createElement(
+                    "td"
+                );
+
+            gesamtZelle.textContent =
+                zahlFormatieren(
+                    wertung.gesamt
+                );
+
+            const statusZelle =
+                document.createElement(
+                    "td"
+                );
+
+            statusZelle.textContent =
+                wertung.vollstaendig
+                    ? "Vollständig"
+                    : "Unvollständig";
+
+            [
+                platzZelle,
+                teamZelle,
+                wettkampfZelle,
+                starterZelle,
+                gewerteteStarterZelle,
+                gesamtZelle,
+                statusZelle
+            ].forEach(
+                function(zelle) {
+                    zeile.appendChild(
+                        zelle
+                    );
+                }
+            );
+
+            tbody.appendChild(
                 zeile
             );
 
