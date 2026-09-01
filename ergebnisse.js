@@ -1,11 +1,16 @@
+```javascript id="k2x7mz"
 // ==========================================
 // SUPABASE EINSTELLUNGEN
 // ==========================================
 
-const SUPABASE_URL = "https://pvvdbcvdhggqbembqrda.supabase.co";
-const SUPABASE_ANON_KEY = "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
+const SUPABASE_URL =
+    "https://pvvdbcvdhggqbembqrda.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
+// Supabase Verbindung
 const supabaseClient = supabase.createClient(
     SUPABASE_URL,
     SUPABASE_ANON_KEY
@@ -19,32 +24,45 @@ const supabaseClient = supabase.createClient(
 async function ergebnisseLaden() {
 
     const tabelle =
-        document.getElementById("ergebnis-tabelle");
+        document.getElementById(
+            "ergebnis-tabelle"
+        );
 
 
-    const { data, error } = await supabaseClient
+    // Wir sind nicht auf der Ergebnisseite
+    if (!tabelle) {
+        return;
+    }
 
-        .from("results")
 
-        .select(`
-            id,
-            ergebnis1,
-            ergebnis2,
-            ergebnis3,
-            participants (
-                vorname,
-                nachname
-            )
-        `);
+    const { data, error } =
+        await supabaseClient
+
+            .from("results")
+
+            .select(`
+                id,
+                ergebnis1,
+                ergebnis2,
+                ergebnis3,
+                participants (
+                    vorname,
+                    nachname
+                )
+            `);
 
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Fehler beim Laden der Ergebnisse:",
+            error
+        );
+
 
         tabelle.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="5">
                     Fehler beim Laden der Ergebnisse.
                 </td>
             </tr>
@@ -54,26 +72,40 @@ async function ergebnisseLaden() {
     }
 
 
-    // Gesamtwert berechnen
-    const ergebnisse = data.map(eintrag => {
+    // ==========================================
+    // GESAMTERGEBNIS BERECHNEN
+    // ==========================================
 
-        const gesamt =
-            eintrag.ergebnis1 +
-            eintrag.ergebnis2 +
-            eintrag.ergebnis3;
+    const ergebnisse =
+        data.map(
+            function(eintrag) {
 
-
-        return {
-            ...eintrag,
-            gesamt: gesamt
-        };
-
-    });
+                const gesamt =
+                    Number(eintrag.ergebnis1) +
+                    Number(eintrag.ergebnis2) +
+                    Number(eintrag.ergebnis3);
 
 
-    // Nach Gesamtwert absteigend sortieren
+                return {
+                    ...eintrag,
+                    gesamt: gesamt
+                };
+
+            }
+        );
+
+
+    // ==========================================
+    // SORTIEREN
+    // Höchstes Gesamtergebnis zuerst
+    // ==========================================
+
     ergebnisse.sort(
-        (a, b) => b.gesamt - a.gesamt
+        function(a, b) {
+
+            return b.gesamt - a.gesamt;
+
+        }
     );
 
 
@@ -81,9 +113,12 @@ async function ergebnisseLaden() {
     tabelle.innerHTML = "";
 
 
-    // Ergebnisse anzeigen
+    // ==========================================
+    // ERGEBNISSE ANZEIGEN
+    // ==========================================
+
     ergebnisse.forEach(
-        (eintrag, index) => {
+        function(eintrag, index) {
 
             const zeile =
                 document.createElement("tr");
@@ -94,52 +129,62 @@ async function ergebnisseLaden() {
 
 
             zeile.innerHTML = `
-
-                <td class="platz">
-                    ${platz}.
+                <td>
+                    <strong>
+                        ${platz}.
+                    </strong>
                 </td>
 
                 <td>
                     ${eintrag.participants.vorname}
-                </td>
-
-                <td>
                     ${eintrag.participants.nachname}
                 </td>
 
                 <td>
-                    ${eintrag.ergebnis1.toFixed(1)}
+                    ${Number(eintrag.ergebnis1)
+                        .toFixed(1)
+                        .replace(".", ",")}
                 </td>
 
                 <td>
-                    ${eintrag.ergebnis2.toFixed(1)}
+                    ${Number(eintrag.ergebnis2)
+                        .toFixed(1)
+                        .replace(".", ",")}
                 </td>
 
                 <td>
-                    ${eintrag.ergebnis3.toFixed(1)}
+                    ${Number(eintrag.ergebnis3)
+                        .toFixed(1)
+                        .replace(".", ",")}
                 </td>
 
                 <td>
                     <strong>
-                        ${eintrag.gesamt.toFixed(1)}
+                        ${eintrag.gesamt
+                            .toFixed(1)
+                            .replace(".", ",")}
                     </strong>
                 </td>
-
             `;
 
 
-            tabelle.appendChild(zeile);
+            tabelle.appendChild(
+                zeile
+            );
 
         }
     );
 
 
-    // Keine Ergebnisse
+    // ==========================================
+    // KEINE ERGEBNISSE
+    // ==========================================
+
     if (ergebnisse.length === 0) {
 
         tabelle.innerHTML = `
             <tr>
-                <td colspan="7">
+                <td colspan="6">
                     Noch keine Ergebnisse vorhanden.
                 </td>
             </tr>
@@ -159,13 +204,13 @@ ergebnisseLaden();
 
 // ==========================================
 // AUTOMATISCHE AKTUALISIERUNG
+//
+// Vorerst alle 5 Sekunden.
+// Supabase Realtime bauen wir später ein.
 // ==========================================
-//
-// Alle 10 Sekunden wird geprüft, ob neue
-// Ergebnisse vorhanden sind.
-//
 
 setInterval(
     ergebnisseLaden,
-    10000
+    5000
 );
+```
