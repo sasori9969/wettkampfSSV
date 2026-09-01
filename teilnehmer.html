@@ -67,6 +67,10 @@
     <main>
 
 
+        <!-- ==========================================
+             NEUEN TEILNEHMER ANLEGEN
+             ========================================== -->
+
         <section class="card">
 
             <h2>
@@ -75,17 +79,13 @@
 
 
             <p>
-                Hier können neue Teilnehmer für den
-                Wettkampf angelegt werden.
+                Hier kannst du einen neuen Teilnehmer
+                anlegen.
             </p>
 
 
             <form id="teilnehmer-form">
 
-
-                <!-- ==================================
-                     VORNAME
-                     ================================== -->
 
                 <div class="form-group">
 
@@ -107,10 +107,6 @@
 
 
 
-                <!-- ==================================
-                     NACHNAME
-                     ================================== -->
-
                 <div class="form-group">
 
                     <label for="nachname">
@@ -131,10 +127,6 @@
 
 
 
-                <!-- ==================================
-                     SPEICHERN
-                     ================================== -->
-
                 <button
                     type="submit"
                 >
@@ -145,12 +137,141 @@
             </form>
 
 
-            <!-- ======================================
-                 MELDUNG
-                 ====================================== -->
-
             <div
                 id="teilnehmer-meldung"
+                class="meldung"
+            ></div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             TEILNEHMER BEARBEITEN
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Teilnehmer bearbeiten
+            </h2>
+
+
+            <p>
+                Teilnehmer auswählen und Namen ändern.
+            </p>
+
+
+            <div class="form-group">
+
+                <label for="teilnehmer-bearbeiten">
+
+                    Teilnehmer auswählen
+
+                </label>
+
+
+                <select
+                    id="teilnehmer-bearbeiten"
+                >
+
+                    <option value="">
+                        Bitte Teilnehmer auswählen
+                    </option>
+
+                </select>
+
+            </div>
+
+
+
+            <form id="teilnehmer-bearbeiten-form">
+
+
+                <div class="form-group">
+
+                    <label for="bearbeiten-vorname">
+                        Vorname
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="bearbeiten-vorname"
+                        placeholder="Vorname"
+                        required
+                    >
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                    <label for="bearbeiten-nachname">
+                        Nachname
+                    </label>
+
+
+                    <input
+                        type="text"
+                        id="bearbeiten-nachname"
+                        placeholder="Nachname"
+                        required
+                    >
+
+                </div>
+
+
+
+                <button
+                    type="submit"
+                >
+                    Änderungen speichern
+                </button>
+
+
+            </form>
+
+
+            <div
+                id="bearbeiten-meldung"
+                class="meldung"
+            ></div>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             TEILNEHMER LÖSCHEN
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Teilnehmer löschen
+            </h2>
+
+
+            <p>
+                Der Teilnehmer und alle zugehörigen
+                Ergebnisse werden endgültig gelöscht.
+            </p>
+
+
+            <button
+                type="button"
+                id="teilnehmer-loeschen"
+            >
+                Teilnehmer + Ergebnisse löschen
+            </button>
+
+
+            <div
+                id="loeschen-meldung"
                 class="meldung"
             ></div>
 
@@ -194,7 +315,7 @@
          ========================================== -->
 
     <script
-        src="app.js?v=3"
+        src="app.js?v=4"
     ></script>
 
 
