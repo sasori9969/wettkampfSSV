@@ -1,12 +1,7 @@
+```css
 /* ==========================================
    SSV 1928 SULZBACH e.V.
    VEREINSDESIGN
-   Farben: Grün / Weiß
-   ========================================== */
-
-
-/* ==========================================
-   GRUNDEINSTELLUNGEN
    ========================================== */
 
 * {
@@ -38,7 +33,7 @@ body {
 
 
 /* ==========================================
-   KOPFBEREICH
+   HEADER
    ========================================== */
 
 header {
@@ -61,8 +56,6 @@ header h1 {
     font-size: 28px;
 
     font-weight: 700;
-
-    letter-spacing: 0.2px;
 }
 
 
@@ -167,7 +160,110 @@ main {
 
 
 /* ==========================================
-   FORMULAR
+   STARTSEITE
+   ========================================== */
+
+.startseite-buttons {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 16px;
+
+    margin-top: 24px;
+}
+
+
+.start-button {
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    min-height: 120px;
+
+    padding: 20px;
+
+    background: white;
+
+    border: 2px solid #dce8df;
+
+    border-radius: 12px;
+
+    color: #1f2937;
+
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.start-button:hover {
+    border-color: #16803c;
+
+    background: #f7fbf8;
+
+    box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.08);
+
+    transform: translateY(-2px);
+}
+
+
+.start-button-icon {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 52px;
+
+    height: 52px;
+
+    flex-shrink: 0;
+
+    border-radius: 10px;
+
+    background: #edf7f0;
+
+    font-size: 26px;
+}
+
+
+.start-button-text {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.start-button-text strong {
+    color: #166534;
+
+    font-size: 17px;
+}
+
+
+.start-button-text small {
+    color: #64748b;
+
+    font-size: 14px;
+
+    line-height: 1.4;
+}
+
+
+/* ==========================================
+   FORMULARE
    ========================================== */
 
 .form-group {
@@ -276,6 +372,34 @@ button:active,
 
 
 /* ==========================================
+   SEKUNDÄRER BUTTON
+   ========================================== */
+
+.button-secondary {
+    background: #64748b;
+}
+
+
+.button-secondary:hover {
+    background: #475569;
+}
+
+
+/* ==========================================
+   LÖSCH-BUTTON
+   ========================================== */
+
+.button-danger {
+    background: #dc2626;
+}
+
+
+.button-danger:hover {
+    background: #b91c1c;
+}
+
+
+/* ==========================================
    MELDUNGEN
    ========================================== */
 
@@ -297,11 +421,74 @@ button:active,
 
 
 /* ==========================================
-   ERGEBNIS-LINKS
+   TEILNEHMERLISTE
    ========================================== */
 
-.ergebnis-link {
-    text-align: left;
+.teilnehmer-liste {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+
+.teilnehmer-zeile {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 15px 16px;
+
+    background: #f8faf9;
+
+    border: 1px solid #dfe8e1;
+
+    border-radius: 10px;
+
+    transition:
+        background 0.15s ease,
+        border-color 0.15s ease;
+}
+
+
+.teilnehmer-zeile:hover {
+    background: #f2f8f3;
+
+    border-color: #c9dccd;
+}
+
+
+.teilnehmer-name {
+    font-size: 17px;
+
+    font-weight: 700;
+
+    color: #166534;
+}
+
+
+.teilnehmer-aktionen {
+    display: flex;
+
+    gap: 8px;
+
+    flex-shrink: 0;
+}
+
+
+.teilnehmer-aktionen button {
+    min-height: 40px;
+
+    padding: 8px 14px;
+
+    font-size: 14px;
 }
 
 
@@ -364,20 +551,10 @@ td {
 }
 
 
-tbody tr {
-    transition:
-        background 0.15s ease;
-}
-
-
 tbody tr:hover {
     background: #f2f8f3;
 }
 
-
-/* ==========================================
-   ERSTE SPALTE – PLATZ
-   ========================================== */
 
 td:first-child {
     font-weight: 700;
@@ -385,10 +562,6 @@ td:first-child {
     color: #166534;
 }
 
-
-/* ==========================================
-   LETZTE SPALTE – GESAMT
-   ========================================== */
 
 td:last-child {
     font-size: 17px;
@@ -414,9 +587,23 @@ footer {
 }
 
 
+footer p {
+    margin: 3px 0;
+}
+
+
 /* ==========================================
    MOBILE
    ========================================== */
+
+@media (max-width: 800px) {
+
+    .startseite-buttons {
+        grid-template-columns: 1fr;
+    }
+
+}
+
 
 @media (max-width: 700px) {
 
@@ -469,13 +656,42 @@ footer {
     }
 
 
+    .startseite-buttons {
+        gap: 12px;
+    }
+
+
+    .start-button {
+        min-height: 95px;
+
+        padding: 16px;
+    }
+
+
     button,
     .button {
-        width: 100%;
-
-        text-align: center;
-
         min-height: 50px;
+    }
+
+
+    .teilnehmer-zeile {
+        align-items: stretch;
+
+        flex-direction: column;
+
+        gap: 12px;
+    }
+
+
+    .teilnehmer-aktionen {
+        width: 100%;
+    }
+
+
+    .teilnehmer-aktionen button {
+        flex: 1;
+
+        min-height: 44px;
     }
 
 
@@ -491,10 +707,6 @@ footer {
 
 }
 
-
-/* ==========================================
-   SEHR KLEINE BILDSCHIRME
-   ========================================== */
 
 @media (max-width: 400px) {
 
@@ -513,4 +725,31 @@ footer {
         font-size: 16px;
     }
 
+
+    .start-button {
+        gap: 11px;
+
+        padding: 14px;
+    }
+
+
+    .start-button-icon {
+        width: 46px;
+
+        height: 46px;
+
+        font-size: 22px;
+    }
+
+
+    .start-button-text strong {
+        font-size: 16px;
+    }
+
+
+    .start-button-text small {
+        font-size: 13px;
+    }
+
 }
+```
