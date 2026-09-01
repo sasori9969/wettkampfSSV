@@ -32,16 +32,6 @@ const wettkampfId =
 
 
 
-if (!wettkampfId) {
-
-    alert(
-        "Kein Wettkampf ausgewählt."
-    );
-
-}
-
-
-
 // ==========================================
 // GLOBALE VARIABLEN
 // ==========================================
@@ -49,6 +39,8 @@ if (!wettkampfId) {
 let aktuellerWettkampf = null;
 
 let ausgewaehlterTeilnehmer = null;
+
+let aktuelleTeams = [];
 
 
 
@@ -75,7 +67,6 @@ async function wettkampfLaden() {
         .single();
 
 
-
     if (error) {
 
         console.error(
@@ -87,14 +78,12 @@ async function wettkampfLaden() {
             "Der Wettkampf konnte nicht geladen werden."
         );
 
-        return;
+        return false;
     }
-
 
 
     aktuellerWettkampf =
         data;
-
 
 
     document.getElementById(
@@ -103,13 +92,11 @@ async function wettkampfLaden() {
         data.name;
 
 
-
     const datum =
         new Date(
             data.datum +
             "T00:00:00"
         );
-
 
 
     document.getElementById(
@@ -125,13 +112,14 @@ async function wettkampfLaden() {
         " Starter pro Team";
 
 
-
     document.getElementById(
         "wettkampf-status"
     ).textContent =
         "Status: " +
         data.status;
 
+
+    return true;
 }
 
 
@@ -164,7 +152,6 @@ async function teamsLaden() {
         );
 
 
-
     if (error) {
 
         console.error(
@@ -176,6 +163,9 @@ async function teamsLaden() {
     }
 
 
+    aktuelleTeams =
+        data || [];
+
 
     const liste =
         document.getElementById(
@@ -183,21 +173,21 @@ async function teamsLaden() {
         );
 
 
-
     liste.innerHTML = "";
 
 
-
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         liste.innerHTML =
             "<p>Noch keine Teams vorhanden.</p>";
 
-        teamsAuswahlAktualisieren([]);
+        teamsAuswahlAktualisieren();
 
         return;
     }
-
 
 
     data.forEach(
@@ -213,7 +203,6 @@ async function teamsLaden() {
                 "wettkampf-eintrag";
 
 
-
             const titel =
                 document.createElement(
                     "h3"
@@ -222,7 +211,6 @@ async function teamsLaden() {
 
             titel.textContent =
                 team.name;
-
 
 
             const button =
@@ -252,7 +240,6 @@ async function teamsLaden() {
             );
 
 
-
             box.appendChild(
                 titel
             );
@@ -271,10 +258,7 @@ async function teamsLaden() {
     );
 
 
-
-    teamsAuswahlAktualisieren(
-        data
-    );
+    teamsAuswahlAktualisieren();
 
 }
 
@@ -284,9 +268,7 @@ async function teamsLaden() {
 // TEAM AUSWAHL AKTUALISIEREN
 // ==========================================
 
-function teamsAuswahlAktualisieren(
-    teams
-) {
+function teamsAuswahlAktualisieren() {
 
     const select =
         document.getElementById(
@@ -294,8 +276,13 @@ function teamsAuswahlAktualisieren(
         );
 
 
-    select.innerHTML = "";
+    if (!select) {
 
+        return;
+    }
+
+
+    select.innerHTML = "";
 
 
     const einzelOption =
@@ -317,8 +304,7 @@ function teamsAuswahlAktualisieren(
     );
 
 
-
-    teams.forEach(
+    aktuelleTeams.forEach(
         function(team) {
 
             const option =
@@ -356,7 +342,6 @@ const teamForm =
     );
 
 
-
 if (teamForm) {
 
     teamForm.addEventListener(
@@ -364,7 +349,6 @@ if (teamForm) {
         async function(event) {
 
             event.preventDefault();
-
 
 
             const name =
@@ -376,12 +360,10 @@ if (teamForm) {
                     .trim();
 
 
-
             if (!name) {
 
                 return;
             }
-
 
 
             const {
@@ -401,7 +383,6 @@ if (teamForm) {
                 ]);
 
 
-
             if (error) {
 
                 console.error(
@@ -419,16 +400,13 @@ if (teamForm) {
             }
 
 
-
             document.getElementById(
                 "team-meldung"
             ).textContent =
                 "Team wurde angelegt.";
 
 
-
             teamForm.reset();
-
 
 
             await teamsLaden();
@@ -459,12 +437,10 @@ async function teamLoeschen(
         );
 
 
-
     if (!bestaetigung) {
 
         return;
     }
-
 
 
     const {
@@ -481,7 +457,6 @@ async function teamLoeschen(
         );
 
 
-
     if (error) {
 
         console.error(
@@ -495,7 +470,6 @@ async function teamLoeschen(
 
         return;
     }
-
 
 
     await teamsLaden();
@@ -516,7 +490,6 @@ const teilnehmerSuche =
     );
 
 
-
 if (teilnehmerSuche) {
 
     teilnehmerSuche.addEventListener(
@@ -535,17 +508,14 @@ async function teilnehmerSuchen() {
             .trim();
 
 
-
     const ergebnisBereich =
         document.getElementById(
             "teilnehmer-suchergebnisse"
         );
 
 
-
     ergebnisBereich.innerHTML =
         "";
-
 
 
     document.getElementById(
@@ -554,17 +524,14 @@ async function teilnehmerSuchen() {
         "none";
 
 
-
     ausgewaehlterTeilnehmer =
         null;
-
 
 
     if (!suchtext) {
 
         return;
     }
-
 
 
     const {
@@ -596,7 +563,6 @@ async function teilnehmerSuchen() {
         .limit(10);
 
 
-
     if (error) {
 
         console.error(
@@ -608,15 +574,16 @@ async function teilnehmerSuchen() {
     }
 
 
-
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         ergebnisBereich.innerHTML =
             "<p>Kein Teilnehmer gefunden.</p>";
 
         return;
     }
-
 
 
     data.forEach(
@@ -638,7 +605,6 @@ async function teilnehmerSuchen() {
                 teilnehmer.nachname;
 
 
-
             button.addEventListener(
                 "click",
                 function() {
@@ -649,7 +615,6 @@ async function teilnehmerSuchen() {
 
                 }
             );
-
 
 
             ergebnisBereich.appendChild(
@@ -675,7 +640,6 @@ function teilnehmerAuswaehlen(
         teilnehmer;
 
 
-
     document.getElementById(
         "ausgewaehlter-teilnehmer"
     ).textContent =
@@ -684,19 +648,16 @@ function teilnehmerAuswaehlen(
         teilnehmer.nachname;
 
 
-
     document.getElementById(
         "starter-bereich"
     ).style.display =
         "block";
 
 
-
     document.getElementById(
         "starter-ak"
     ).checked =
         false;
-
 
 
     document.getElementById(
@@ -729,19 +690,16 @@ async function starterHinzufuegen() {
     }
 
 
-
     const teamId =
         document.getElementById(
             "starter-team"
         ).value || null;
 
 
-
     const ak =
         document.getElementById(
             "starter-ak"
         ).checked;
-
 
 
     const {
@@ -767,7 +725,6 @@ async function starterHinzufuegen() {
         ]);
 
 
-
     if (error) {
 
         console.error(
@@ -785,12 +742,10 @@ async function starterHinzufuegen() {
     }
 
 
-
     document.getElementById(
         "starter-meldung"
     ).textContent =
         "Start wurde hinzugefügt.";
-
 
 
     document.getElementById(
@@ -799,12 +754,10 @@ async function starterHinzufuegen() {
         "";
 
 
-
     document.getElementById(
         "teilnehmer-suchergebnisse"
     ).innerHTML =
         "";
-
 
 
     document.getElementById(
@@ -813,10 +766,8 @@ async function starterHinzufuegen() {
         "none";
 
 
-
     ausgewaehlterTeilnehmer =
         null;
-
 
 
     await starterLaden();
@@ -849,6 +800,11 @@ async function starterLaden() {
             ),
             teams (
                 name
+            ),
+            start_results (
+                id,
+                nummer,
+                wert
             )
         `)
 
@@ -865,7 +821,6 @@ async function starterLaden() {
         );
 
 
-
     if (error) {
 
         console.error(
@@ -875,7 +830,6 @@ async function starterLaden() {
 
         return;
     }
-
 
 
     const liste =
@@ -888,15 +842,16 @@ async function starterLaden() {
         "";
 
 
-
-    if (!data || data.length === 0) {
+    if (
+        !data ||
+        data.length === 0
+    ) {
 
         liste.innerHTML =
             "<p>Noch keine Starter vorhanden.</p>";
 
         return;
     }
-
 
 
     data.forEach(
@@ -912,7 +867,6 @@ async function starterLaden() {
                 "wettkampf-eintrag";
 
 
-
             const name =
                 document.createElement(
                     "h3"
@@ -925,12 +879,10 @@ async function starterLaden() {
                 start.participants.nachname;
 
 
-
             const info =
                 document.createElement(
                     "p"
                 );
-
 
 
             let zuordnung =
@@ -947,7 +899,6 @@ async function starterLaden() {
             }
 
 
-
             if (start.ak) {
 
                 zuordnung +=
@@ -956,11 +907,159 @@ async function starterLaden() {
             }
 
 
-
             info.textContent =
                 zuordnung;
 
 
+            // ==================================
+            // ERGEBNISFORMULAR
+            // ==================================
+
+            const ergebnisContainer =
+                document.createElement(
+                    "div"
+                );
+
+
+            ergebnisContainer.className =
+                "ergebnis-eingabe-container";
+
+
+            const vorhandeneErgebnisse =
+                start.start_results || [];
+
+
+            for (
+                let nummer = 1;
+                nummer <= aktuellerWettkampf.anzahl_ergebnisse;
+                nummer++
+            ) {
+
+                const vorhandenesErgebnis =
+                    vorhandeneErgebnisse.find(
+                        function(ergebnis) {
+
+                            return (
+                                Number(
+                                    ergebnis.nummer
+                                ) === nummer
+                            );
+
+                        }
+                    );
+
+
+                const zeile =
+                    document.createElement(
+                        "div"
+                    );
+
+
+                zeile.className =
+                    "ergebnis-zeile";
+
+
+                const label =
+                    document.createElement(
+                        "label"
+                    );
+
+
+                label.textContent =
+                    "Ergebnis " +
+                    nummer;
+
+
+                const input =
+                    document.createElement(
+                        "input"
+                    );
+
+
+                input.type =
+                    "text";
+
+
+                input.inputMode =
+                    "decimal";
+
+
+                input.placeholder =
+                    "z. B. 12,5";
+
+
+                input.dataset.nummer =
+                    nummer;
+
+
+                if (
+                    vorhandenesErgebnis
+                ) {
+
+                    input.value =
+                        String(
+                            vorhandenesErgebnis.wert
+                        )
+                        .replace(
+                            ".",
+                            ","
+                        );
+
+                }
+
+
+                zeile.appendChild(
+                    label
+                );
+
+
+                zeile.appendChild(
+                    input
+                );
+
+
+                ergebnisContainer.appendChild(
+                    zeile
+                );
+
+            }
+
+
+            // ==================================
+            // ERGEBNISSE SPEICHERN BUTTON
+            // ==================================
+
+            const speichernButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            speichernButton.type =
+                "button";
+
+
+            speichernButton.textContent =
+                "Ergebnisse speichern";
+
+
+            speichernButton.addEventListener(
+                "click",
+                function() {
+
+                    ergebnisseSpeichern(
+                        start.id,
+                        ergebnisContainer,
+                        speichernButton
+                    );
+
+                }
+            );
+
+
+            // ==================================
+            // START LÖSCHEN BUTTON
+            // ==================================
 
             const loeschenButton =
                 document.createElement(
@@ -991,7 +1090,6 @@ async function starterLaden() {
             );
 
 
-
             box.appendChild(
                 name
             );
@@ -999,6 +1097,16 @@ async function starterLaden() {
 
             box.appendChild(
                 info
+            );
+
+
+            box.appendChild(
+                ergebnisContainer
+            );
+
+
+            box.appendChild(
+                speichernButton
             );
 
 
@@ -1019,6 +1127,229 @@ async function starterLaden() {
 
 
 // ==========================================
+// ZAHL UMWANDELN
+// ==========================================
+
+function zahlUmwandeln(
+    wert
+) {
+
+    const text =
+        String(wert)
+            .trim()
+            .replace(
+                ",",
+                "."
+            );
+
+
+    if (text === "") {
+
+        return null;
+    }
+
+
+    return parseFloat(
+        text
+    );
+
+}
+
+
+
+// ==========================================
+// ERGEBNISSE SPEICHERN
+// ==========================================
+
+async function ergebnisseSpeichern(
+    startId,
+    container,
+    button
+) {
+
+    const inputs =
+        container.querySelectorAll(
+            "input"
+        );
+
+
+    const ergebnisse =
+        [];
+
+
+    for (
+        const input of inputs
+    ) {
+
+        const nummer =
+            Number(
+                input.dataset.nummer
+            );
+
+
+        const wert =
+            zahlUmwandeln(
+                input.value
+            );
+
+
+        if (
+            input.value.trim() !== "" &&
+            Number.isNaN(wert)
+        ) {
+
+            alert(
+                "Ergebnis " +
+                nummer +
+                " ist keine gültige Zahl."
+            );
+
+            return;
+        }
+
+
+        if (
+            input.value.trim() !== ""
+        ) {
+
+            ergebnisse.push({
+                start_id:
+                    startId,
+
+                nummer:
+                    nummer,
+
+                wert:
+                    wert
+            });
+
+        }
+
+    }
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Speichert ...";
+
+
+
+    // ==================================
+    // VORHANDENE ERGEBNISSE LÖSCHEN
+    // ==================================
+
+    const {
+        error: deleteError
+    } = await supabaseClient
+
+        .from("start_results")
+
+        .delete()
+
+        .eq(
+            "start_id",
+            startId
+        );
+
+
+    if (deleteError) {
+
+        console.error(
+            "Fehler beim Löschen der alten Ergebnisse:",
+            deleteError
+        );
+
+
+        alert(
+            "Die alten Ergebnisse konnten nicht aktualisiert werden."
+        );
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Ergebnisse speichern";
+
+        return;
+    }
+
+
+
+    // ==================================
+    // NEUE ERGEBNISSE SPEICHERN
+    // ==================================
+
+    if (
+        ergebnisse.length > 0
+    ) {
+
+        const {
+            error: insertError
+        } = await supabaseClient
+
+            .from("start_results")
+
+            .insert(
+                ergebnisse
+            );
+
+
+        if (insertError) {
+
+            console.error(
+                "Fehler beim Speichern der Ergebnisse:",
+                insertError
+            );
+
+
+            alert(
+                "Die Ergebnisse konnten nicht gespeichert werden."
+            );
+
+
+            button.disabled =
+                false;
+
+
+            button.textContent =
+                "Ergebnisse speichern";
+
+            return;
+        }
+
+    }
+
+
+
+    button.disabled =
+        false;
+
+
+    button.textContent =
+        "Gespeichert ✓";
+
+
+
+    setTimeout(
+        function() {
+
+            button.textContent =
+                "Ergebnisse speichern";
+
+        },
+        1500
+    );
+
+}
+
+
+
+// ==========================================
 // START LÖSCHEN
 // ==========================================
 
@@ -1031,16 +1362,15 @@ async function startLoeschen(
         confirm(
             "Start von " +
             name +
-            " wirklich löschen?"
+            " wirklich löschen?\n\n" +
+            "Alle Ergebnisse dieses Starts werden ebenfalls gelöscht."
         );
-
 
 
     if (!bestaetigung) {
 
         return;
     }
-
 
 
     const {
@@ -1055,7 +1385,6 @@ async function startLoeschen(
             "id",
             startId
         );
-
 
 
     if (error) {
@@ -1073,7 +1402,6 @@ async function startLoeschen(
     }
 
 
-
     await starterLaden();
 
 }
@@ -1086,14 +1414,31 @@ async function startLoeschen(
 
 async function start() {
 
-    await wettkampfLaden();
+    if (!wettkampfId) {
+
+        alert(
+            "Kein Wettkampf ausgewählt."
+        );
+
+        return;
+    }
+
+
+    const erfolgreich =
+        await wettkampfLaden();
+
+
+    if (!erfolgreich) {
+
+        return;
+    }
+
 
     await teamsLaden();
 
     await starterLaden();
 
 }
-
 
 
 start();
