@@ -3,8 +3,8 @@
 // SUPABASE EINSTELLUNGEN
 // ==========================================
 
-const SUPABASE_URL = "DEINE_SUPABASE_URL";
-const SUPABASE_ANON_KEY = "DEIN_SUPABASE_ANON_KEY";
+const SUPABASE_URL = "https://pvvdbcvdhggqbembqrda.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
 const supabaseClient = supabase.createClient(
