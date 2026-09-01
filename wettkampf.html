@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SSV 1928 Sulzbach e.V. – Wettkampf
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         KOPFBEREICH
+         ========================================== -->
+
+    <header>
+
+        <h1>
+            SSV 1928 Sulzbach e.V.
+        </h1>
+
+
+        <nav>
+
+            <a href="index.html">
+                Startseite
+            </a>
+
+            <a href="wettkaempfe.html">
+                Wettkämpfe
+            </a>
+
+            <a href="teilnehmer.html">
+                Teilnehmer
+            </a>
+
+            <a href="ergebnisse.html">
+                Ergebnisse
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
+    <main>
+
+
+        <!-- ==========================================
+             WETTKAMPFINFORMATIONEN
+             ========================================== -->
+
+        <section class="card">
+
+            <h2 id="wettkampf-name">
+                Wettkampf wird geladen ...
+            </h2>
+
+
+            <p id="wettkampf-info">
+                Bitte warten ...
+            </p>
+
+
+            <p id="wettkampf-status">
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             TEAM ANLEGEN
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Team anlegen
+            </h2>
+
+
+            <form id="team-form">
+
+
+                <label for="team-name">
+                    Teamname
+                </label>
+
+
+                <input
+                    type="text"
+                    id="team-name"
+                    placeholder="z. B. Team Grün"
+                    required
+                >
+
+
+                <button type="submit">
+                    Team anlegen
+                </button>
+
+
+            </form>
+
+
+            <p id="team-meldung"></p>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             START HINZUFÜGEN
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Starter hinzufügen
+            </h2>
+
+
+            <label for="teilnehmer-suche">
+                Teilnehmer suchen
+            </label>
+
+
+            <input
+                type="text"
+                id="teilnehmer-suche"
+                placeholder="Name oder Anfangsbuchstaben eingeben"
+                autocomplete="off"
+            >
+
+
+            <div id="teilnehmer-suchergebnisse">
+            </div>
+
+
+            <div id="starter-bereich"
+                 style="display: none;">
+
+
+                <h3 id="ausgewaehlter-teilnehmer">
+                </h3>
+
+
+                <label for="starter-team">
+                    Team
+                </label>
+
+
+                <select id="starter-team">
+
+                    <option value="">
+                        Einzelstart
+                    </option>
+
+                </select>
+
+
+                <label for="starter-ak">
+
+                    <input
+                        type="checkbox"
+                        id="starter-ak"
+                    >
+
+                    Außer Konkurrenz (AK)
+
+                </label>
+
+
+                <button
+                    type="button"
+                    id="starter-hinzufuegen"
+                >
+                    Start hinzufügen
+                </button>
+
+
+                <button
+                    type="button"
+                    id="starter-abbrechen"
+                >
+                    Abbrechen
+                </button>
+
+
+            </div>
+
+
+            <p id="starter-meldung"></p>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             TEAMS
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Teams
+            </h2>
+
+
+            <div id="teams-liste">
+
+                <p>
+                    Teams werden geladen ...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             STARTER
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Starter dieses Wettkampfs
+            </h2>
+
+
+            <div id="starter-liste">
+
+                <p>
+                    Starter werden geladen ...
+                </p>
+
+            </div>
+
+        </section>
+
+
+
+    </main>
+
+
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+    <footer>
+
+        <p>
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+        <p>
+            Wettkampfauswertung
+        </p>
+
+    </footer>
+
+
+
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <script
+        src="wettkampf.js"
+    ></script>
+
+
+</body>
+
+</html>
