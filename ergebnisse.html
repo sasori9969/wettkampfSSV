@@ -10,7 +10,9 @@
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Ergebnisse</title>
+    <title>
+        SSV 1928 Sulzbach e.V. – Ergebnisse
+    </title>
 
     <link
         rel="stylesheet"
@@ -30,18 +32,22 @@
     <header>
 
         <h1>
-            Wettkampfauswertung
+            SSV 1928 Sulzbach e.V.
         </h1>
 
 
         <nav>
 
             <a href="index.html">
-                Teilnehmer
+                Startseite
             </a>
 
-            <a href="ergebnisse-eingabe.html">
-                Ergebnisse erfassen
+            <a href="wettkaempfe.html">
+                Wettkämpfe
+            </a>
+
+            <a href="teilnehmer.html">
+                Teilnehmer
             </a>
 
             <a href="ergebnisse.html">
@@ -60,15 +66,98 @@
 
     <main>
 
+
+        <!-- ==========================================
+             WETTKAMPF AUSWÄHLEN
+             ========================================== -->
+
         <section class="card">
 
             <h2>
-                Ergebnisse
+                Wettkampfauswertung
+            </h2>
+
+
+            <label for="wettkampf-auswahl">
+                Wettkampf
+            </label>
+
+
+            <select id="wettkampf-auswahl">
+
+                <option value="">
+                    Wettkampf auswählen ...
+                </option>
+
+            </select>
+
+
+            <p id="wettkampf-info">
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             AUSWERTUNGSART
+             ========================================== -->
+
+        <section
+            class="card"
+            id="auswertung-bereich"
+            style="display: none;"
+        >
+
+            <h2>
+                Auswertung
+            </h2>
+
+
+            <div class="auswertung-buttons">
+
+                <button
+                    type="button"
+                    id="button-einzelwertung"
+                    class="auswertung-button aktiv"
+                >
+                    Einzelwertung
+                </button>
+
+
+                <button
+                    type="button"
+                    id="button-teamwertung"
+                    class="auswertung-button"
+                >
+                    Teamwertung
+                </button>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             EINZELWERTUNG
+             ========================================== -->
+
+        <section
+            class="card"
+            id="einzelwertung"
+            style="display: none;"
+        >
+
+            <h2>
+                Einzelwertung
             </h2>
 
 
             <p>
-                Die Ergebnisliste wird automatisch aktualisiert.
+                Für die persönliche Wertung zählt
+                innerhalb dieses Wettkampfs das beste
+                Ergebnis eines Teilnehmers.
             </p>
 
 
@@ -76,48 +165,16 @@
 
                 <table>
 
-                    <thead>
-
-                        <tr>
-
-                            <th>
-                                Platz
-                            </th>
-
-                            <th>
-                                Vorname
-                            </th>
-
-                            <th>
-                                Nachname
-                            </th>
-
-                            <th>
-                                Ergebnis 1
-                            </th>
-
-                            <th>
-                                Ergebnis 2
-                            </th>
-
-                            <th>
-                                Ergebnis 3
-                            </th>
-
-                            <th>
-                                Gesamt
-                            </th>
-
-                        </tr>
+                    <thead id="einzel-tabelle-kopf">
 
                     </thead>
 
 
-                    <tbody id="ergebnis-tabelle">
+                    <tbody id="einzel-tabelle">
 
                         <tr>
 
-                            <td colspan="7">
+                            <td>
                                 Ergebnisse werden geladen...
                             </td>
 
@@ -131,6 +188,72 @@
 
         </section>
 
+
+
+        <!-- ==========================================
+             TEAMWERTUNG
+             ========================================== -->
+
+        <section
+            class="card"
+            id="teamwertung"
+            style="display: none;"
+        >
+
+            <h2>
+                Teamwertung
+            </h2>
+
+
+            <p id="teamwertung-info">
+            </p>
+
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead id="team-tabelle-kopf">
+
+                    </thead>
+
+
+                    <tbody id="team-tabelle">
+
+                        <tr>
+
+                            <td>
+                                Ergebnisse werden geladen...
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             HINWEIS
+             ========================================== -->
+
+        <section
+            class="card"
+            id="keine-auswertung"
+        >
+
+            <p>
+                Bitte oben einen Wettkampf auswählen.
+            </p>
+
+        </section>
+
+
     </main>
 
 
@@ -142,7 +265,11 @@
     <footer>
 
         <p>
-            Wettkampfauswertung – Vereinsseite
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+        <p>
+            Wettkampfauswertung
         </p>
 
     </footer>
@@ -158,12 +285,8 @@
     ></script>
 
 
-    <!-- ==========================================
-         ERGEBNIS-JAVASCRIPT
-         ========================================== -->
-
     <script
-        src="ergebnisse.js?v=3"
+        src="ergebnisse.js?v=4"
     ></script>
 
 
