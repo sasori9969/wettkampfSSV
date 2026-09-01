@@ -2,7 +2,8 @@
 // SUPABASE EINSTELLUNGEN
 // ==========================================
 
-const SUPABASE_URL = "https://pvvdbcvdhggqbembqrda.supabase.co";
+const SUPABASE_URL =
+    "https://pvvdbcvdhggqbembqrda.supabase.co";
 
 const SUPABASE_ANON_KEY =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
@@ -21,7 +22,9 @@ const supabaseClient = supabase.createClient(
 
 function zahlUmwandeln(wert) {
 
-    // Komma in Punkt umwandeln
+    wert = wert.trim();
+
+    // Deutsches Komma in Punkt umwandeln
     wert = wert.replace(",", ".");
 
     return parseFloat(wert);
@@ -34,21 +37,27 @@ function zahlUmwandeln(wert) {
 
 async function teilnehmerLaden() {
 
-    const select = document.getElementById("teilnehmer");
+    const select =
+        document.getElementById("teilnehmer");
 
-    // Wenn wir nicht auf der Eingabeseite sind,
-    // brauchen wir nichts zu tun.
+    // Wenn kein Teilnehmer-Auswahlfeld
+    // vorhanden ist, sind wir nicht auf
+    // der Ergebnisseingabe-Seite.
     if (!select) {
         return;
     }
 
 
-    const { data, error } = await supabaseClient
-        .from("participants")
-        .select("*")
-        .order("nachname", {
-            ascending: true
-        });
+    const { data, error } =
+        await supabaseClient
+
+            .from("participants")
+
+            .select("*")
+
+            .order("nachname", {
+                ascending: true
+            });
 
 
     if (error) {
@@ -70,30 +79,42 @@ async function teilnehmerLaden() {
     const standardOption =
         document.createElement("option");
 
+
     standardOption.value = "";
 
     standardOption.textContent =
         "Bitte Teilnehmer auswählen";
 
-    select.appendChild(standardOption);
+
+    select.appendChild(
+        standardOption
+    );
 
 
     // Teilnehmer einfügen
-    data.forEach(function(teilnehmer) {
+    data.forEach(
+        function(teilnehmer) {
 
-        const option =
-            document.createElement("option");
+            const option =
+                document.createElement("option");
 
-        option.value = teilnehmer.id;
 
-        option.textContent =
-            teilnehmer.vorname +
-            " " +
-            teilnehmer.nachname;
+            option.value =
+                teilnehmer.id;
 
-        select.appendChild(option);
 
-    });
+            option.textContent =
+                teilnehmer.vorname +
+                " " +
+                teilnehmer.nachname;
+
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
 
 }
 
@@ -103,7 +124,9 @@ async function teilnehmerLaden() {
 // ==========================================
 
 const teilnehmerForm =
-    document.getElementById("teilnehmer-form");
+    document.getElementById(
+        "teilnehmer-form"
+    );
 
 
 if (teilnehmerForm) {
@@ -129,6 +152,7 @@ if (teilnehmerForm) {
                     .trim();
 
 
+            // Eingaben prüfen
             if (!vorname || !nachname) {
 
                 alert(
@@ -139,9 +163,12 @@ if (teilnehmerForm) {
             }
 
 
+            // Teilnehmer speichern
             const { error } =
                 await supabaseClient
+
                     .from("participants")
+
                     .insert([
                         {
                             vorname: vorname,
@@ -167,12 +194,14 @@ if (teilnehmerForm) {
             }
 
 
+            // Erfolgsmeldung
             document.getElementById(
                 "teilnehmer-meldung"
             ).textContent =
                 "Teilnehmer wurde gespeichert.";
 
 
+            // Formular leeren
             teilnehmerForm.reset();
 
 
@@ -184,28 +213,54 @@ if (teilnehmerForm) {
 
 }
 
+
 // ==========================================
 // VORHANDENE ERGEBNISSE LADEN
 // ==========================================
 
 async function vorhandeneErgebnisseLaden() {
 
-    const participantId =
-        document.getElementById("teilnehmer").value;
+    const select =
+        document.getElementById(
+            "teilnehmer"
+        );
 
 
     const ergebnis1 =
-        document.getElementById("ergebnis1");
+        document.getElementById(
+            "ergebnis1"
+        );
+
 
     const ergebnis2 =
-        document.getElementById("ergebnis2");
+        document.getElementById(
+            "ergebnis2"
+        );
+
 
     const ergebnis3 =
-        document.getElementById("ergebnis3");
+        document.getElementById(
+            "ergebnis3"
+        );
 
 
-    // Wenn kein Teilnehmer ausgewählt ist,
-    // Felder leeren.
+    // Sicherheitsprüfung
+    if (
+        !select ||
+        !ergebnis1 ||
+        !ergebnis2 ||
+        !ergebnis3
+    ) {
+
+        return;
+    }
+
+
+    const participantId =
+        select.value;
+
+
+    // Kein Teilnehmer ausgewählt
     if (!participantId) {
 
         ergebnis1.value = "";
@@ -216,6 +271,7 @@ async function vorhandeneErgebnisseLaden() {
     }
 
 
+    // Vorhandene Ergebnisse laden
     const { data, error } =
         await supabaseClient
 
@@ -244,10 +300,7 @@ async function vorhandeneErgebnisseLaden() {
     }
 
 
-    // ==========================================
-    // KEINE ERGEBNISSE VORHANDEN
-    // ==========================================
-
+    // Keine Ergebnisse vorhanden
     if (!data) {
 
         ergebnis1.value = "";
@@ -258,10 +311,7 @@ async function vorhandeneErgebnisseLaden() {
     }
 
 
-    // ==========================================
-    // VORHANDENE ERGEBNISSE EINTRAGEN
-    // ==========================================
-
+    // Ergebnisse in Felder schreiben
     ergebnis1.value =
         Number(data.ergebnis1)
             .toFixed(1)
@@ -281,12 +331,15 @@ async function vorhandeneErgebnisseLaden() {
 
 }
 
+
 // ==========================================
 // TEILNEHMER AUSWAHL GEÄNDERT
 // ==========================================
 
 const teilnehmerSelect =
-    document.getElementById("teilnehmer");
+    document.getElementById(
+        "teilnehmer"
+    );
 
 
 if (teilnehmerSelect) {
@@ -298,12 +351,15 @@ if (teilnehmerSelect) {
 
 }
 
+
 // ==========================================
 // ERGEBNISSE SPEICHERN
 // ==========================================
 
 const ergebnisForm =
-    document.getElementById("ergebnis-form");
+    document.getElementById(
+        "ergebnis-form"
+    );
 
 
 if (ergebnisForm) {
@@ -317,14 +373,18 @@ if (ergebnisForm) {
 
             const participantId =
                 document
-                    .getElementById("teilnehmer")
+                    .getElementById(
+                        "teilnehmer"
+                    )
                     .value;
 
 
             const wert1 =
                 zahlUmwandeln(
                     document
-                        .getElementById("ergebnis1")
+                        .getElementById(
+                            "ergebnis1"
+                        )
                         .value
                 );
 
@@ -332,7 +392,9 @@ if (ergebnisForm) {
             const wert2 =
                 zahlUmwandeln(
                     document
-                        .getElementById("ergebnis2")
+                        .getElementById(
+                            "ergebnis2"
+                        )
                         .value
                 );
 
@@ -340,7 +402,9 @@ if (ergebnisForm) {
             const wert3 =
                 zahlUmwandeln(
                     document
-                        .getElementById("ergebnis3")
+                        .getElementById(
+                            "ergebnis3"
+                        )
                         .value
                 );
 
@@ -371,22 +435,37 @@ if (ergebnisForm) {
             }
 
 
-const { error } =
-    await supabaseClient
-        .from("results")
-        .upsert(
-            {
-                participant_id: participantId,
-                ergebnis1: wert1,
-                ergebnis2: wert2,
-                ergebnis3: wert3
-            },
-            {
-                onConflict: "participant_id"
-            }
-        );
+            // ==========================================
+            // ERGEBNISSE SPEICHERN ODER AKTUALISIEREN
+            // ==========================================
+
+            const { error } =
+                await supabaseClient
+
+                    .from("results")
+
+                    .upsert(
+                        {
+                            participant_id:
+                                participantId,
+
+                            ergebnis1:
+                                wert1,
+
+                            ergebnis2:
+                                wert2,
+
+                            ergebnis3:
+                                wert3
+                        },
+                        {
+                            onConflict:
+                                "participant_id"
+                        }
+                    );
 
 
+            // Fehler
             if (error) {
 
                 console.error(
@@ -404,13 +483,21 @@ const { error } =
             }
 
 
+            // Erfolgsmeldung
             document.getElementById(
                 "ergebnis-meldung"
             ).textContent =
                 "Ergebnisse wurden gespeichert.";
 
 
-            ergebnisForm.reset();
+            // ==========================================
+            // WICHTIG:
+            // Teilnehmer bleibt ausgewählt.
+            // Die gespeicherten Werte werden erneut
+            // aus der Datenbank geladen.
+            // ==========================================
+
+            await vorhandeneErgebnisseLaden();
 
         }
     );
