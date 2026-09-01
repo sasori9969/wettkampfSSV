@@ -258,25 +258,20 @@ if (ergebnisForm) {
             }
 
 
-            // Ergebnisse speichern
-            const { error } =
-                await supabaseClient
-                    .from("results")
-                    .insert([
-                        {
-                            participant_id:
-                                participantId,
-
-                            ergebnis1:
-                                wert1,
-
-                            ergebnis2:
-                                wert2,
-
-                            ergebnis3:
-                                wert3
-                        }
-                    ]);
+const { error } =
+    await supabaseClient
+        .from("results")
+        .upsert(
+            {
+                participant_id: participantId,
+                ergebnis1: wert1,
+                ergebnis2: wert2,
+                ergebnis3: wert3
+            },
+            {
+                onConflict: "participant_id"
+            }
+        );
 
 
             if (error) {
