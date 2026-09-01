@@ -9,11 +9,15 @@ const SUPABASE_ANON_KEY =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
-// Supabase Verbindung
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+// ==========================================
+// SUPABASE VERBINDUNG
+// ==========================================
+
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
 
 
 // ==========================================
@@ -28,7 +32,8 @@ async function ergebnisseLaden() {
         );
 
 
-    // Wir sind nicht auf der Ergebnisseite
+    // Wenn keine Tabelle vorhanden ist,
+    // sind wir nicht auf der Ergebnisseite.
     if (!tabelle) {
         return;
     }
@@ -51,6 +56,10 @@ async function ergebnisseLaden() {
             `);
 
 
+    // ==========================================
+    // FEHLER
+    // ==========================================
+
     if (error) {
 
         console.error(
@@ -61,11 +70,12 @@ async function ergebnisseLaden() {
 
         tabelle.innerHTML = `
             <tr>
-                <td colspan="5">
+                <td colspan="7">
                     Fehler beim Laden der Ergebnisse.
                 </td>
             </tr>
         `;
+
 
         return;
     }
@@ -86,8 +96,11 @@ async function ergebnisseLaden() {
 
 
                 return {
+
                     ...eintrag,
+
                     gesamt: gesamt
+
                 };
 
             }
@@ -96,7 +109,7 @@ async function ergebnisseLaden() {
 
     // ==========================================
     // SORTIEREN
-    // Höchstes Gesamtergebnis zuerst
+    // HÖCHSTES ERGEBNIS ZUERST
     // ==========================================
 
     ergebnisse.sort(
@@ -108,7 +121,10 @@ async function ergebnisseLaden() {
     );
 
 
-    // Tabelle leeren
+    // ==========================================
+    // TABELLE LEEREN
+    // ==========================================
+
     tabelle.innerHTML = "";
 
 
@@ -127,43 +143,92 @@ async function ergebnisseLaden() {
                 index + 1;
 
 
+            // ==========================================
+            // ZAHLEN FORMATIEREN
+            // ==========================================
+
+            const wert1 =
+                Number(eintrag.ergebnis1)
+                    .toFixed(1)
+                    .replace(".", ",");
+
+
+            const wert2 =
+                Number(eintrag.ergebnis2)
+                    .toFixed(1)
+                    .replace(".", ",");
+
+
+            const wert3 =
+                Number(eintrag.ergebnis3)
+                    .toFixed(1)
+                    .replace(".", ",");
+
+
+            const gesamt =
+                Number(eintrag.gesamt)
+                    .toFixed(1)
+                    .replace(".", ",");
+
+
+            // ==========================================
+            // VOR- UND NACHNAME
+            // ==========================================
+
+            const vorname =
+                eintrag.participants?.vorname
+                || "";
+
+
+            const nachname =
+                eintrag.participants?.nachname
+                || "";
+
+
+            // ==========================================
+            // ZEILE ERSTELLEN
+            // ==========================================
+
             zeile.innerHTML = `
+
                 <td>
                     <strong>
                         ${platz}.
                     </strong>
                 </td>
 
-                <td>
-                    ${eintrag.participants.vorname}
-                    ${eintrag.participants.nachname}
-                </td>
 
                 <td>
-                    ${Number(eintrag.ergebnis1)
-                        .toFixed(1)
-                        .replace(".", ",")}
+                    ${vorname}
                 </td>
 
-                <td>
-                    ${Number(eintrag.ergebnis2)
-                        .toFixed(1)
-                        .replace(".", ",")}
-                </td>
 
                 <td>
-                    ${Number(eintrag.ergebnis3)
-                        .toFixed(1)
-                        .replace(".", ",")}
+                    ${nachname}
                 </td>
+
+
+                <td>
+                    ${wert1}
+                </td>
+
+
+                <td>
+                    ${wert2}
+                </td>
+
+
+                <td>
+                    ${wert3}
+                </td>
+
 
                 <td>
                     <strong>
-                        ${eintrag.gesamt
-                            .toFixed(1)
-                            .replace(".", ",")}
+                        ${gesamt}
                     </strong>
                 </td>
+
             `;
 
 
@@ -182,11 +247,15 @@ async function ergebnisseLaden() {
     if (ergebnisse.length === 0) {
 
         tabelle.innerHTML = `
+
             <tr>
-                <td colspan="6">
+
+                <td colspan="7">
                     Noch keine Ergebnisse vorhanden.
                 </td>
+
             </tr>
+
         `;
 
     }
@@ -203,9 +272,6 @@ ergebnisseLaden();
 
 // ==========================================
 // AUTOMATISCHE AKTUALISIERUNG
-//
-// Vorerst alle 5 Sekunden.
-// Supabase Realtime bauen wir später ein.
 // ==========================================
 
 setInterval(
