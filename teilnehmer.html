@@ -148,132 +148,31 @@
 
 
         <!-- ==========================================
-             TEILNEHMER BEARBEITEN
+             TEILNEHMERLISTE
              ========================================== -->
 
         <section class="card">
 
             <h2>
-                Teilnehmer bearbeiten
+                Teilnehmer
             </h2>
 
 
             <p>
-                Teilnehmer auswählen und Namen ändern.
+                Vorhandene Teilnehmer verwalten.
             </p>
 
 
-            <div class="form-group">
+            <div
+                id="teilnehmer-liste"
+                class="teilnehmer-liste"
+            >
 
-                <label for="teilnehmer-bearbeiten">
-
-                    Teilnehmer auswählen
-
-                </label>
-
-
-                <select
-                    id="teilnehmer-bearbeiten"
-                >
-
-                    <option value="">
-                        Bitte Teilnehmer auswählen
-                    </option>
-
-                </select>
+                <p>
+                    Teilnehmer werden geladen ...
+                </p>
 
             </div>
-
-
-
-            <form id="teilnehmer-bearbeiten-form">
-
-
-                <div class="form-group">
-
-                    <label for="bearbeiten-vorname">
-                        Vorname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="bearbeiten-vorname"
-                        placeholder="Vorname"
-                        required
-                    >
-
-                </div>
-
-
-
-                <div class="form-group">
-
-                    <label for="bearbeiten-nachname">
-                        Nachname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="bearbeiten-nachname"
-                        placeholder="Nachname"
-                        required
-                    >
-
-                </div>
-
-
-
-                <button
-                    type="submit"
-                >
-                    Änderungen speichern
-                </button>
-
-
-            </form>
-
-
-            <div
-                id="bearbeiten-meldung"
-                class="meldung"
-            ></div>
-
-
-        </section>
-
-
-
-        <!-- ==========================================
-             TEILNEHMER LÖSCHEN
-             ========================================== -->
-
-        <section class="card">
-
-            <h2>
-                Teilnehmer löschen
-            </h2>
-
-
-            <p>
-                Der Teilnehmer und alle zugehörigen
-                Ergebnisse werden endgültig gelöscht.
-            </p>
-
-
-            <button
-                type="button"
-                id="teilnehmer-loeschen"
-            >
-                Teilnehmer + Ergebnisse löschen
-            </button>
-
-
-            <div
-                id="loeschen-meldung"
-                class="meldung"
-            ></div>
 
 
         </section>
@@ -315,7 +214,7 @@
          ========================================== -->
 
     <script
-        src="app.js?v=4"
+        src="app.js?v=5"
     ></script>
 
 
