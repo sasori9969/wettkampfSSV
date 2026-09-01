@@ -1,172 +1,231 @@
-```html
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Wettkampfauswertung</title>
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
-    <link rel="stylesheet" href="style.css">
+    <title>Teilnehmer erfassen</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
 </head>
+
 
 <body>
 
+
+    <!-- ==========================================
+         KOPFBEREICH
+         ========================================== -->
+
     <header>
-        <h1>Wettkampfauswertung</h1>
+
+        <h1>
+            Wettkampfauswertung
+        </h1>
+
 
         <nav>
-            <a href="index.html">Eingabe</a>
-            <a href="ergebnisse.html">Ergebnisse</a>
+
+            <a href="index.html">
+                Teilnehmer
+            </a>
+
+            <a href="ergebnisse-eingabe.html">
+                Ergebnisse erfassen
+            </a>
+
+            <a href="ergebnisse.html">
+                Ergebnisse
+            </a>
+
         </nav>
+
     </header>
 
 
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
     <main>
 
-        <!-- Teilnehmer -->
+
         <section class="card">
 
-            <h2>Teilnehmer erfassen</h2>
+            <h2>
+                Teilnehmer erfassen
+            </h2>
+
 
             <form id="teilnehmer-form">
 
+
+                <!-- Vorname -->
+
                 <div class="form-group">
-                    <label for="vorname">Vorname</label>
+
+                    <label for="vorname">
+                        Vorname
+                    </label>
+
+
                     <input
                         type="text"
                         id="vorname"
                         name="vorname"
+                        autocomplete="given-name"
                         required
                     >
+
                 </div>
 
+
+
+                <!-- Nachname -->
+
                 <div class="form-group">
-                    <label for="nachname">Nachname</label>
+
+                    <label for="nachname">
+                        Nachname
+                    </label>
+
+
                     <input
                         type="text"
                         id="nachname"
                         name="nachname"
+                        autocomplete="family-name"
                         required
                     >
+
                 </div>
+
+
+
+                <!-- Speichern -->
 
                 <button type="submit">
                     Teilnehmer speichern
                 </button>
 
+
             </form>
 
-            <p id="teilnehmer-meldung" class="meldung"></p>
+
+            <!-- Rückmeldung -->
+
+            <p
+                id="teilnehmer-meldung"
+                class="meldung"
+            ></p>
+
 
         </section>
 
 
-        <!-- Ergebnisse -->
-        <section class="card">
 
-            <h2>Ergebnisse erfassen</h2>
+        <!-- ==========================================
+             WEITER
+             ========================================== -->
 
-            <form id="ergebnis-form">
-
-                <div class="form-group">
-                    <label for="teilnehmer">
-                        Teilnehmer
-                    </label>
-
-                    <select id="teilnehmer" required>
-                        <option value="">
-                            Bitte Teilnehmer auswählen
-                        </option>
-                    </select>
-                </div>
-
-
-                <div class="form-group">
-                    <label for="ergebnis1">
-                        Ergebnis 1
-                    </label>
-
-                    <input
-                        type="text"
-                        id="ergebnis1"
-                        inputmode="decimal"
-                        placeholder="z. B. 12,5"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="ergebnis2">
-                        Ergebnis 2
-                    </label>
-
-                    <input
-                        type="text"
-                        id="ergebnis2"
-                        inputmode="decimal"
-                        placeholder="z. B. 13,2"
-                        required
-                    >
-                </div>
-
-
-                <div class="form-group">
-                    <label for="ergebnis3">
-                        Ergebnis 3
-                    </label>
-
-                    <input
-                        type="text"
-                        id="ergebnis3"
-                        inputmode="decimal"
-                        placeholder="z. B. 11,8"
-                        required
-                    >
-                </div>
-
-
-                <button type="submit">
-                    Ergebnisse speichern
-                </button>
-
-            </form>
-
-            <p id="ergebnis-meldung" class="meldung"></p>
-
-        </section>
-
-
-        <!-- Link zur öffentlichen Ergebnisliste -->
         <section class="card ergebnis-link">
 
-            <h2>Ergebnisliste</h2>
+            <h2>
+                Ergebnisse erfassen
+            </h2>
+
 
             <p>
-                Die bereits gespeicherten Ergebnisse findest du hier:
+                Hier kannst du die drei Ergebnisse
+                eines Teilnehmers eingeben.
             </p>
 
-            <a class="button" href="ergebnisse.html">
+
+            <a
+                class="button"
+                href="ergebnisse-eingabe.html"
+            >
+                Ergebnisse erfassen
+            </a>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             ERGEBNISLISTE
+             ========================================== -->
+
+        <section class="card ergebnis-link">
+
+            <h2>
+                Ergebnisliste
+            </h2>
+
+
+            <p>
+                Bereits gespeicherte Ergebnisse anzeigen.
+            </p>
+
+
+            <a
+                class="button"
+                href="ergebnisse.html"
+            >
                 Ergebnisse anzeigen
             </a>
 
         </section>
 
+
     </main>
 
 
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
     <footer>
-        <p>Wettkampfauswertung – Vereinsseite</p>
+
+        <p>
+            Wettkampfauswertung – Vereinsseite
+        </p>
+
     </footer>
 
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <!-- Eigene Anwendung -->
-    <script src="app.js"></script>
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+
+    <!-- ==========================================
+         ANWENDUNG
+         ========================================== -->
+
+    <script
+        src="app.js?v=2"
+    ></script>
+
 
 </body>
+
 </html>
-```
