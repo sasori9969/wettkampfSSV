@@ -184,6 +184,104 @@ if (teilnehmerForm) {
 
 }
 
+```javascript
+// ==========================================
+// VORHANDENE ERGEBNISSE LADEN
+// ==========================================
+
+async function vorhandeneErgebnisseLaden() {
+
+    const participantId =
+        document.getElementById("teilnehmer").value;
+
+
+    const ergebnis1 =
+        document.getElementById("ergebnis1");
+
+    const ergebnis2 =
+        document.getElementById("ergebnis2");
+
+    const ergebnis3 =
+        document.getElementById("ergebnis3");
+
+
+    // Wenn kein Teilnehmer ausgewählt ist,
+    // Felder leeren.
+    if (!participantId) {
+
+        ergebnis1.value = "";
+        ergebnis2.value = "";
+        ergebnis3.value = "";
+
+        return;
+    }
+
+
+    const { data, error } =
+        await supabaseClient
+
+            .from("results")
+
+            .select(
+                "ergebnis1, ergebnis2, ergebnis3"
+            )
+
+            .eq(
+                "participant_id",
+                participantId
+            )
+
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "Fehler beim Laden der Ergebnisse:",
+            error
+        );
+
+        return;
+    }
+
+
+    // ==========================================
+    // KEINE ERGEBNISSE VORHANDEN
+    // ==========================================
+
+    if (!data) {
+
+        ergebnis1.value = "";
+        ergebnis2.value = "";
+        ergebnis3.value = "";
+
+        return;
+    }
+
+
+    // ==========================================
+    // VORHANDENE ERGEBNISSE EINTRAGEN
+    // ==========================================
+
+    ergebnis1.value =
+        Number(data.ergebnis1)
+            .toFixed(1)
+            .replace(".", ",");
+
+
+    ergebnis2.value =
+        Number(data.ergebnis2)
+            .toFixed(1)
+            .replace(".", ",");
+
+
+    ergebnis3.value =
+        Number(data.ergebnis3)
+            .toFixed(1)
+            .replace(".", ",");
+
+}
+```
 
 // ==========================================
 // ERGEBNISSE SPEICHERN
