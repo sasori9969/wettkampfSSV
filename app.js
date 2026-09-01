@@ -9,11 +9,12 @@ const SUPABASE_ANON_KEY =
     "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL";
 
 
-// Supabase Verbindung
-const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_ANON_KEY
-);
+const supabaseClient =
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
+
 
 
 // ==========================================
@@ -22,13 +23,12 @@ const supabaseClient = supabase.createClient(
 
 function zahlUmwandeln(wert) {
 
-    wert = wert.trim();
-
-    // Deutsches Komma in Punkt umwandeln
     wert = wert.replace(",", ".");
 
     return parseFloat(wert);
+
 }
+
 
 
 // ==========================================
@@ -37,27 +37,64 @@ function zahlUmwandeln(wert) {
 
 async function teilnehmerLaden() {
 
-    const select =
+    const selects = [];
+
+
+    const ergebnisSelect =
         document.getElementById("teilnehmer");
 
-    // Wenn kein Teilnehmer-Auswahlfeld
-    // vorhanden ist, sind wir nicht auf
-    // der Ergebnisseingabe-Seite.
-    if (!select) {
-        return;
+
+    const bearbeitenSelect =
+        document.getElementById(
+            "teilnehmer-bearbeiten"
+        );
+
+
+    if (ergebnisSelect) {
+
+        selects.push(ergebnisSelect);
+
     }
 
 
-    const { data, error } =
-        await supabaseClient
+    if (bearbeitenSelect) {
 
-            .from("participants")
+        selects.push(bearbeitenSelect);
 
-            .select("*")
+    }
 
-            .order("nachname", {
+
+    if (selects.length === 0) {
+
+        return;
+
+    }
+
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("participants")
+
+        .select("*")
+
+        .order(
+            "nachname",
+            {
                 ascending: true
-            });
+            }
+        )
+
+        .order(
+            "vorname",
+            {
+                ascending: true
+            }
+        );
+
 
 
     if (error) {
@@ -68,55 +105,129 @@ async function teilnehmerLaden() {
         );
 
         return;
+
     }
 
 
-    // Auswahlfeld zurücksetzen
-    select.innerHTML = "";
+
+    // ==========================================
+    // ERGEBNIS-EINGABE
+    // ==========================================
+
+    if (ergebnisSelect) {
+
+        ergebnisSelect.innerHTML = "";
 
 
-    // Standardauswahl
-    const standardOption =
-        document.createElement("option");
+        const standardOption =
+            document.createElement("option");
 
 
-    standardOption.value = "";
-
-    standardOption.textContent =
-        "Bitte Teilnehmer auswählen";
+        standardOption.value = "";
 
 
-    select.appendChild(
-        standardOption
-    );
+        standardOption.textContent =
+            "Bitte Teilnehmer auswählen";
 
 
-    // Teilnehmer einfügen
-    data.forEach(
-        function(teilnehmer) {
-
-            const option =
-                document.createElement("option");
+        ergebnisSelect.appendChild(
+            standardOption
+        );
 
 
-            option.value =
-                teilnehmer.id;
+        data.forEach(
+            function(teilnehmer) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
 
 
-            option.textContent =
-                teilnehmer.vorname +
-                " " +
-                teilnehmer.nachname;
+                option.value =
+                    teilnehmer.id;
 
 
-            select.appendChild(
-                option
-            );
+                option.textContent =
+                    teilnehmer.vorname +
+                    " " +
+                    teilnehmer.nachname;
 
-        }
-    );
+
+                ergebnisSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
+
+
+
+    // ==========================================
+    // TEILNEHMER BEARBEITEN
+    // ==========================================
+
+    if (bearbeitenSelect) {
+
+        bearbeitenSelect.innerHTML = "";
+
+
+        const standardOption =
+            document.createElement("option");
+
+
+        standardOption.value = "";
+
+
+        standardOption.textContent =
+            "Bitte Teilnehmer auswählen";
+
+
+        bearbeitenSelect.appendChild(
+            standardOption
+        );
+
+
+        data.forEach(
+            function(teilnehmer) {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    teilnehmer.id;
+
+
+                option.textContent =
+                    teilnehmer.vorname +
+                    " " +
+                    teilnehmer.nachname;
+
+
+                option.dataset.vorname =
+                    teilnehmer.vorname;
+
+
+                option.dataset.nachname =
+                    teilnehmer.nachname;
+
+
+                bearbeitenSelect.appendChild(
+                    option
+                );
+
+            }
+        );
+
+    }
 
 }
+
 
 
 // ==========================================
@@ -140,19 +251,23 @@ if (teilnehmerForm) {
 
             const vorname =
                 document
-                    .getElementById("vorname")
+                    .getElementById(
+                        "vorname"
+                    )
                     .value
                     .trim();
 
 
             const nachname =
                 document
-                    .getElementById("nachname")
+                    .getElementById(
+                        "nachname"
+                    )
                     .value
                     .trim();
 
 
-            // Eingaben prüfen
+
             if (!vorname || !nachname) {
 
                 alert(
@@ -160,21 +275,24 @@ if (teilnehmerForm) {
                 );
 
                 return;
+
             }
 
 
-            // Teilnehmer speichern
-            const { error } =
-                await supabaseClient
 
-                    .from("participants")
+            const {
+                error
+            } = await supabaseClient
 
-                    .insert([
-                        {
-                            vorname: vorname,
-                            nachname: nachname
-                        }
-                    ]);
+                .from("participants")
+
+                .insert([
+                    {
+                        vorname: vorname,
+                        nachname: nachname
+                    }
+                ]);
+
 
 
             if (error) {
@@ -190,22 +308,22 @@ if (teilnehmerForm) {
                 ).textContent =
                     "Fehler beim Speichern.";
 
+
                 return;
+
             }
 
 
-            // Erfolgsmeldung
+
             document.getElementById(
                 "teilnehmer-meldung"
             ).textContent =
                 "Teilnehmer wurde gespeichert.";
 
 
-            // Formular leeren
             teilnehmerForm.reset();
 
 
-            // Teilnehmerliste aktualisieren
             await teilnehmerLaden();
 
         }
@@ -214,16 +332,352 @@ if (teilnehmerForm) {
 }
 
 
+
+// ==========================================
+// TEILNEHMER AUSWÄHLEN
+// ==========================================
+
+const bearbeitenSelect =
+    document.getElementById(
+        "teilnehmer-bearbeiten"
+    );
+
+
+if (bearbeitenSelect) {
+
+    bearbeitenSelect.addEventListener(
+        "change",
+        function() {
+
+            const option =
+                bearbeitenSelect
+                    .selectedOptions[0];
+
+
+            const vornameInput =
+                document.getElementById(
+                    "bearbeiten-vorname"
+                );
+
+
+            const nachnameInput =
+                document.getElementById(
+                    "bearbeiten-nachname"
+                );
+
+
+
+            if (
+                !option ||
+                !option.value
+            ) {
+
+                vornameInput.value = "";
+
+                nachnameInput.value = "";
+
+                return;
+
+            }
+
+
+
+            vornameInput.value =
+                option.dataset.vorname || "";
+
+
+            nachnameInput.value =
+                option.dataset.nachname || "";
+
+        }
+    );
+
+}
+
+
+
+// ==========================================
+// TEILNEHMER BEARBEITEN
+// ==========================================
+
+const bearbeitenForm =
+    document.getElementById(
+        "teilnehmer-bearbeiten-form"
+    );
+
+
+if (bearbeitenForm) {
+
+    bearbeitenForm.addEventListener(
+        "submit",
+        async function(event) {
+
+            event.preventDefault();
+
+
+            const participantId =
+                bearbeitenSelect.value;
+
+
+            const vorname =
+                document
+                    .getElementById(
+                        "bearbeiten-vorname"
+                    )
+                    .value
+                    .trim();
+
+
+            const nachname =
+                document
+                    .getElementById(
+                        "bearbeiten-nachname"
+                    )
+                    .value
+                    .trim();
+
+
+
+            if (!participantId) {
+
+                alert(
+                    "Bitte zuerst einen Teilnehmer auswählen."
+                );
+
+                return;
+
+            }
+
+
+
+            if (!vorname || !nachname) {
+
+                alert(
+                    "Bitte Vor- und Nachname eingeben."
+                );
+
+                return;
+
+            }
+
+
+
+            const {
+                error
+            } = await supabaseClient
+
+                .from("participants")
+
+                .update({
+                    vorname: vorname,
+                    nachname: nachname
+                })
+
+                .eq(
+                    "id",
+                    participantId
+                );
+
+
+
+            if (error) {
+
+                console.error(
+                    "Fehler beim Ändern des Teilnehmers:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "bearbeiten-meldung"
+                ).textContent =
+                    "Fehler beim Ändern des Teilnehmers.";
+
+
+                return;
+
+            }
+
+
+
+            document.getElementById(
+                "bearbeiten-meldung"
+            ).textContent =
+                "Teilnehmer wurde geändert.";
+
+
+            await teilnehmerLaden();
+
+
+            bearbeitenSelect.value =
+                participantId;
+
+
+            const option =
+                bearbeitenSelect
+                    .selectedOptions[0];
+
+
+            if (option) {
+
+                option.dataset.vorname =
+                    vorname;
+
+                option.dataset.nachname =
+                    nachname;
+
+            }
+
+        }
+    );
+
+}
+
+
+
+// ==========================================
+// TEILNEHMER LÖSCHEN
+// ==========================================
+
+const loeschenButton =
+    document.getElementById(
+        "teilnehmer-loeschen"
+    );
+
+
+if (loeschenButton) {
+
+    loeschenButton.addEventListener(
+        "click",
+        async function() {
+
+            const participantId =
+                bearbeitenSelect.value;
+
+
+
+            if (!participantId) {
+
+                alert(
+                    "Bitte zuerst einen Teilnehmer auswählen."
+                );
+
+                return;
+
+            }
+
+
+
+            const option =
+                bearbeitenSelect
+                    .selectedOptions[0];
+
+
+            const name =
+                option
+                    ? option.textContent
+                    : "Dieser Teilnehmer";
+
+
+
+            const bestaetigt =
+                confirm(
+                    "ACHTUNG!\n\n" +
+                    "Soll \"" +
+                    name +
+                    "\" wirklich gelöscht werden?\n\n" +
+                    "Dabei werden auch ALLE Ergebnisse " +
+                    "dieses Teilnehmers endgültig gelöscht."
+                );
+
+
+
+            if (!bestaetigt) {
+
+                return;
+
+            }
+
+
+
+            const {
+                error
+            } = await supabaseClient
+
+                .from("participants")
+
+                .delete()
+
+                .eq(
+                    "id",
+                    participantId
+                );
+
+
+
+            if (error) {
+
+                console.error(
+                    "Fehler beim Löschen:",
+                    error
+                );
+
+
+                document.getElementById(
+                    "loeschen-meldung"
+                ).textContent =
+                    "Fehler beim Löschen des Teilnehmers.";
+
+
+                return;
+
+            }
+
+
+
+            document.getElementById(
+                "loeschen-meldung"
+            ).textContent =
+                "Teilnehmer und alle zugehörigen " +
+                "Ergebnisse wurden gelöscht.";
+
+
+
+            document.getElementById(
+                "bearbeiten-vorname"
+            ).value = "";
+
+
+            document.getElementById(
+                "bearbeiten-nachname"
+            ).value = "";
+
+
+
+            await teilnehmerLaden();
+
+
+            bearbeitenSelect.value = "";
+
+        }
+    );
+
+}
+
+
+
 // ==========================================
 // VORHANDENE ERGEBNISSE LADEN
 // ==========================================
 
 async function vorhandeneErgebnisseLaden() {
 
-    const select =
-        document.getElementById(
-            "teilnehmer"
-        );
+    const participantId =
+        document
+            .getElementById(
+                "teilnehmer"
+            )
+            .value;
 
 
     const ergebnis1 =
@@ -244,49 +698,39 @@ async function vorhandeneErgebnisseLaden() {
         );
 
 
-    // Sicherheitsprüfung
-    if (
-        !select ||
-        !ergebnis1 ||
-        !ergebnis2 ||
-        !ergebnis3
-    ) {
 
-        return;
-    }
-
-
-    const participantId =
-        select.value;
-
-
-    // Kein Teilnehmer ausgewählt
     if (!participantId) {
 
         ergebnis1.value = "";
+
         ergebnis2.value = "";
+
         ergebnis3.value = "";
 
         return;
+
     }
 
 
-    // Vorhandene Ergebnisse laden
-    const { data, error } =
-        await supabaseClient
 
-            .from("results")
+    const {
+        data,
+        error
+    } = await supabaseClient
 
-            .select(
-                "ergebnis1, ergebnis2, ergebnis3"
-            )
+        .from("results")
 
-            .eq(
-                "participant_id",
-                participantId
-            )
+        .select(
+            "ergebnis1, ergebnis2, ergebnis3"
+        )
 
-            .maybeSingle();
+        .eq(
+            "participant_id",
+            participantId
+        )
+
+        .maybeSingle();
+
 
 
     if (error) {
@@ -297,43 +741,54 @@ async function vorhandeneErgebnisseLaden() {
         );
 
         return;
+
     }
 
 
-    // Keine Ergebnisse vorhanden
+
     if (!data) {
 
         ergebnis1.value = "";
+
         ergebnis2.value = "";
+
         ergebnis3.value = "";
 
         return;
+
     }
 
 
-    // Ergebnisse in Felder schreiben
+
     ergebnis1.value =
-        Number(data.ergebnis1)
+        Number(
+            data.ergebnis1
+        )
             .toFixed(1)
             .replace(".", ",");
 
 
     ergebnis2.value =
-        Number(data.ergebnis2)
+        Number(
+            data.ergebnis2
+        )
             .toFixed(1)
             .replace(".", ",");
 
 
     ergebnis3.value =
-        Number(data.ergebnis3)
+        Number(
+            data.ergebnis3
+        )
             .toFixed(1)
-            .replace(".", ",");
+            .replace(".", "");
 
 }
 
 
+
 // ==========================================
-// TEILNEHMER AUSWAHL GEÄNDERT
+// TEILNEHMER AUSWAHL ERGEBNISSE
 // ==========================================
 
 const teilnehmerSelect =
@@ -350,6 +805,7 @@ if (teilnehmerSelect) {
     );
 
 }
+
 
 
 // ==========================================
@@ -371,12 +827,14 @@ if (ergebnisForm) {
             event.preventDefault();
 
 
+
             const participantId =
                 document
                     .getElementById(
                         "teilnehmer"
                     )
                     .value;
+
 
 
             const wert1 =
@@ -409,7 +867,7 @@ if (ergebnisForm) {
                 );
 
 
-            // Teilnehmer prüfen
+
             if (!participantId) {
 
                 alert(
@@ -417,10 +875,11 @@ if (ergebnisForm) {
                 );
 
                 return;
+
             }
 
 
-            // Zahlen prüfen
+
             if (
                 Number.isNaN(wert1) ||
                 Number.isNaN(wert2) ||
@@ -432,40 +891,39 @@ if (ergebnisForm) {
                 );
 
                 return;
+
             }
 
 
-            // ==========================================
-            // ERGEBNISSE SPEICHERN ODER AKTUALISIEREN
-            // ==========================================
 
-            const { error } =
-                await supabaseClient
+            const {
+                error
+            } = await supabaseClient
 
-                    .from("results")
+                .from("results")
 
-                    .upsert(
-                        {
-                            participant_id:
-                                participantId,
+                .upsert(
+                    {
+                        participant_id:
+                            participantId,
 
-                            ergebnis1:
-                                wert1,
+                        ergebnis1:
+                            wert1,
 
-                            ergebnis2:
-                                wert2,
+                        ergebnis2:
+                            wert2,
 
-                            ergebnis3:
-                                wert3
-                        },
-                        {
-                            onConflict:
-                                "participant_id"
-                        }
-                    );
+                        ergebnis3:
+                            wert3
+                    },
+                    {
+                        onConflict:
+                            "participant_id"
+                    }
+                );
 
 
-            // Fehler
+
             if (error) {
 
                 console.error(
@@ -479,30 +937,23 @@ if (ergebnisForm) {
                 ).textContent =
                     "Fehler beim Speichern.";
 
+
                 return;
+
             }
 
 
-            // Erfolgsmeldung
+
             document.getElementById(
                 "ergebnis-meldung"
             ).textContent =
                 "Ergebnisse wurden gespeichert.";
 
-
-            // ==========================================
-            // WICHTIG:
-            // Teilnehmer bleibt ausgewählt.
-            // Die gespeicherten Werte werden erneut
-            // aus der Datenbank geladen.
-            // ==========================================
-
-            await vorhandeneErgebnisseLaden();
-
         }
     );
 
 }
+
 
 
 // ==========================================
