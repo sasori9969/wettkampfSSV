@@ -1,5 +1,11 @@
 // ==========================================
-// SUPABASE EINSTELLUNGEN
+// SSV 1928 Sulzbach e.V.
+// WETTKAMPF.JS
+// ==========================================
+
+
+// ==========================================
+// SUPABASE
 // ==========================================
 
 const SUPABASE_URL =
@@ -16,7 +22,7 @@ const supabaseClient =
 
 
 // ==========================================
-// WETTKAMPF-ID
+// WETTKAMPF-ID AUS URL
 // ==========================================
 
 const urlParameter =
@@ -40,10 +46,31 @@ let aktuelleTeams = [];
 
 
 // ==========================================
+// HILFSFUNKTION
+// ==========================================
+
+function element(id) {
+
+    return document.getElementById(id);
+
+}
+
+
+// ==========================================
 // WETTKAMPF LADEN
 // ==========================================
 
 async function wettkampfLaden() {
+
+    if (!wettkampfId) {
+
+        alert(
+            "Kein Wettkampf ausgewählt."
+        );
+
+        return false;
+    }
+
 
     const {
         data,
@@ -51,7 +78,10 @@ async function wettkampfLaden() {
     } = await supabaseClient
         .from("competitions")
         .select("*")
-        .eq("id", wettkampfId)
+        .eq(
+            "id",
+            wettkampfId
+        )
         .single();
 
 
@@ -74,37 +104,77 @@ async function wettkampfLaden() {
         data;
 
 
-    document.getElementById(
-        "wettkampf-name"
-    ).textContent =
-        data.name;
-
-
-    const datum =
-        new Date(
-            data.datum + "T00:00:00"
+    const nameElement =
+        element(
+            "wettkampf-name"
         );
 
 
-    document.getElementById(
-        "wettkampf-info"
-    ).textContent =
-        datum.toLocaleDateString("de-DE") +
-        " · " +
-        data.anzahl_ergebnisse +
-        " Ergebnisse · " +
-        data.teamgroesse +
-        " Starter pro Team";
+    if (nameElement) {
+
+        nameElement.textContent =
+            data.name;
+
+    }
 
 
-    document.getElementById(
-        "wettkampf-status"
-    ).textContent =
-        "Status: " +
-        data.status;
+    const infoElement =
+        element(
+            "wettkampf-info"
+        );
+
+
+    if (infoElement) {
+
+        let datumText =
+            data.datum || "";
+
+
+        if (data.datum) {
+
+            const datum =
+                new Date(
+                    data.datum +
+                    "T00:00:00"
+                );
+
+
+            datumText =
+                datum.toLocaleDateString(
+                    "de-DE"
+                );
+
+        }
+
+
+        infoElement.textContent =
+            datumText +
+            " · " +
+            data.anzahl_ergebnisse +
+            " Ergebnisse · " +
+            data.teamgroesse +
+            " Starter pro Team";
+
+    }
+
+
+    const statusElement =
+        element(
+            "wettkampf-status"
+        );
+
+
+    if (statusElement) {
+
+        statusElement.textContent =
+            "Status: " +
+            data.status;
+
+    }
 
 
     return true;
+
 }
 
 
@@ -119,8 +189,13 @@ async function teamsLaden() {
         error
     } = await supabaseClient
         .from("teams")
-        .select("*")
-        .eq("competition_id", wettkampfId)
+        .select(
+            "id, competition_id, name, created_at"
+        )
+        .eq(
+            "competition_id",
+            wettkampfId
+        )
         .order(
             "name",
             {
@@ -137,6 +212,7 @@ async function teamsLaden() {
         );
 
         return;
+
     }
 
 
@@ -147,17 +223,18 @@ async function teamsLaden() {
     teamsAuswahlAktualisieren();
 
     await teamAnzeigeLaden();
+
 }
 
 
 // ==========================================
-// TEAM-AUSWAHL AKTUALISIEREN
+// TEAM-AUSWAHL
 // ==========================================
 
 function teamsAuswahlAktualisieren() {
 
     const select =
-        document.getElementById(
+        element(
             "starter-team"
         );
 
@@ -165,10 +242,12 @@ function teamsAuswahlAktualisieren() {
     if (!select) {
 
         return;
+
     }
 
 
-    select.innerHTML = "";
+    select.innerHTML =
+        "";
 
 
     const einzelOption =
@@ -224,7 +303,7 @@ function teamsAuswahlAktualisieren() {
 async function teamAnzeigeLaden() {
 
     const liste =
-        document.getElementById(
+        element(
             "teams-liste"
         );
 
@@ -232,10 +311,12 @@ async function teamAnzeigeLaden() {
     if (!liste) {
 
         return;
+
     }
 
 
-    liste.innerHTML = "";
+    liste.innerHTML =
+        "<p>Teams werden geladen ...</p>";
 
 
     if (
@@ -246,28 +327,18 @@ async function teamAnzeigeLaden() {
             "<p>Noch keine Teams vorhanden.</p>";
 
         return;
+
     }
 
-
-    // ======================================
-    // ALLE STARTS DES WETTKAMPFS LADEN
-    // ======================================
 
     const {
         data: starts,
         error
     } = await supabaseClient
         .from("starts")
-        .select(`
-            id,
-            participant_id,
-            team_id,
-            ak,
-            participants (
-                vorname,
-                nachname
-            )
-        `)
+        .select(
+            "id, participant_id, team_id, ak, created_at"
+        )
         .eq(
             "competition_id",
             wettkampfId
@@ -283,7 +354,7 @@ async function teamAnzeigeLaden() {
     if (error) {
 
         console.error(
-            "Fehler beim Laden der Teamstarter:",
+            "Fehler beim Laden der Teamstarts:",
             error
         );
 
@@ -291,6 +362,7 @@ async function teamAnzeigeLaden() {
             "<p>Die Teamstarter konnten nicht geladen werden.</p>";
 
         return;
+
     }
 
 
@@ -298,47 +370,79 @@ async function teamAnzeigeLaden() {
         starts || [];
 
 
-    // ======================================
-    // TEAMS AUFBAUEN
-    // ======================================
+    const teilnehmerIds =
+        [
+            ...new Set(
+                alleStarts.map(
+                    start =>
+                        start.participant_id
+                )
+            )
+        ];
+
+
+    let teilnehmer =
+        [];
+
+
+    if (
+        teilnehmerIds.length > 0
+    ) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("participants")
+            .select(
+                "id, vorname, nachname"
+            )
+            .in(
+                "id",
+                teilnehmerIds
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Teilnehmer:",
+                error
+            );
+
+            return;
+
+        }
+
+
+        teilnehmer =
+            data || [];
+
+    }
+
 
     aktuelleTeams.forEach(
         function(team) {
 
             const teamStarts =
                 alleStarts.filter(
-                    function(start) {
-
-                        return (
-                            start.team_id ===
-                            team.id
-                        );
-
-                    }
+                    start =>
+                        start.team_id ===
+                        team.id
                 );
 
 
             const regulareStarts =
                 teamStarts.filter(
-                    function(start) {
-
-                        return (
-                            start.ak === false
-                        );
-
-                    }
+                    start =>
+                        start.ak === false
                 );
 
 
             const akStarts =
                 teamStarts.filter(
-                    function(start) {
-
-                        return (
-                            start.ak === true
-                        );
-
-                    }
+                    start =>
+                        start.ak === true
                 );
 
 
@@ -351,10 +455,6 @@ async function teamAnzeigeLaden() {
             box.className =
                 "wettkampf-eintrag";
 
-
-            // ==================================
-            // TEAMKOPF
-            // ==================================
 
             const titel =
                 document.createElement(
@@ -397,22 +497,22 @@ async function teamAnzeigeLaden() {
                 regulareStarts.length > 0
             ) {
 
-                const starterTitel =
+                const titelRegulaer =
                     document.createElement(
                         "strong"
                     );
 
 
-                starterTitel.textContent =
+                titelRegulaer.textContent =
                     "Reguläre Starter";
 
 
                 box.appendChild(
-                    starterTitel
+                    titelRegulaer
                 );
 
 
-                const ul =
+                const listeRegulaer =
                     document.createElement(
                         "ul"
                     );
@@ -421,19 +521,39 @@ async function teamAnzeigeLaden() {
                 regulareStarts.forEach(
                     function(start) {
 
+                        const person =
+                            teilnehmer.find(
+                                p =>
+                                    Number(p.id) ===
+                                    Number(
+                                        start.participant_id
+                                    )
+                            );
+
+
                         const li =
                             document.createElement(
                                 "li"
                             );
 
 
-                        li.textContent =
-                            start.participants.vorname +
-                            " " +
-                            start.participants.nachname;
+                        if (person) {
+
+                            li.textContent =
+                                person.vorname +
+                                " " +
+                                person.nachname;
+
+                        } else {
+
+                            li.textContent =
+                                "Teilnehmer #" +
+                                start.participant_id;
+
+                        }
 
 
-                        ul.appendChild(
+                        listeRegulaer.appendChild(
                             li
                         );
 
@@ -442,23 +562,7 @@ async function teamAnzeigeLaden() {
 
 
                 box.appendChild(
-                    ul
-                );
-
-            } else {
-
-                const leer =
-                    document.createElement(
-                        "p"
-                    );
-
-
-                leer.textContent =
-                    "Noch keine regulären Starter.";
-
-
-                box.appendChild(
-                    leer
+                    listeRegulaer
                 );
 
             }
@@ -472,22 +576,22 @@ async function teamAnzeigeLaden() {
                 akStarts.length > 0
             ) {
 
-                const akTitel =
+                const titelAK =
                     document.createElement(
                         "strong"
                     );
 
 
-                akTitel.textContent =
+                titelAK.textContent =
                     "AK-Starter";
 
 
                 box.appendChild(
-                    akTitel
+                    titelAK
                 );
 
 
-                const akListe =
+                const listeAK =
                     document.createElement(
                         "ul"
                     );
@@ -496,20 +600,41 @@ async function teamAnzeigeLaden() {
                 akStarts.forEach(
                     function(start) {
 
+                        const person =
+                            teilnehmer.find(
+                                p =>
+                                    Number(p.id) ===
+                                    Number(
+                                        start.participant_id
+                                    )
+                            );
+
+
                         const li =
                             document.createElement(
                                 "li"
                             );
 
 
-                        li.textContent =
-                            start.participants.vorname +
-                            " " +
-                            start.participants.nachname +
-                            " · AK";
+                        if (person) {
+
+                            li.textContent =
+                                person.vorname +
+                                " " +
+                                person.nachname +
+                                " · AK";
+
+                        } else {
+
+                            li.textContent =
+                                "Teilnehmer #" +
+                                start.participant_id +
+                                " · AK";
+
+                        }
 
 
-                        akListe.appendChild(
+                        listeAK.appendChild(
                             li
                         );
 
@@ -518,7 +643,7 @@ async function teamAnzeigeLaden() {
 
 
                 box.appendChild(
-                    akListe
+                    listeAK
                 );
 
             }
@@ -575,7 +700,7 @@ async function teamAnzeigeLaden() {
 // ==========================================
 
 const teamForm =
-    document.getElementById(
+    element(
         "team-form"
     );
 
@@ -589,18 +714,27 @@ if (teamForm) {
             event.preventDefault();
 
 
+            const nameInput =
+                element(
+                    "team-name"
+                );
+
+
+            if (!nameInput) {
+
+                return;
+
+            }
+
+
             const name =
-                document
-                    .getElementById(
-                        "team-name"
-                    )
-                    .value
-                    .trim();
+                nameInput.value.trim();
 
 
             if (!name) {
 
                 return;
+
             }
 
 
@@ -627,19 +761,37 @@ if (teamForm) {
                 );
 
 
-                document.getElementById(
-                    "team-meldung"
-                ).textContent =
-                    "Fehler beim Anlegen des Teams.";
+                const meldung =
+                    element(
+                        "team-meldung"
+                    );
+
+
+                if (meldung) {
+
+                    meldung.textContent =
+                        "Fehler beim Anlegen des Teams.";
+
+                }
+
 
                 return;
+
             }
 
 
-            document.getElementById(
-                "team-meldung"
-            ).textContent =
-                "Team wurde angelegt.";
+            const meldung =
+                element(
+                    "team-meldung"
+                );
+
+
+            if (meldung) {
+
+                meldung.textContent =
+                    "Team wurde angelegt.";
+
+            }
 
 
             teamForm.reset();
@@ -676,19 +828,17 @@ async function teamLoeschen(
     if (!bestaetigung) {
 
         return;
+
     }
 
-
-    // ======================================
-    // STARTS VOM TEAM TRENNEN
-    // ======================================
 
     const {
         error: startError
     } = await supabaseClient
         .from("starts")
         .update({
-            team_id: null
+            team_id:
+                null
         })
         .eq(
             "team_id",
@@ -703,17 +853,16 @@ async function teamLoeschen(
             startError
         );
 
+
         alert(
             "Die Teamzuordnungen konnten nicht geändert werden."
         );
 
+
         return;
+
     }
 
-
-    // ======================================
-    // TEAM LÖSCHEN
-    // ======================================
 
     const {
         error
@@ -733,11 +882,14 @@ async function teamLoeschen(
             error
         );
 
+
         alert(
             "Team konnte nicht gelöscht werden."
         );
 
+
         return;
+
     }
 
 
@@ -753,7 +905,7 @@ async function teamLoeschen(
 // ==========================================
 
 const teilnehmerSuche =
-    document.getElementById(
+    element(
         "teilnehmer-suche"
     );
 
@@ -775,19 +927,31 @@ async function teilnehmerSuchen() {
 
 
     const ergebnisBereich =
-        document.getElementById(
+        element(
             "teilnehmer-suchergebnisse"
         );
 
 
-    ergebnisBereich.innerHTML =
-        "";
+    const starterBereich =
+        element(
+            "starter-bereich"
+        );
 
 
-    document.getElementById(
-        "starter-bereich"
-    ).style.display =
-        "none";
+    if (ergebnisBereich) {
+
+        ergebnisBereich.innerHTML =
+            "";
+
+    }
+
+
+    if (starterBereich) {
+
+        starterBereich.style.display =
+            "none";
+
+    }
 
 
     ausgewaehlterTeilnehmer =
@@ -797,6 +961,7 @@ async function teilnehmerSuchen() {
     if (!suchtext) {
 
         return;
+
     }
 
 
@@ -832,6 +997,7 @@ async function teilnehmerSuchen() {
         );
 
         return;
+
     }
 
 
@@ -840,10 +1006,16 @@ async function teilnehmerSuchen() {
         data.length === 0
     ) {
 
-        ergebnisBereich.innerHTML =
-            "<p>Kein Teilnehmer gefunden.</p>";
+        if (ergebnisBereich) {
+
+            ergebnisBereich.innerHTML =
+                "<p>Kein Teilnehmer gefunden.</p>";
+
+        }
+
 
         return;
+
     }
 
 
@@ -878,9 +1050,13 @@ async function teilnehmerSuchen() {
             );
 
 
-            ergebnisBereich.appendChild(
-                button
-            );
+            if (ergebnisBereich) {
+
+                ergebnisBereich.appendChild(
+                    button
+                );
+
+            }
 
         }
     );
@@ -900,30 +1076,62 @@ function teilnehmerAuswaehlen(
         teilnehmer;
 
 
-    document.getElementById(
-        "ausgewaehlter-teilnehmer"
-    ).textContent =
-        teilnehmer.vorname +
-        " " +
-        teilnehmer.nachname;
+    const ausgewaehlt =
+        element(
+            "ausgewaehlter-teilnehmer"
+        );
 
 
-    document.getElementById(
-        "starter-bereich"
-    ).style.display =
-        "block";
+    if (ausgewaehlt) {
+
+        ausgewaehlt.textContent =
+            teilnehmer.vorname +
+            " " +
+            teilnehmer.nachname;
+
+    }
 
 
-    document.getElementById(
-        "starter-ak"
-    ).checked =
-        false;
+    const starterBereich =
+        element(
+            "starter-bereich"
+        );
 
 
-    document.getElementById(
-        "starter-team"
-    ).value =
-        "";
+    if (starterBereich) {
+
+        starterBereich.style.display =
+            "block";
+
+    }
+
+
+    const ak =
+        element(
+            "starter-ak"
+        );
+
+
+    if (ak) {
+
+        ak.checked =
+            false;
+
+    }
+
+
+    const team =
+        element(
+            "starter-team"
+        );
+
+
+    if (team) {
+
+        team.value =
+            "";
+
+    }
 
 }
 
@@ -932,32 +1140,62 @@ function teilnehmerAuswaehlen(
 // START HINZUFÜGEN
 // ==========================================
 
-document.getElementById(
-    "starter-hinzufuegen"
-).addEventListener(
-    "click",
-    starterHinzufuegen
-);
+const starterHinzufuegenButton =
+    element(
+        "starter-hinzufuegen"
+    );
+
+
+if (starterHinzufuegenButton) {
+
+    starterHinzufuegenButton.addEventListener(
+        "click",
+        starterHinzufuegen
+    );
+
+}
 
 
 async function starterHinzufuegen() {
 
-    if (!ausgewaehlterTeilnehmer) {
+    if (
+        !ausgewaehlterTeilnehmer
+    ) {
+
+        alert(
+            "Bitte zuerst einen Teilnehmer auswählen."
+        );
 
         return;
+
     }
 
 
-    const teamId =
-        document.getElementById(
+    const teamSelect =
+        element(
             "starter-team"
-        ).value || null;
+        );
+
+
+    const akCheckbox =
+        element(
+            "starter-ak"
+        );
+
+
+    const teamId =
+        teamSelect
+            ? (
+                teamSelect.value ||
+                null
+            )
+            : null;
 
 
     let ak =
-        document.getElementById(
-            "starter-ak"
-        ).checked;
+        akCheckbox
+            ? akCheckbox.checked
+            : false;
 
 
     // ======================================
@@ -1003,6 +1241,7 @@ async function starterHinzufuegen() {
             );
 
             return;
+
         }
 
 
@@ -1013,14 +1252,9 @@ async function starterHinzufuegen() {
 
             const team =
                 aktuelleTeams.find(
-                    function(item) {
-
-                        return (
-                            item.id ===
-                            teamId
-                        );
-
-                    }
+                    t =>
+                        t.id ===
+                        teamId
                 );
 
 
@@ -1042,17 +1276,23 @@ async function starterHinzufuegen() {
 
             if (bestaetigung) {
 
-                ak = true;
+                ak =
+                    true;
 
             } else {
 
                 return;
+
             }
 
         }
 
     }
 
+
+    // ======================================
+    // START SPEICHERN
+    // ======================================
 
     const {
         error
@@ -1083,37 +1323,73 @@ async function starterHinzufuegen() {
         );
 
 
-        document.getElementById(
-            "starter-meldung"
-        ).textContent =
-            "Fehler beim Hinzufügen des Starts.";
+        const meldung =
+            element(
+                "starter-meldung"
+            );
+
+
+        if (meldung) {
+
+            meldung.textContent =
+                "Fehler beim Hinzufügen des Starts.";
+
+        }
+
 
         return;
+
     }
 
 
-    document.getElementById(
-        "starter-meldung"
-    ).textContent =
-        "Start wurde hinzugefügt.";
+    const meldung =
+        element(
+            "starter-meldung"
+        );
 
 
-    document.getElementById(
-        "teilnehmer-suche"
-    ).value =
-        "";
+    if (meldung) {
+
+        meldung.textContent =
+            "Start wurde hinzugefügt.";
+
+    }
 
 
-    document.getElementById(
-        "teilnehmer-suchergebnisse"
-    ).innerHTML =
-        "";
+    if (teilnehmerSuche) {
+
+        teilnehmerSuche.value =
+            "";
+
+    }
 
 
-    document.getElementById(
-        "starter-bereich"
-    ).style.display =
-        "none";
+    const suchergebnisse =
+        element(
+            "teilnehmer-suchergebnisse"
+        );
+
+
+    if (suchergebnisse) {
+
+        suchergebnisse.innerHTML =
+            "";
+
+    }
+
+
+    const starterBereich =
+        element(
+            "starter-bereich"
+        );
+
+
+    if (starterBereich) {
+
+        starterBereich.style.display =
+            "none";
+
+    }
 
 
     ausgewaehlterTeilnehmer =
@@ -1129,34 +1405,41 @@ async function starterHinzufuegen() {
 
 // ==========================================
 // STARTER LADEN
+// WICHTIG:
+// KEINE verschachtelte SUPABASE-RELATION
 // ==========================================
 
 async function starterLaden() {
 
+    const liste =
+        element(
+            "starter-liste"
+        );
+
+
+    if (!liste) {
+
+        return;
+
+    }
+
+
+    liste.innerHTML =
+        "<p>Starter werden geladen ...</p>";
+
+
+    // ======================================
+    // 1. STARTS
+    // ======================================
+
     const {
-        data,
-        error
+        data: starts,
+        error: startsError
     } = await supabaseClient
         .from("starts")
-        .select(`
-            id,
-            participant_id,
-            team_id,
-            ak,
-            created_at,
-            participants (
-                vorname,
-                nachname
-            ),
-            teams (
-                name
-            ),
-            results (
-                id,
-                nummer,
-                wert
-            )
-        `)
+        .select(
+            "id, participant_id, team_id, ak, created_at"
+        )
         .eq(
             "competition_id",
             wettkampfId
@@ -1169,40 +1452,272 @@ async function starterLaden() {
         );
 
 
-    if (error) {
+    if (startsError) {
 
         console.error(
-            "Fehler beim Laden der Starter:",
-            error
+            "Fehler beim Laden der Starts:",
+            startsError
         );
 
+
+        liste.innerHTML =
+            "<p>Die Starter konnten nicht geladen werden.</p>";
+
+
         return;
+
     }
 
 
-    const liste =
-        document.getElementById(
-            "starter-liste"
-        );
-
-
-    liste.innerHTML =
-        "";
+    const alleStarts =
+        starts || [];
 
 
     if (
-        !data ||
-        data.length === 0
+        alleStarts.length === 0
     ) {
 
         liste.innerHTML =
             "<p>Noch keine Starter vorhanden.</p>";
 
+
         return;
+
     }
 
 
-    data.forEach(
+    // ======================================
+    // 2. TEILNEHMER
+    // ======================================
+
+    const teilnehmerIds =
+        [
+            ...new Set(
+                alleStarts.map(
+                    start =>
+                        start.participant_id
+                )
+            )
+        ];
+
+
+    let teilnehmer =
+        [];
+
+
+    if (
+        teilnehmerIds.length > 0
+    ) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("participants")
+            .select(
+                "id, vorname, nachname"
+            )
+            .in(
+                "id",
+                teilnehmerIds
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Teilnehmer:",
+                error
+            );
+
+
+            liste.innerHTML =
+                "<p>Die Teilnehmer konnten nicht geladen werden.</p>";
+
+
+            return;
+
+        }
+
+
+        teilnehmer =
+            data || [];
+
+    }
+
+
+    // ======================================
+    // 3. TEAMS
+    // ======================================
+
+    const teamIds =
+        [
+            ...new Set(
+                alleStarts
+                    .map(
+                        start =>
+                            start.team_id
+                    )
+                    .filter(
+                        id =>
+                            id !== null
+                    )
+            )
+        ];
+
+
+    let teams =
+        [];
+
+
+    if (
+        teamIds.length > 0
+    ) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("teams")
+            .select(
+                "id, name"
+            )
+            .in(
+                "id",
+                teamIds
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Teams:",
+                error
+            );
+
+
+            liste.innerHTML =
+                "<p>Die Teams konnten nicht geladen werden.</p>";
+
+
+            return;
+
+        }
+
+
+        teams =
+            data || [];
+
+    }
+
+
+    // ======================================
+    // 4. ERGEBNISSE
+    // ======================================
+
+    const startIds =
+        alleStarts.map(
+            start =>
+                start.id
+        );
+
+
+    let ergebnisse =
+        [];
+
+
+    if (
+        startIds.length > 0
+    ) {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("results")
+            .select(
+                "id, start_id, nummer, wert"
+            )
+            .in(
+                "start_id",
+                startIds
+            )
+            .order(
+                "nummer",
+                {
+                    ascending: true
+                }
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Laden der Ergebnisse:",
+                error
+            );
+
+
+            liste.innerHTML =
+                "<p>Die Ergebnisse konnten nicht geladen werden.</p>";
+
+
+            return;
+
+        }
+
+
+        ergebnisse =
+            data || [];
+
+    }
+
+
+    // ======================================
+    // 5. DATEN ZUSAMMENFÜHREN
+    // ======================================
+
+    alleStarts.forEach(
+        function(start) {
+
+            start.participant =
+                teilnehmer.find(
+                    person =>
+                        Number(person.id) ===
+                        Number(
+                            start.participant_id
+                        )
+                ) || null;
+
+
+            start.team =
+                teams.find(
+                    team =>
+                        team.id ===
+                        start.team_id
+                ) || null;
+
+
+            start.results =
+                ergebnisse.filter(
+                    ergebnis =>
+                        ergebnis.start_id ===
+                        start.id
+                );
+
+        }
+    );
+
+
+    // ======================================
+    // 6. ANZEIGE
+    // ======================================
+
+    liste.innerHTML =
+        "";
+
+
+    alleStarts.forEach(
         function(start) {
 
             starterAnzeigeErstellen(
@@ -1217,7 +1732,7 @@ async function starterLaden() {
 
 
 // ==========================================
-// STARTER-ANZEIGE
+// STARTER ANZEIGEN
 // ==========================================
 
 function starterAnzeigeErstellen(
@@ -1245,10 +1760,25 @@ function starterAnzeigeErstellen(
         );
 
 
-    name.textContent =
-        start.participants.vorname +
-        " " +
-        start.participants.nachname;
+    if (start.participant) {
+
+        name.textContent =
+            start.participant.vorname +
+            " " +
+            start.participant.nachname;
+
+    } else {
+
+        name.textContent =
+            "Teilnehmer #" +
+            start.participant_id;
+
+    }
+
+
+    box.appendChild(
+        name
+    );
 
 
     // ======================================
@@ -1267,6 +1797,11 @@ function starterAnzeigeErstellen(
         );
 
 
+    box.appendChild(
+        info
+    );
+
+
     // ======================================
     // ERGEBNISSE
     // ======================================
@@ -1275,6 +1810,11 @@ function starterAnzeigeErstellen(
         ergebnisContainerErstellen(
             start
         );
+
+
+    box.appendChild(
+        ergebnisContainer
+    );
 
 
     // ======================================
@@ -1309,6 +1849,11 @@ function starterAnzeigeErstellen(
     );
 
 
+    box.appendChild(
+        speichernButton
+    );
+
+
     // ======================================
     // START BEARBEITEN
     // ======================================
@@ -1339,6 +1884,11 @@ function starterAnzeigeErstellen(
     );
 
 
+    box.appendChild(
+        bearbeitenButton
+    );
+
+
     // ======================================
     // START LÖSCHEN
     // ======================================
@@ -1361,39 +1911,26 @@ function starterAnzeigeErstellen(
         "click",
         function() {
 
+            let name =
+                "diesem Teilnehmer";
+
+
+            if (start.participant) {
+
+                name =
+                    start.participant.vorname +
+                    " " +
+                    start.participant.nachname;
+
+            }
+
+
             startLoeschen(
                 start.id,
-                start.participants.vorname +
-                " " +
-                start.participants.nachname
+                name
             );
 
         }
-    );
-
-
-    box.appendChild(
-        name
-    );
-
-
-    box.appendChild(
-        info
-    );
-
-
-    box.appendChild(
-        ergebnisContainer
-    );
-
-
-    box.appendChild(
-        speichernButton
-    );
-
-
-    box.appendChild(
-        bearbeitenButton
     );
 
 
@@ -1421,19 +1958,10 @@ function startZuordnungText(
         "Einzelstart";
 
 
-    if (start.team_id) {
+    if (start.team) {
 
-        if (start.teams) {
-
-            text =
-                start.teams.name;
-
-        } else {
-
-            text =
-                "Team";
-
-        }
+        text =
+            start.team.name;
 
     }
 
@@ -1473,23 +2001,25 @@ function ergebnisContainerErstellen(
         start.results || [];
 
 
+    const anzahl =
+        Number(
+            aktuellerWettkampf.anzahl_ergebnisse
+        );
+
+
     for (
         let nummer = 1;
-        nummer <= aktuellerWettkampf.anzahl_ergebnisse;
+        nummer <= anzahl;
         nummer++
     ) {
 
-        const vorhandenesErgebnis =
+        const vorhanden =
             vorhandeneErgebnisse.find(
-                function(ergebnis) {
-
-                    return (
-                        Number(
-                            ergebnis.nummer
-                        ) === nummer
-                    );
-
-                }
+                ergebnis =>
+                    Number(
+                        ergebnis.nummer
+                    ) ===
+                    nummer
             );
 
 
@@ -1529,20 +2059,18 @@ function ergebnisContainerErstellen(
 
 
         input.placeholder =
-            "z. B. 12,5";
+            "z. B. 12,40";
 
 
         input.dataset.nummer =
             nummer;
 
 
-        if (
-            vorhandenesErgebnis
-        ) {
+        if (vorhanden) {
 
             input.value =
                 String(
-                    vorhandenesErgebnis.wert
+                    vorhanden.wert
                 ).replace(
                     ".",
                     ","
@@ -1581,6 +2109,21 @@ async function startBearbeiten(
     start
 ) {
 
+    const vorhandeneBearbeitung =
+        document.querySelector(
+            ".wettkampf-bearbeiten"
+        );
+
+
+    if (
+        vorhandeneBearbeitung
+    ) {
+
+        vorhandeneBearbeitung.remove();
+
+    }
+
+
     const box =
         document.createElement(
             "div"
@@ -1597,12 +2140,33 @@ async function startBearbeiten(
         );
 
 
+    let name =
+        "Teilnehmer";
+
+
+    if (start.participant) {
+
+        name =
+            start.participant.vorname +
+            " " +
+            start.participant.nachname;
+
+    }
+
+
     titel.textContent =
         "Start bearbeiten: " +
-        start.participants.vorname +
-        " " +
-        start.participants.nachname;
+        name;
 
+
+    box.appendChild(
+        titel
+    );
+
+
+    // ======================================
+    // TEAM
+    // ======================================
 
     const teamLabel =
         document.createElement(
@@ -1675,6 +2239,20 @@ async function startBearbeiten(
     );
 
 
+    box.appendChild(
+        teamLabel
+    );
+
+
+    box.appendChild(
+        teamSelect
+    );
+
+
+    // ======================================
+    // AK
+    // ======================================
+
     const akLabel =
         document.createElement(
             "label"
@@ -1707,6 +2285,15 @@ async function startBearbeiten(
     );
 
 
+    box.appendChild(
+        akLabel
+    );
+
+
+    // ======================================
+    // SPEICHERN
+    // ======================================
+
     const speichernButton =
         document.createElement(
             "button"
@@ -1733,6 +2320,10 @@ async function startBearbeiten(
             let neueAk =
                 akCheckbox.checked;
 
+
+            // ==============================
+            // TEAMGRÖSSE PRÜFEN
+            // ==============================
 
             if (
                 neueTeamId &&
@@ -1777,6 +2368,7 @@ async function startBearbeiten(
                     );
 
                     return;
+
                 }
 
 
@@ -1794,11 +2386,10 @@ async function startBearbeiten(
                         );
 
 
-                    if (
-                        !bestaetigung
-                    ) {
+                    if (!bestaetigung) {
 
                         return;
+
                     }
 
 
@@ -1809,6 +2400,10 @@ async function startBearbeiten(
 
             }
 
+
+            // ==============================
+            // START AKTUALISIEREN
+            // ==============================
 
             const {
                 error
@@ -1834,11 +2429,14 @@ async function startBearbeiten(
                     error
                 );
 
+
                 alert(
                     "Der Start konnte nicht geändert werden."
                 );
 
+
                 return;
+
             }
 
 
@@ -1852,6 +2450,15 @@ async function startBearbeiten(
         }
     );
 
+
+    box.appendChild(
+        speichernButton
+    );
+
+
+    // ======================================
+    // ABBRECHEN
+    // ======================================
 
     const abbrechenButton =
         document.createElement(
@@ -1878,40 +2485,23 @@ async function startBearbeiten(
 
 
     box.appendChild(
-        titel
-    );
-
-
-    box.appendChild(
-        teamLabel
-    );
-
-
-    box.appendChild(
-        teamSelect
-    );
-
-
-    box.appendChild(
-        akLabel
-    );
-
-
-    box.appendChild(
-        speichernButton
-    );
-
-
-    box.appendChild(
         abbrechenButton
     );
 
 
-    document.getElementById(
-        "starter-liste"
-    ).prepend(
-        box
-    );
+    const starterListe =
+        element(
+            "starter-liste"
+        );
+
+
+    if (starterListe) {
+
+        starterListe.prepend(
+            box
+        );
+
+    }
 
 }
 
@@ -1933,15 +2523,22 @@ function zahlUmwandeln(
             );
 
 
-    if (text === "") {
+    if (
+        text === ""
+    ) {
 
         return null;
+
     }
 
 
-    return parseFloat(
-        text
-    );
+    const zahl =
+        parseFloat(
+            text
+        );
+
+
+    return zahl;
 
 }
 
@@ -1976,14 +2573,27 @@ async function ergebnisseSpeichern(
             );
 
 
+        const rohwert =
+            input.value.trim();
+
+
+        if (
+            rohwert === ""
+        ) {
+
+            continue;
+
+        }
+
+
         const wert =
             zahlUmwandeln(
-                input.value
+                rohwert
             );
 
 
         if (
-            input.value.trim() !== "" &&
+            wert === null ||
             Number.isNaN(wert)
         ) {
 
@@ -1993,26 +2603,22 @@ async function ergebnisseSpeichern(
                 " ist keine gültige Zahl."
             );
 
+
             return;
-        }
-
-
-        if (
-            input.value.trim() !== ""
-        ) {
-
-            ergebnisse.push({
-                start_id:
-                    startId,
-
-                nummer:
-                    nummer,
-
-                wert:
-                    wert
-            });
 
         }
+
+
+        ergebnisse.push({
+            start_id:
+                startId,
+
+            nummer:
+                nummer,
+
+            wert:
+                wert
+        });
 
     }
 
@@ -2060,12 +2666,14 @@ async function ergebnisseSpeichern(
         button.textContent =
             "Ergebnisse speichern";
 
+
         return;
+
     }
 
 
     // ======================================
-    // NEUE ERGEBNISSE SPEICHERN
+    // NEUE ERGEBNISSE
     // ======================================
 
     if (
@@ -2101,7 +2709,9 @@ async function ergebnisseSpeichern(
             button.textContent =
                 "Ergebnisse speichern";
 
+
             return;
+
         }
 
     }
@@ -2149,8 +2759,46 @@ async function startLoeschen(
     if (!bestaetigung) {
 
         return;
+
     }
 
+
+    // ======================================
+    // ERGEBNISSE ZUERST LÖSCHEN
+    // ======================================
+
+    const {
+        error: resultError
+    } = await supabaseClient
+        .from("results")
+        .delete()
+        .eq(
+            "start_id",
+            startId
+        );
+
+
+    if (resultError) {
+
+        console.error(
+            "Fehler beim Löschen der Ergebnisse:",
+            resultError
+        );
+
+
+        alert(
+            "Die Ergebnisse konnten nicht gelöscht werden."
+        );
+
+
+        return;
+
+    }
+
+
+    // ======================================
+    // START LÖSCHEN
+    // ======================================
 
     const {
         error
@@ -2172,10 +2820,12 @@ async function startLoeschen(
 
 
         alert(
-            "Start konnte nicht gelöscht werden."
+            "Der Start konnte nicht gelöscht werden."
         );
 
+
         return;
+
     }
 
 
@@ -2187,11 +2837,11 @@ async function startLoeschen(
 
 
 // ==========================================
-// STARTER-AUSWAHL ABBRECHEN
+// STARTER ABBRECHEN
 // ==========================================
 
 const starterAbbrechen =
-    document.getElementById(
+    element(
         "starter-abbrechen"
     );
 
@@ -2202,21 +2852,40 @@ if (starterAbbrechen) {
         "click",
         function() {
 
-            document.getElementById(
-                "teilnehmer-suche"
-            ).value = "";
+            if (teilnehmerSuche) {
+
+                teilnehmerSuche.value =
+                    "";
+
+            }
 
 
-            document.getElementById(
-                "teilnehmer-suchergebnisse"
-            ).innerHTML =
-                "";
+            const suchergebnisse =
+                element(
+                    "teilnehmer-suchergebnisse"
+                );
 
 
-            document.getElementById(
-                "starter-bereich"
-            ).style.display =
-                "none";
+            if (suchergebnisse) {
+
+                suchergebnisse.innerHTML =
+                    "";
+
+            }
+
+
+            const starterBereich =
+                element(
+                    "starter-bereich"
+                );
+
+
+            if (starterBereich) {
+
+                starterBereich.style.display =
+                    "none";
+
+            }
 
 
             ausgewaehlterTeilnehmer =
@@ -2229,7 +2898,7 @@ if (starterAbbrechen) {
 
 
 // ==========================================
-// START
+// INITIALISIERUNG
 // ==========================================
 
 async function start() {
@@ -2241,6 +2910,7 @@ async function start() {
         );
 
         return;
+
     }
 
 
@@ -2251,6 +2921,7 @@ async function start() {
     if (!erfolgreich) {
 
         return;
+
     }
 
 
@@ -2260,5 +2931,9 @@ async function start() {
 
 }
 
+
+// ==========================================
+// LOS
+// ==========================================
 
 start();
