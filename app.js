@@ -184,7 +184,6 @@ if (teilnehmerForm) {
 
 }
 
-```javascript
 // ==========================================
 // VORHANDENE ERGEBNISSE LADEN
 // ==========================================
@@ -281,7 +280,23 @@ async function vorhandeneErgebnisseLaden() {
             .replace(".", ",");
 
 }
-```
+
+// ==========================================
+// TEILNEHMER AUSWAHL GEÄNDERT
+// ==========================================
+
+const teilnehmerSelect =
+    document.getElementById("teilnehmer");
+
+
+if (teilnehmerSelect) {
+
+    teilnehmerSelect.addEventListener(
+        "change",
+        vorhandeneErgebnisseLaden
+    );
+
+}
 
 // ==========================================
 // ERGEBNISSE SPEICHERN
