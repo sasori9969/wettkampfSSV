@@ -1,4 +1,3 @@
-```javascript id="k2x7mz"
 // ==========================================
 // SUPABASE EINSTELLUNGEN
 // ==========================================
@@ -213,4 +212,3 @@ setInterval(
     ergebnisseLaden,
     5000
 );
-```
