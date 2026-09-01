@@ -1,1 +1,313 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        SSV 1928 Sulzbach e.V. – Wettkämpfe
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+    <!-- ==========================================
+         KOPFBEREICH
+         ========================================== -->
+
+    <header>
+
+        <h1>
+            SSV 1928 Sulzbach e.V.
+        </h1>
+
+
+        <nav>
+
+            <a href="index.html">
+                Startseite
+            </a>
+
+            <a href="wettkaempfe.html">
+                Wettkämpfe
+            </a>
+
+            <a href="teilnehmer.html">
+                Teilnehmer
+            </a>
+
+            <a href="ergebnisse.html">
+                Ergebnisse
+            </a>
+
+        </nav>
+
+    </header>
+
+
+
+    <!-- ==========================================
+         HAUPTBEREICH
+         ========================================== -->
+
+    <main>
+
+
+        <!-- ==========================================
+             SEITENÜBERSCHRIFT
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Wettkämpfe
+            </h2>
+
+            <p>
+                Hier kannst du neue Wettkämpfe anlegen
+                und bereits durchgeführte Wettkämpfe
+                aufrufen.
+            </p>
+
+        </section>
+
+
+
+        <!-- ==========================================
+             NEUER WETTKAMPF
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Neuen Wettkampf anlegen
+            </h2>
+
+
+            <form id="wettkampf-form">
+
+
+                <!-- WETTKAMPFNAME -->
+
+                <label for="wettkampf-name">
+                    Wettkampfname
+                </label>
+
+                <input
+                    type="text"
+                    id="wettkampf-name"
+                    placeholder="z. B. Vereinsmeisterschaft 2026"
+                    required
+                >
+
+
+
+                <!-- DATUM -->
+
+                <label for="wettkampf-datum">
+                    Datum
+                </label>
+
+                <input
+                    type="date"
+                    id="wettkampf-datum"
+                    required
+                >
+
+
+
+                <!-- ANZAHL ERGEBNISSE -->
+
+                <label for="anzahl-ergebnisse">
+                    Anzahl Ergebnisse pro Start
+                </label>
+
+                <select
+                    id="anzahl-ergebnisse"
+                    required
+                >
+
+                    <option value="3">
+                        3
+                    </option>
+
+                    <option value="4">
+                        4
+                    </option>
+
+                    <option value="5" selected>
+                        5
+                    </option>
+
+                    <option value="6">
+                        6
+                    </option>
+
+                    <option value="7">
+                        7
+                    </option>
+
+                    <option value="8">
+                        8
+                    </option>
+
+                    <option value="9">
+                        9
+                    </option>
+
+                    <option value="10">
+                        10
+                    </option>
+
+                </select>
+
+
+
+                <!-- TEAMGRÖSSE -->
+
+                <label for="teamgroesse">
+                    Starter pro Team
+                </label>
+
+                <select
+                    id="teamgroesse"
+                    required
+                >
+
+                    <option value="3" selected>
+                        3
+                    </option>
+
+                    <option value="4">
+                        4
+                    </option>
+
+                    <option value="5">
+                        5
+                    </option>
+
+                    <option value="6">
+                        6
+                    </option>
+
+                    <option value="7">
+                        7
+                    </option>
+
+                    <option value="8">
+                        8
+                    </option>
+
+                    <option value="9">
+                        9
+                    </option>
+
+                    <option value="10">
+                        10
+                    </option>
+
+                </select>
+
+
+
+                <!-- SPEICHERN -->
+
+                <button
+                    type="submit"
+                >
+                    Wettkampf anlegen
+                </button>
+
+
+            </form>
+
+
+            <p
+                id="wettkampf-meldung"
+            ></p>
+
+
+        </section>
+
+
+
+        <!-- ==========================================
+             WETTKÄMPFE
+             ========================================== -->
+
+        <section class="card">
+
+            <h2>
+                Vorhandene Wettkämpfe
+            </h2>
+
+
+            <div id="wettkampf-liste">
+
+                <p>
+                    Wettkämpfe werden geladen ...
+                </p>
+
+            </div>
+
+        </section>
+
+
+    </main>
+
+
+
+    <!-- ==========================================
+         FOOTER
+         ========================================== -->
+
+    <footer>
+
+        <p>
+            SSV 1928 Sulzbach e.V.
+        </p>
+
+        <p>
+            Wettkampfauswertung
+        </p>
+
+    </footer>
+
+
+
+    <!-- ==========================================
+         SUPABASE
+         ========================================== -->
+
+    <script
+        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+    ></script>
+
+
+    <!-- ==========================================
+         WETTKAMPF JAVASCRIPT
+         ========================================== -->
+
+    <script
+        src="wettkaempfe.js"
+    ></script>
+
+
+</body>
+
+</html>
 
