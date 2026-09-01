@@ -25,159 +25,102 @@
 <body>
 
 
-    <!-- ==========================================
-         KOPFBEREICH
-         ========================================== -->
+<header>
 
-    <header>
-
-        <h1>
-            SSV 1928 Sulzbach e.V.
-        </h1>
+    <h1>
+        SSV 1928 Sulzbach e.V.
+    </h1>
 
 
-        <nav>
+    <nav>
 
-            <a href="index.html">
-                Startseite
-            </a>
+        <a href="index.html">
+            Startseite
+        </a>
+
+        <a href="wettkaempfe.html">
+            Wettkämpfe
+        </a>
+
+        <a href="teilnehmer.html">
+            Teilnehmer
+        </a>
+
+        <a href="ergebnisse-eingabe.html">
+            Ergebnisse erfassen
+        </a>
+
+        <a href="ergebnisse.html">
+            Ergebnisse
+        </a>
+
+    </nav>
+
+</header>
 
 
-            <a href="wettkaempfe.html">
-                Wettkämpfe
-            </a>
 
-
-            <a href="teilnehmer.html">
-                Teilnehmer
-            </a>
-
-
-            <a href="ergebnisse-eingabe.html">
-                Ergebnisse erfassen
-            </a>
-
-
-            <a href="ergebnisse.html">
-                Ergebnisse
-            </a>
-
-        </nav>
-
-    </header>
-
+<main>
 
 
     <!-- ==========================================
-         HAUPTBEREICH
+         EINZELWERTUNG
          ========================================== -->
 
-    <main>
+    <section class="card">
+
+        <h2>
+            Einzelwertung
+        </h2>
 
 
-        <!-- ==========================================
-             ÜBERSCHRIFT
-             ========================================== -->
+        <div class="filter-bereich">
 
-        <section class="card">
+            <label for="wettkampf-filter">
+                Wettkampf
+            </label>
 
-            <h2>
-                Ergebnisse
-            </h2>
+            <select id="wettkampf-filter">
 
+                <option value="">
+                    Alle Wettkämpfe
+                </option>
 
-            <p>
-                Hier werden die Ergebnisse aller
-                Wettkampfstarts angezeigt.
-            </p>
+            </select>
 
 
-            <p id="aktualisierungs-info">
-                Ergebnisse werden automatisch aktualisiert.
-            </p>
+            <label for="team-filter">
+                Team
+            </label>
 
-        </section>
+            <select id="team-filter">
 
+                <option value="">
+                    Alle Teams
+                </option>
 
-
-        <!-- ==========================================
-             FILTER
-             ========================================== -->
-
-        <section class="card">
-
-            <h2>
-                Filter
-            </h2>
+            </select>
 
 
-            <div class="form-group">
+            <label for="status-filter">
+                Wertung
+            </label>
 
-                <label for="wettkampf-filter">
-                    Wettkampf
-                </label>
+            <select id="status-filter">
 
+                <option value="">
+                    Alle
+                </option>
 
-                <select id="wettkampf-filter">
-
-                    <option value="">
-                        Alle Wettkämpfe
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="team-filter">
-                    Team
-                </label>
-
-
-                <select id="team-filter">
-
-                    <option value="">
-                        Alle Teams
-                    </option>
-
-
-                    <option value="einzel">
-                        Einzelstarts
-                    </option>
-
-                </select>
-
-            </div>
-
-
-            <div class="form-group">
-
-                <label for="status-filter">
+                <option value="wertung">
                     Wertung
-                </label>
+                </option>
 
+                <option value="ak">
+                    Außer Konkurrenz
+                </option>
 
-                <select id="status-filter">
-
-                    <option value="">
-                        Alle
-                    </option>
-
-
-                    <option value="wertung">
-                        Wertung
-                    </option>
-
-
-                    <option value="ak">
-                        Außer Konkurrenz
-                    </option>
-
-                </select>
-
-            </div>
+            </select>
 
 
             <button
@@ -187,174 +130,182 @@
                 Filter zurücksetzen
             </button>
 
-        </section>
+        </div>
 
 
+        <div class="table-container">
 
-        <!-- ==========================================
-             ERGEBNISTABELLE
-             ========================================== -->
+            <table>
 
-        <section class="card">
+                <thead>
 
-            <h2>
-                Rangliste
-            </h2>
+                    <tr>
 
+                        <th>
+                            Platz
+                        </th>
 
-            <div class="table-container">
+                        <th>
+                            Wettkampf
+                        </th>
 
-                <table
-                    id="ergebnis-tabelle-komplett"
-                >
+                        <th>
+                            Datum
+                        </th>
 
-                    <thead
-                        id="ergebnis-kopf"
-                    >
+                        <th>
+                            Vorname
+                        </th>
 
-                        <tr>
+                        <th>
+                            Nachname
+                        </th>
 
-                            <th>
-                                Platz
-                            </th>
+                        <th>
+                            Team
+                        </th>
 
-                            <th>
-                                Wettkampf
-                            </th>
+                        <th>
+                            Status
+                        </th>
 
-                            <th>
-                                Datum
-                            </th>
+                        <th>
+                            Ergebnisse
+                        </th>
 
-                            <th>
-                                Vorname
-                            </th>
+                        <th>
+                            Gesamt
+                        </th>
 
-                            <th>
-                                Nachname
-                            </th>
+                    </tr>
 
-                            <th>
-                                Team
-                            </th>
-
-                            <th>
-                                Status
-                            </th>
-
-                            <th>
-                                Ergebnisse
-                            </th>
-
-                            <th>
-                                Gesamt
-                            </th>
-
-                        </tr>
-
-                    </thead>
+                </thead>
 
 
-                    <tbody
-                        id="ergebnis-tabelle"
-                    >
+                <tbody id="ergebnis-tabelle">
 
-                        <tr>
+                    <tr>
 
-                            <td colspan="9">
-                                Ergebnisse werden geladen...
-                            </td>
+                        <td colspan="9">
+                            Ergebnisse werden geladen...
+                        </td>
 
-                        </tr>
+                    </tr>
 
-                    </tbody>
+                </tbody>
 
-                </table>
+            </table>
 
-            </div>
+        </div>
 
-        </section>
-
-
-
-        <!-- ==========================================
-             HINWEIS
-             ========================================== -->
-
-        <section class="card">
-
-            <h2>
-                Hinweis
-            </h2>
-
-
-            <p>
-                Ein Teilnehmer kann mehrere Starts
-                innerhalb eines Wettkampfs haben.
-            </p>
-
-
-            <p>
-                Jeder Start besitzt seine eigenen
-                Ergebnisse.
-            </p>
-
-
-            <p>
-                Ein Start kann als Einzelstart,
-                Teamstart oder außer Konkurrenz
-                geführt werden.
-            </p>
-
-
-            <p>
-                Die Zuordnung kann nachträglich
-                geändert werden.
-            </p>
-
-        </section>
-
-
-    </main>
+    </section>
 
 
 
     <!-- ==========================================
-         FOOTER
+         TEAMWERTUNG
          ========================================== -->
 
-    <footer>
+    <section class="card">
 
-        <p>
-            SSV 1928 Sulzbach e.V.
-        </p>
+        <h2>
+            Teamwertung
+        </h2>
 
 
         <p>
-            Wettkampfauswertung
+            Die Teamwertung berücksichtigt automatisch
+            die für den jeweiligen Wettkampf festgelegte
+            Teamgröße.
         </p>
 
-    </footer>
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            Platz
+                        </th>
+
+                        <th>
+                            Team
+                        </th>
+
+                        <th>
+                            Wettkampf
+                        </th>
+
+                        <th>
+                            Starter
+                        </th>
+
+                        <th>
+                            Gewertete Starter
+                        </th>
+
+                        <th>
+                            Gesamt
+                        </th>
+
+                        <th>
+                            Status
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="team-ergebnis-tabelle">
+
+                    <tr>
+
+                        <td colspan="7">
+                            Teamwertung wird geladen...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </section>
+
+
+</main>
 
 
 
-    <!-- ==========================================
-         SUPABASE
-         ========================================== -->
+<footer>
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+    <p>
+        SSV 1928 Sulzbach e.V.
+    </p>
+
+    <p>
+        Wettkampfauswertung
+    </p>
+
+</footer>
 
 
 
-    <!-- ==========================================
-         JAVASCRIPT
-         ========================================== -->
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
 
-    <script
-        src="ergebnisse.js?v=4"
-    ></script>
+
+<script
+    src="ergebnisse.js?v=6"
+></script>
 
 
 </body>
