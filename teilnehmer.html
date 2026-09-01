@@ -11,7 +11,7 @@
     >
 
     <title>
-        Teilnehmer – SSV 1928 Sulzbach e.V.
+        SSV 1928 Sulzbach e.V. – Teilnehmer
     </title>
 
     <link
@@ -25,197 +25,264 @@
 <body>
 
 
+<header>
+
+    <h1>
+        SSV 1928 Sulzbach e.V.
+    </h1>
+
+
+    <nav>
+
+        <a href="index.html">
+            Startseite
+        </a>
+
+        <a href="wettkaempfe.html">
+            Wettkämpfe
+        </a>
+
+        <a href="teilnehmer.html">
+            Teilnehmer
+        </a>
+
+        <a href="ergebnisse.html">
+            Ergebnisse
+        </a>
+
+    </nav>
+
+</header>
+
+
+
+<main>
+
+
     <!-- ==========================================
-         KOPFBEREICH
+         TEILNEHMER ANLEGEN
          ========================================== -->
 
-    <header>
+    <section class="card">
 
-        <h1>
-            SSV 1928 Sulzbach e.V.
-        </h1>
-
-
-        <nav>
-
-            <a href="index.html">
-                Startseite
-            </a>
-
-            <a href="teilnehmer.html">
-                Teilnehmer
-            </a>
-
-            <a href="ergebnisse-eingabe.html">
-                Ergebnisse erfassen
-            </a>
-
-            <a href="ergebnisse.html">
-                Ergebnisse
-            </a>
-
-        </nav>
-
-    </header>
+        <h2>
+            Teilnehmer verwalten
+        </h2>
 
 
-
-    <!-- ==========================================
-         HAUPTBEREICH
-         ========================================== -->
-
-    <main>
+        <p>
+            Hier können Teilnehmer angelegt,
+            bearbeitet und gelöscht werden.
+        </p>
 
 
-        <!-- ==========================================
-             NEUEN TEILNEHMER ANLEGEN
-             ========================================== -->
-
-        <section class="card">
-
-            <h2>
-                Teilnehmer anlegen
-            </h2>
+        <form id="teilnehmer-form">
 
 
-            <p>
-                Hier kannst du einen neuen Teilnehmer
-                anlegen.
-            </p>
+            <input
+                type="hidden"
+                id="teilnehmer-id"
+            >
 
 
-            <form id="teilnehmer-form">
+            <div class="form-group">
+
+                <label for="vorname">
+                    Vorname
+                </label>
 
 
-                <div class="form-group">
+                <input
+                    type="text"
+                    id="vorname"
+                    placeholder="Vorname"
+                    autocomplete="given-name"
+                    required
+                >
 
-                    <label for="vorname">
-                        Vorname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="vorname"
-                        name="vorname"
-                        placeholder="Vorname eingeben"
-                        autocomplete="given-name"
-                        required
-                    >
-
-                </div>
+            </div>
 
 
 
-                <div class="form-group">
+            <div class="form-group">
 
-                    <label for="nachname">
-                        Nachname
-                    </label>
-
-
-                    <input
-                        type="text"
-                        id="nachname"
-                        name="nachname"
-                        placeholder="Nachname eingeben"
-                        autocomplete="family-name"
-                        required
-                    >
-
-                </div>
+                <label for="nachname">
+                    Nachname
+                </label>
 
 
+                <input
+                    type="text"
+                    id="nachname"
+                    placeholder="Nachname"
+                    autocomplete="family-name"
+                    required
+                >
+
+            </div>
+
+
+
+            <div class="form-buttons">
 
                 <button
                     type="submit"
+                    id="teilnehmer-speichern"
                 >
                     Teilnehmer speichern
                 </button>
 
 
-            </form>
-
-
-            <div
-                id="teilnehmer-meldung"
-                class="meldung"
-            ></div>
-
-
-        </section>
-
-
-
-        <!-- ==========================================
-             TEILNEHMERLISTE
-             ========================================== -->
-
-        <section class="card">
-
-            <h2>
-                Teilnehmer
-            </h2>
-
-
-            <p>
-                Vorhandene Teilnehmer verwalten.
-            </p>
-
-
-            <div
-                id="teilnehmer-liste"
-                class="teilnehmer-liste"
-            >
-
-                <p>
-                    Teilnehmer werden geladen ...
-                </p>
+                <button
+                    type="button"
+                    id="teilnehmer-abbrechen"
+                    class="button-secondary"
+                    style="display:none;"
+                >
+                    Bearbeitung abbrechen
+                </button>
 
             </div>
 
 
-        </section>
+        </form>
 
 
-    </main>
+        <p
+            id="teilnehmer-meldung"
+            class="meldung"
+        ></p>
 
-
-
-    <!-- ==========================================
-         FOOTER
-         ========================================== -->
-
-    <footer>
-
-        <p>
-            SSV 1928 Sulzbach e.V.
-        </p>
-
-        <p>
-            Wettkampfauswertung
-        </p>
-
-    </footer>
+    </section>
 
 
 
     <!-- ==========================================
-         SUPABASE
+         SUCHE
          ========================================== -->
 
-    <script
-        src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
-    ></script>
+    <section class="card">
+
+        <h2>
+            Teilnehmer suchen
+        </h2>
+
+
+        <div class="form-group">
+
+            <label for="teilnehmer-suche">
+                Suche
+            </label>
+
+
+            <input
+                type="text"
+                id="teilnehmer-suche"
+                placeholder="Vorname oder Nachname"
+                autocomplete="off"
+            >
+
+        </div>
+
+    </section>
+
 
 
     <!-- ==========================================
-         JAVASCRIPT
+         TEILNEHMERLISTE
          ========================================== -->
 
-    <script
-        src="app.js?v=5"
-    ></script>
+    <section class="card">
+
+        <h2>
+            Teilnehmer
+        </h2>
+
+
+        <div class="table-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Vorname
+                        </th>
+
+                        <th>
+                            Nachname
+                        </th>
+
+                        <th>
+                            Aktionen
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody id="teilnehmer-liste">
+
+                    <tr>
+
+                        <td colspan="4">
+                            Teilnehmer werden geladen ...
+                        </td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <p
+            id="teilnehmer-anzahl"
+        ></p>
+
+    </section>
+
+
+</main>
+
+
+
+<footer>
+
+    <p>
+        SSV 1928 Sulzbach e.V.
+    </p>
+
+    <p>
+        Wettkampfauswertung
+    </p>
+
+</footer>
+
+
+
+<script
+    src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
+></script>
+
+
+<script
+    src="supabase.js"
+></script>
+
+
+<script
+    src="teilnehmer.js"
+></script>
 
 
 </body>
