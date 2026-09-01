@@ -10,7 +10,12 @@
 // ==========================================================
 
 const ergebnisSupabaseClient =
-    supabaseClient;
+    typeof supabaseClient !== "undefined"
+        ? supabaseClient
+        : window.supabase.createClient(
+            "https://pvvdbcvdhggqbembqrda.supabase.co",
+            "sb_publishable_UABPYPapTKw-L2Ut_osECg_sDnwWdnL"
+        );
 
 
 // ==========================================================
