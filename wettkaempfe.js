@@ -1,63 +1,129 @@
 // ==========================================================
 // SSV 1928 SULZBACH E.V.
-// WETTKÄMPFE VERWALTEN
+// WETTKAMPFVERWALTUNG
 // ==========================================================
+//
+// Funktionen:
+//
+// - Wettkampf anlegen
+// - Wettkampf bearbeiten
+// - Wettkampf löschen
+// - Wettkampf öffnen
+// - Wettkampfname ändern
+// - Wettkampfdatum ändern
+// - Anzahl Ergebnisse ändern
+// - Teamgröße ändern
+// - Status ändern
+//
+// Die IDs der Wettkämpfe sind UUIDs.
+// ==========================================================
+
 
 
 // ==========================================================
 // GLOBALE VARIABLEN
 // ==========================================================
 
-let aktuellerWettkampfId = null;
+let alleWettkaempfe = [];
 
 
 // ==========================================================
-// ELEMENTE
+// DOM ELEMENTE
 // ==========================================================
 
-const form =
+const wettkampfForm =
     document.getElementById(
         "wettkampf-form"
     );
 
 
-const meldung =
+const wettkampfId =
+    document.getElementById(
+        "wettkampf-id"
+    );
+
+
+const wettkampfName =
+    document.getElementById(
+        "wettkampf-name"
+    );
+
+
+const wettkampfDatum =
+    document.getElementById(
+        "wettkampf-datum"
+    );
+
+
+const anzahlErgebnisse =
+    document.getElementById(
+        "anzahl-ergebnisse"
+    );
+
+
+const teamgroesse =
+    document.getElementById(
+        "teamgroesse"
+    );
+
+
+const wettkampfStatus =
+    document.getElementById(
+        "wettkampf-status"
+    );
+
+
+const wettkampfSpeichern =
+    document.getElementById(
+        "wettkampf-speichern"
+    );
+
+
+const wettkampfAbbrechen =
+    document.getElementById(
+        "wettkampf-abbrechen"
+    );
+
+
+const wettkampfMeldung =
     document.getElementById(
         "wettkampf-meldung"
     );
 
 
-const liste =
+const wettkaempfeListe =
     document.getElementById(
         "wettkaempfe-liste"
     );
 
 
+
 // ==========================================================
-// MELDUNG
+// MELDUNG ANZEIGEN
 // ==========================================================
 
-function meldungAnzeigen(
+function meldung(
     text,
-    typ = ""
+    klasse = ""
 ) {
 
-    if (!meldung) {
+    if (!wettkampfMeldung) {
 
         return;
 
     }
 
 
-    meldung.textContent =
+    wettkampfMeldung.textContent =
         text;
 
 
-    meldung.className =
+    wettkampfMeldung.className =
         "meldung " +
-        typ;
+        klasse;
 
 }
+
 
 
 // ==========================================================
@@ -66,17 +132,19 @@ function meldungAnzeigen(
 
 async function wettkaempfeLaden() {
 
-    if (!liste) {
+    if (!wettkaempfeListe) {
 
         return;
 
     }
 
 
-    liste.innerHTML = `
+    wettkaempfeListe.innerHTML = `
+
         <p>
             Wettkämpfe werden geladen ...
         </p>
+
     `;
 
 
@@ -102,6 +170,13 @@ async function wettkaempfeLaden() {
             {
                 ascending: false
             }
+        )
+
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
         );
 
 
@@ -113,10 +188,12 @@ async function wettkaempfeLaden() {
         );
 
 
-        liste.innerHTML = `
+        wettkaempfeListe.innerHTML = `
+
             <p class="status-fehler">
-                ❌ Wettkämpfe konnten nicht geladen werden.
+                Wettkämpfe konnten nicht geladen werden.
             </p>
+
         `;
 
 
@@ -125,50 +202,87 @@ async function wettkaempfeLaden() {
     }
 
 
-    if (
-        !data ||
-        data.length === 0
-    ) {
-
-        liste.innerHTML = `
-            <p>
-                Noch keine Wettkämpfe vorhanden.
-            </p>
-        `;
+    alleWettkaempfe =
+        data || [];
 
 
-        return;
+    wettkaempfeAnzeigen(
+        alleWettkaempfe
+    );
 
-    }
+}
 
 
-    liste.innerHTML =
+
+// ==========================================================
+// WETTKÄMPFE ANZEIGEN
+// ==========================================================
+
+function wettkaempfeAnzeigen(
+    wettkaempfe
+) {
+
+    wettkaempfeListe.innerHTML =
         "";
 
 
-    data.forEach(
-        function(wettkampf) {
+    if (
+        !wettkaempfe ||
+        wettkaempfe.length === 0
+    ) {
 
-            const element =
+        wettkaempfeListe.innerHTML = `
+
+            <p>
+                Noch keine Wettkämpfe vorhanden.
+            </p>
+
+        `;
+
+
+        return;
+
+    }
+
+
+    wettkaempfe.forEach(
+        function(
+            wettkampf
+        ) {
+
+            const card =
                 document.createElement(
                     "div"
                 );
 
 
-            element.className =
-                "listen-element";
+            card.className =
+                "wettkampf-card";
 
 
-            element.innerHTML = `
+            const datum =
+                datumFormatieren(
+                    wettkampf.datum
+                );
 
-                <div class="listen-element-info">
+
+            const status =
+                statusFormatieren(
+                    wettkampf.status
+                );
+
+
+            card.innerHTML = `
+
+                <div class="wettkampf-card-inhalt">
+
 
                     <h3>
-                        ${
-                            escapeHtml(
-                                wettkampf.name
-                            )
-                        }
+
+                        ${escapeHtml(
+                            wettkampf.name
+                        )}
+
                     </h3>
 
 
@@ -178,11 +292,7 @@ async function wettkaempfeLaden() {
                             Datum:
                         </strong>
 
-                        ${
-                            formatDatum(
-                                wettkampf.datum
-                            )
-                        }
+                        ${datum}
 
                     </p>
 
@@ -193,19 +303,22 @@ async function wettkaempfeLaden() {
                             Ergebnisse:
                         </strong>
 
-                        ${
+                        ${Number(
                             wettkampf.anzahl_ergebnisse
-                        }
+                        )}
 
-                        &nbsp; | &nbsp;
+                    </p>
+
+
+                    <p>
 
                         <strong>
                             Teamgröße:
                         </strong>
 
-                        ${
+                        ${Number(
                             wettkampf.teamgroesse
-                        }
+                        )}
 
                     </p>
 
@@ -216,31 +329,29 @@ async function wettkaempfeLaden() {
                             Status:
                         </strong>
 
-                        ${
-                            escapeHtml(
-                                wettkampf.status
-                            )
-                        }
+                        ${status}
 
                     </p>
+
 
                 </div>
 
 
-                <div class="listen-element-aktionen">
+                <div class="wettkampf-card-aktionen">
+
 
                     <button
                         type="button"
                         class="button"
                         data-oeffnen="${wettkampf.id}"
                     >
-                        Öffnen
+                        Wettkampf öffnen
                     </button>
 
 
                     <button
                         type="button"
-                        class="button button-secondary"
+                        class="button"
                         data-bearbeiten="${wettkampf.id}"
                     >
                         Bearbeiten
@@ -255,24 +366,26 @@ async function wettkaempfeLaden() {
                         Löschen
                     </button>
 
+
                 </div>
 
             `;
 
 
-            liste.appendChild(
-                element
+            wettkaempfeListe.appendChild(
+                card
             );
 
         }
     );
 
 
-    // ------------------------------------------------------
-    // BUTTONS
-    // ------------------------------------------------------
 
-    liste
+    // ======================================================
+    // WETTKAMPF ÖFFNEN
+    // ======================================================
+
+    wettkaempfeListe
         .querySelectorAll(
             "[data-oeffnen]"
         )
@@ -300,7 +413,12 @@ async function wettkaempfeLaden() {
         );
 
 
-    liste
+
+    // ======================================================
+    // WETTKAMPF BEARBEITEN
+    // ======================================================
+
+    wettkaempfeListe
         .querySelectorAll(
             "[data-bearbeiten]"
         )
@@ -326,7 +444,12 @@ async function wettkaempfeLaden() {
         );
 
 
-    liste
+
+    // ======================================================
+    // WETTKAMPF LÖSCHEN
+    // ======================================================
+
+    wettkaempfeListe
         .querySelectorAll(
             "[data-loeschen]"
         )
@@ -354,11 +477,12 @@ async function wettkaempfeLaden() {
 }
 
 
+
 // ==========================================================
-// WETTKAMPF ANLEGEN
+// WETTKAMPF SPEICHERN
 // ==========================================================
 
-async function wettkampfAnlegen(
+async function wettkampfSpeichernFunktion(
     event
 ) {
 
@@ -366,45 +490,47 @@ async function wettkampfAnlegen(
 
 
     const name =
-        document.getElementById(
-            "wettkampf-name"
-        ).value.trim();
+        wettkampfName.value.trim();
 
 
     const datum =
-        document.getElementById(
-            "wettkampf-datum"
-        ).value;
+        wettkampfDatum.value;
 
 
-    const anzahlErgebnisse =
+    const ergebnisse =
         Number(
-            document.getElementById(
-                "anzahl-ergebnisse"
-            ).value
+            anzahlErgebnisse.value
         );
 
 
-    const teamgroesse =
+    const groesse =
         Number(
-            document.getElementById(
-                "teamgroesse"
-            ).value
+            teamgroesse.value
         );
 
 
     const status =
-        document.getElementById(
-            "wettkampf-status"
-        ).value;
+        wettkampfStatus.value;
 
+
+    const id =
+        wettkampfId.value.trim();
+
+
+
+    // ======================================================
+    // VALIDIERUNG
+    // ======================================================
 
     if (!name) {
 
-        meldungAnzeigen(
+        meldung(
             "Bitte einen Wettkampfnamen eingeben.",
             "status-fehler"
         );
+
+
+        wettkampfName.focus();
 
 
         return;
@@ -414,26 +540,76 @@ async function wettkampfAnlegen(
 
     if (!datum) {
 
-        meldungAnzeigen(
+        meldung(
             "Bitte ein Datum auswählen.",
             "status-fehler"
         );
 
 
+        wettkampfDatum.focus();
+
+
         return;
 
     }
 
 
     if (
-        !Number.isInteger(
-            anzahlErgebnisse
-        ) ||
-        anzahlErgebnisse < 1
+        !Number.isInteger(ergebnisse) ||
+        ergebnisse < 1 ||
+        ergebnisse > 20
     ) {
 
-        meldungAnzeigen(
-            "Die Anzahl der Ergebnisse muss mindestens 1 sein.",
+        meldung(
+            "Die Anzahl der Ergebnisse muss zwischen 1 und 20 liegen.",
+            "status-fehler"
+        );
+
+
+        anzahlErgebnisse.focus();
+
+
+        return;
+
+    }
+
+
+    if (
+        !Number.isInteger(groesse) ||
+        groesse < 1 ||
+        groesse > 100
+    ) {
+
+        meldung(
+            "Die Teamgröße muss zwischen 1 und 100 liegen.",
+            "status-fehler"
+        );
+
+
+        teamgroesse.focus();
+
+
+        return;
+
+    }
+
+
+    const erlaubteStatus =
+        [
+            "geplant",
+            "laufend",
+            "beendet"
+        ];
+
+
+    if (
+        !erlaubteStatus.includes(
+            status
+        )
+    ) {
+
+        meldung(
+            "Ungültiger Wettkampfstatus.",
             "status-fehler"
         );
 
@@ -443,17 +619,73 @@ async function wettkampfAnlegen(
     }
 
 
-    if (
-        !Number.isInteger(
-            teamgroesse
-        ) ||
-        teamgroesse < 1
-    ) {
 
-        meldungAnzeigen(
-            "Die Teamgröße muss mindestens 1 sein.",
-            "status-fehler"
+    // ======================================================
+    // BESTEHENDEN WETTKAMPF BEARBEITEN
+    // ======================================================
+
+    if (id) {
+
+        const {
+            error
+        } = await supabaseClient
+
+            .from("competitions")
+
+            .update({
+
+                name:
+                    name,
+
+                datum:
+                    datum,
+
+                anzahl_ergebnisse:
+                    ergebnisse,
+
+                teamgroesse:
+                    groesse,
+
+                status:
+                    status
+
+            })
+
+            .eq(
+                "id",
+                id
+            );
+
+
+        if (error) {
+
+            console.error(
+                "Fehler beim Bearbeiten des Wettkampfs:",
+                error
+            );
+
+
+            meldung(
+                "❌ Wettkampf konnte nicht geändert werden.",
+                "status-fehler"
+            );
+
+
+            return;
+
+        }
+
+
+        meldung(
+            "✅ Wettkampf wurde geändert.",
+            "status-ok"
         );
+
+
+        formularZuruecksetzen();
+
+
+        await wettkaempfeLaden();
 
 
         return;
@@ -461,10 +693,10 @@ async function wettkampfAnlegen(
     }
 
 
-    meldungAnzeigen(
-        "Wettkampf wird angelegt ..."
-    );
 
+    // ======================================================
+    // NEUEN WETTKAMPF ANLEGEN
+    // ======================================================
 
     const {
         data,
@@ -482,10 +714,10 @@ async function wettkampfAnlegen(
                 datum,
 
             anzahl_ergebnisse:
-                anzahlErgebnisse,
+                ergebnisse,
 
             teamgroesse:
-                teamgroesse,
+                groesse,
 
             status:
                 status
@@ -496,15 +728,16 @@ async function wettkampfAnlegen(
         .single();
 
 
+
     if (error) {
 
         console.error(
-            "Fehler beim Anlegen:",
+            "Fehler beim Anlegen des Wettkampfs:",
             error
         );
 
 
-        meldungAnzeigen(
+        meldung(
             "❌ Wettkampf konnte nicht angelegt werden.",
             "status-fehler"
         );
@@ -515,253 +748,152 @@ async function wettkampfAnlegen(
     }
 
 
-    meldungAnzeigen(
+
+    // ======================================================
+    // ERFOLGREICH ANGELEGT
+    // ======================================================
+
+    meldung(
         "✅ Wettkampf wurde angelegt.",
         "status-ok"
     );
 
 
-    form.reset();
-
-
-    document.getElementById(
-        "anzahl-ergebnisse"
-    ).value = 3;
-
-
-    document.getElementById(
-        "teamgroesse"
-    ).value = 3;
-
-
-    document.getElementById(
-        "wettkampf-status"
-    ).value =
-        "geplant";
+    formularZuruecksetzen();
 
 
     await wettkaempfeLaden();
 
 }
+
 
 
 // ==========================================================
 // WETTKAMPF BEARBEITEN
 // ==========================================================
 
-async function wettkampfBearbeiten(
+function wettkampfBearbeiten(
     id
 ) {
 
-    const {
-        data,
-        error
-    } = await supabaseClient
+    const wettkampf =
+        alleWettkaempfe.find(
+            function(
+                eintrag
+            ) {
 
-        .from("competitions")
+                return String(
+                    eintrag.id
+                ) === String(id);
 
-        .select(`
-            id,
-            name,
-            datum,
-            anzahl_ergebnisse,
-            teamgroesse,
-            status
-        `)
-
-        .eq(
-            "id",
-            id
-        )
-
-        .single();
+            }
+        );
 
 
-    if (error) {
+    if (!wettkampf) {
 
         console.error(
-            "Fehler beim Laden:",
-            error
-        );
-
-
-        alert(
-            "Wettkampf konnte nicht geladen werden."
-        );
-
-
-        return;
-
-    }
-
-
-    const name =
-        prompt(
-            "Wettkampfname:",
-            data.name
-        );
-
-
-    if (
-        name === null
-    ) {
-
-        return;
-
-    }
-
-
-    const datum =
-        prompt(
-            "Datum (JJJJ-MM-TT):",
-            data.datum
-        );
-
-
-    if (
-        datum === null
-    ) {
-
-        return;
-
-    }
-
-
-    const anzahl =
-        prompt(
-            "Anzahl Ergebnisse pro Start:",
-            data.anzahl_ergebnisse
-        );
-
-
-    if (
-        anzahl === null
-    ) {
-
-        return;
-
-    }
-
-
-    const teamgroesse =
-        prompt(
-            "Teamgröße:",
-            data.teamgroesse
-        );
-
-
-    if (
-        teamgroesse === null
-    ) {
-
-        return;
-
-    }
-
-
-    const status =
-        prompt(
-            "Status (geplant / laufend / beendet):",
-            data.status
-        );
-
-
-    if (
-        status === null
-    ) {
-
-        return;
-
-    }
-
-
-    const neueAnzahl =
-        Number(
-            anzahl
-        );
-
-
-    const neueTeamgroesse =
-        Number(
-            teamgroesse
-        );
-
-
-    if (
-        !name.trim() ||
-        !datum ||
-        !Number.isInteger(
-            neueAnzahl
-        ) ||
-        neueAnzahl < 1 ||
-        !Number.isInteger(
-            neueTeamgroesse
-        ) ||
-        neueTeamgroesse < 1
-    ) {
-
-        alert(
-            "Ungültige Eingaben."
-        );
-
-
-        return;
-
-    }
-
-
-    const {
-        error: updateError
-    } = await supabaseClient
-
-        .from("competitions")
-
-        .update({
-
-            name:
-                name.trim(),
-
-            datum:
-                datum,
-
-            anzahl_ergebnisse:
-                neueAnzahl,
-
-            teamgroesse:
-                neueTeamgroesse,
-
-            status:
-                status.trim()
-
-        })
-
-        .eq(
-            "id",
+            "Wettkampf nicht gefunden:",
             id
         );
 
 
-    if (updateError) {
-
-        console.error(
-            "Fehler beim Bearbeiten:",
-            updateError
-        );
-
-
-        alert(
-            "Wettkampf konnte nicht geändert werden."
-        );
-
-
         return;
 
     }
 
 
-    await wettkaempfeLaden();
+    wettkampfId.value =
+        wettkampf.id;
+
+
+    wettkampfName.value =
+        wettkampf.name || "";
+
+
+    wettkampfDatum.value =
+        wettkampf.datum || "";
+
+
+    anzahlErgebnisse.value =
+        wettkampf.anzahl_ergebnisse || 3;
+
+
+    teamgroesse.value =
+        wettkampf.teamgroesse || 3;
+
+
+    wettkampfStatus.value =
+        wettkampf.status || "geplant";
+
+
+    wettkampfSpeichern.textContent =
+        "Änderungen speichern";
+
+
+    wettkampfAbbrechen.style.display =
+        "inline-block";
+
+
+    meldung(
+        "Wettkampf wird bearbeitet."
+    );
+
+
+    window.scrollTo({
+
+        top: 0,
+
+        behavior: "smooth"
+
+    });
+
+
+    wettkampfName.focus();
 
 }
+
+
+
+// ==========================================================
+// FORMULAR ZURÜCKSETZEN
+// ==========================================================
+
+function formularZuruecksetzen() {
+
+    wettkampfId.value =
+        "";
+
+
+    wettkampfName.value =
+        "";
+
+
+    wettkampfDatum.value =
+        "";
+
+
+    anzahlErgebnisse.value =
+        3;
+
+
+    teamgroesse.value =
+        3;
+
+
+    wettkampfStatus.value =
+        "geplant";
+
+
+    wettkampfSpeichern.textContent =
+        "Wettkampf anlegen";
+
+
+    wettkampfAbbrechen.style.display =
+        "none";
+
+}
+
 
 
 // ==========================================================
@@ -772,9 +904,44 @@ async function wettkampfLoeschen(
     id
 ) {
 
+    const wettkampf =
+        alleWettkaempfe.find(
+            function(
+                eintrag
+            ) {
+
+                return String(
+                    eintrag.id
+                ) === String(id);
+
+            }
+        );
+
+
+    if (!wettkampf) {
+
+        return;
+
+    }
+
+
     const bestaetigt =
         confirm(
-            "Soll dieser Wettkampf wirklich gelöscht werden?\n\nDabei können auch zugehörige Starts und Ergebnisse betroffen sein."
+
+            "Wettkampf wirklich löschen?\n\n" +
+
+            wettkampf.name +
+
+            "\n" +
+
+            datumFormatieren(
+                wettkampf.datum
+            ) +
+
+            "\n\n" +
+
+            "Achtung: Zugehörige Teams, Starts und Ergebnisse können ebenfalls von Datenbankbeziehungen betroffen sein."
+
         );
 
 
@@ -785,165 +952,10 @@ async function wettkampfLoeschen(
     }
 
 
-    // ------------------------------------------------------
-    // ZUERST ERGEBNISSE DER STARTS LÖSCHEN
-    // ------------------------------------------------------
 
-    const {
-        data: starts,
-        error: startsError
-    } = await supabaseClient
-
-        .from("starts")
-
-        .select(
-            "id"
-        )
-
-        .eq(
-            "competition_id",
-            id
-        );
-
-
-    if (startsError) {
-
-        console.error(
-            startsError
-        );
-
-
-        alert(
-            "Starts konnten nicht geprüft werden."
-        );
-
-
-        return;
-
-    }
-
-
-    if (
-        starts &&
-        starts.length > 0
-    ) {
-
-        const startIds =
-            starts.map(
-                function(start) {
-
-                    return start.id;
-
-                }
-            );
-
-
-        const {
-            error: resultsError
-        } = await supabaseClient
-
-            .from("results")
-
-            .delete()
-
-            .in(
-                "start_id",
-                startIds
-            );
-
-
-        if (resultsError) {
-
-            console.error(
-                resultsError
-            );
-
-
-            alert(
-                "Ergebnisse konnten nicht gelöscht werden."
-            );
-
-
-            return;
-
-        }
-
-
-        // --------------------------------------------------
-        // STARTS LÖSCHEN
-        // --------------------------------------------------
-
-        const {
-            error: deleteStartsError
-        } = await supabaseClient
-
-            .from("starts")
-
-            .delete()
-
-            .eq(
-                "competition_id",
-                id
-            );
-
-
-        if (deleteStartsError) {
-
-            console.error(
-                deleteStartsError
-            );
-
-
-            alert(
-                "Starts konnten nicht gelöscht werden."
-            );
-
-
-            return;
-
-        }
-
-    }
-
-
-    // ------------------------------------------------------
-    // TEAMS DES WETTKAMPFS LÖSCHEN
-    // ------------------------------------------------------
-
-    const {
-        error: teamsError
-    } = await supabaseClient
-
-        .from("teams")
-
-        .delete()
-
-        .eq(
-            "competition_id",
-            id
-        );
-
-
-    if (teamsError) {
-
-        console.error(
-            teamsError
-        );
-
-
-        alert(
-            "Teams konnten nicht gelöscht werden."
-        );
-
-
-        return;
-
-    }
-
-
-    // ------------------------------------------------------
+    // ======================================================
     // WETTKAMPF LÖSCHEN
-    // ------------------------------------------------------
+    // ======================================================
 
     const {
         error
@@ -962,13 +974,19 @@ async function wettkampfLoeschen(
     if (error) {
 
         console.error(
-            "Fehler beim Löschen:",
+            "Fehler beim Löschen des Wettkampfs:",
             error
         );
 
 
-        alert(
-            "Wettkampf konnte nicht gelöscht werden."
+        meldung(
+
+            "❌ Wettkampf konnte nicht gelöscht werden. " +
+
+            "Möglicherweise existieren noch Teams oder Starts.",
+
+            "status-fehler"
+
         );
 
 
@@ -977,9 +995,185 @@ async function wettkampfLoeschen(
     }
 
 
+    meldung(
+        "✅ Wettkampf wurde gelöscht.",
+        "status-ok"
+    );
+
+
     await wettkaempfeLaden();
 
 }
+
+
+
+// ==========================================================
+// DATUM FORMATIEREN
+// ==========================================================
+
+function datumFormatieren(
+    datum
+) {
+
+    if (!datum) {
+
+        return "";
+
+    }
+
+
+    const teile =
+        String(
+            datum
+        ).split("-");
+
+
+    if (
+        teile.length !== 3
+    ) {
+
+        return datum;
+
+    }
+
+
+    return (
+
+        teile[2] +
+        "." +
+        teile[1] +
+        "." +
+        teile[0]
+
+    );
+
+}
+
+
+
+// ==========================================================
+// STATUS FORMATIEREN
+// ==========================================================
+
+function statusFormatieren(
+    status
+) {
+
+    switch (status) {
+
+        case "geplant":
+
+            return "🟡 Geplant";
+
+
+        case "laufend":
+
+            return "🟢 Laufend";
+
+
+        case "beendet":
+
+            return "🔵 Beendet";
+
+
+        default:
+
+            return escapeHtml(
+                status || ""
+            );
+
+    }
+
+}
+
+
+
+// ==========================================================
+// HTML SICHER MACHEN
+// ==========================================================
+
+function escapeHtml(
+    wert
+) {
+
+    if (
+        wert === null ||
+        wert === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(wert)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+// ==========================================================
+// FORMULAR EVENT
+// ==========================================================
+
+if (wettkampfForm) {
+
+    wettkampfForm.addEventListener(
+        "submit",
+        wettkampfSpeichernFunktion
+    );
+
+}
+
+
+
+// ==========================================================
+// ABBRECHEN
+// ==========================================================
+
+if (wettkampfAbbrechen) {
+
+    wettkampfAbbrechen.addEventListener(
+        "click",
+        function() {
+
+            formularZuruecksetzen();
+
+
+            meldung(
+                ""
+            );
+
+        }
+    );
+
+}
+
 
 
 // ==========================================================
@@ -989,16 +1183,6 @@ async function wettkampfLoeschen(
 document.addEventListener(
     "DOMContentLoaded",
     function() {
-
-        if (form) {
-
-            form.addEventListener(
-                "submit",
-                wettkampfAnlegen
-            );
-
-        }
-
 
         wettkaempfeLaden();
 
