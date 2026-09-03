@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ergebnisse & Ranglisten – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html" class="active">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Print Header -->
+        <div class="print-only" style="margin-bottom: 1.5rem; text-align: center; border-bottom: 2px solid #000; padding-bottom: 0.75rem;">
+            <h1 style="font-size: 1.6rem; margin-bottom: 0.25rem;">SSV 1928 Sulzbach e.V.</h1>
+            <h2 id="print-competition-title" style="font-size: 1.3rem; margin-bottom: 0.25rem;">Wettkampfauswertung</h2>
+            <p id="print-competition-meta" style="font-size: 0.95rem; color: #555;">–</p>
+        </div>
+
+        <div class="page-header no-print">
+            <div>
+                <h1 class="page-title">🏆 Ergebnisse & Ranglisten</h1>
+                <p class="page-subtitle">Offizielle Einzel- und Mannschaftsauswertung</p>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <button type="button" id="btn-print" class="btn btn-outline">🖨️ Drucken / PDF</button>
+                <button type="button" id="btn-export-csv" class="btn btn-outline">📥 CSV Export</button>
+                <a id="btn-live-qr" href="qrcode.html" class="btn btn-outline" title="Live-Ergebnisseite und QR-Code anzeigen">📺 Live / QR</a>
+                <a id="btn-edit-results" href="ergebnisse-eingabe.html" class="btn btn-primary">📝 Ergebnisse bearbeiten</a>
+            </div>
+        </div>
+
+        <!-- Wettkampf-Auswahl Card -->
+        <div class="card no-print" style="margin-bottom: 1.25rem;">
+            <div class="card-body" style="padding: 1rem 1.25rem;">
+                <div class="form-row" style="align-items: center;">
+                    <div class="form-group" style="margin-bottom: 0; flex: 2; min-width: 260px;">
+                        <label for="select-competition" style="font-weight: 700;">🎯 Wettkampf auswählen:</label>
+                        <select id="select-competition" class="form-select">
+                            <option value="">Lade Wettkämpfe...</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0; flex: 1; min-width: 200px;">
+                        <label style="font-weight: 700;">Status & Modus:</label>
+                        <div id="comp-info-badge" style="padding: 0.5rem 0;">–</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Ranglisten Tabs -->
+        <div class="card">
+            <div class="card-header no-print" style="padding-bottom: 0;">
+                <ul class="nav-tabs" style="margin-bottom: 0; width: 100%;">
+                    <li><button type="button" class="nav-tab-btn active" data-tab="tab-einzel">🥇 Einzelwertung</button></li>
+                    <li><button type="button" class="nav-tab-btn" data-tab="tab-team">🛡️ Mannschaftswertung</button></li>
+                    <li><button type="button" class="nav-tab-btn" data-tab="tab-all">📋 Alle Starts & Serien</button></li>
+                </ul>
+            </div>
+
+            <div class="card-body">
+                
+                <!-- Tab 1: Einzelwertung -->
+                <div id="tab-einzel" class="tab-pane active">
+                    <div class="no-print" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                        <h3 class="card-title" style="margin-bottom: 0;">Rangliste Einzelwertung</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <label style="margin-bottom: 0; font-size: 0.85rem;">Filter:</label>
+                            <select id="filter-einzel-ak" class="form-select form-select-sm" style="width: auto; padding: 0.25rem 0.5rem;">
+                                <option value="all">Alle Starts (inkl. AK)</option>
+                                <option value="wertung">Nur reguläre Wertung (ohne AK)</option>
+                                <option value="ak_only">Nur Außer Konkurrenz (AK)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="einzel-table-container">
+                        <div class="empty-state"><p>Wähle einen Wettkampf aus.</p></div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Mannschaftswertung -->
+                <div id="tab-team" class="tab-pane">
+                    <div class="no-print" style="margin-bottom: 1rem;">
+                        <h3 class="card-title">Rangliste Mannschaftswertung</h3>
+                    </div>
+                    <div id="team-table-container">
+                        <div class="empty-state"><p>Wähle einen Wettkampf aus.</p></div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Alle Starts & Serien -->
+                <div id="tab-all" class="tab-pane">
+                    <div class="no-print" style="margin-bottom: 1rem;">
+                        <h3 class="card-title">Vollständiges Protokoll aller Starts</h3>
+                    </div>
+                    <div id="all-starts-table-container">
+                        <div class="empty-state"><p>Wähle einen Wettkampf aus.</p></div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer no-print">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="ergebnisse.js"></script>
+</body>
+</html>

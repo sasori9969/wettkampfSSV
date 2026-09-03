@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wettkampf-Details – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html" class="active">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <!-- Breadcrumb / Back Link -->
+        <div style="margin-bottom: 1rem;">
+            <a href="wettkaempfe.html" class="btn btn-sm btn-outline">&larr; Zurück zu allen Wettkämpfen</a>
+        </div>
+
+        <!-- Competition Header Card -->
+        <div class="card" id="competition-header-card">
+            <div class="card-body">
+                <div class="page-header" style="margin-bottom: 0.5rem;">
+                    <div>
+                        <h1 class="page-title" id="comp-title-display">Lade Wettkampf...</h1>
+                        <p class="page-subtitle" id="comp-meta-display">–</p>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: wrap;">
+                        <a id="btn-quick-entry" href="#" class="btn btn-primary">📝 Ergebnisse erfassen</a>
+                        <a id="btn-quick-ranking" href="#" class="btn btn-success">🏆 Rangliste ansehen</a>
+                        <a id="btn-quick-live-qr" href="#" class="btn btn-outline">📺 Live-QR</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            
+            <!-- Section 1: Teams verwalten -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🛡️ Teams / Mannschaften</h2>
+                    <span id="teams-count-badge" class="badge badge-team">0 Teams</span>
+                </div>
+                <div class="card-body">
+                    <form id="form-add-team" style="margin-bottom: 1.25rem;">
+                        <div class="form-group">
+                            <label for="team-name">Neues Team anlegen</label>
+                            <div style="display: flex; gap: 0.5rem;">
+                                <input type="text" id="team-name" class="form-control" placeholder="z. B. Team Grün" required>
+                                <button type="submit" id="btn-save-team" class="btn btn-primary">
+                                    + Team anlegen
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    <div id="teams-list-container">
+                        <div class="empty-state" style="padding: 1.5rem 0;">
+                            <p>Noch keine Teams angelegt.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 2: Starter hinzufügen -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">➕ Starter hinzufügen</h2>
+                </div>
+                <div class="card-body">
+                    
+                    <!-- Schritt 1: Teilnehmer suchen & auswählen -->
+                    <div class="form-group">
+                        <label for="search-participant-input">1. Teilnehmer suchen <span style="color: var(--danger);">*</span></label>
+                        <div class="search-wrapper">
+                            <input type="text" id="search-participant-input" class="form-control form-control-lg" placeholder="🔍 Name suchen oder hier klicken..." autocomplete="off">
+                            <ul id="participant-search-results" class="search-results-list" style="display: none;"></ul>
+                        </div>
+                        <div class="form-text">💡 Klicke in das Feld, um die zuletzt angelegten Teilnehmer sofort anzuzeigen.</div>
+                    </div>
+
+                    <!-- Ausgewählter Teilnehmer Banner -->
+                    <div id="selected-participant-card" class="selected-card" style="display: none;">
+                        <div>
+                            <div class="selected-title" id="selected-participant-name">–</div>
+                            <div class="selected-meta" id="selected-participant-info">Teilnehmer ausgewählt</div>
+                        </div>
+                        <button type="button" id="btn-deselect-participant" class="btn btn-sm btn-outline">&times; Abwählen</button>
+                    </div>
+
+                    <!-- Schritt 2: Team, AK und Speichern -->
+                    <form id="form-add-start">
+                        <input type="hidden" id="selected-participant-id">
+
+                        <div class="form-group">
+                            <label for="select-start-team">2. Mannschaft / Einzelstart</label>
+                            <select id="select-start-team" class="form-select">
+                                <option value="">Einzelstart (kein Team)</option>
+                            </select>
+                            <div class="form-text" id="team-capacity-info">Einzelstarts zählen für die Einzelwertung.</div>
+                        </div>
+
+                        <div class="form-check" style="margin-top: 1rem; margin-bottom: 1.25rem;">
+                            <input type="checkbox" id="check-ak" class="form-check-input">
+                            <label for="check-ak" class="form-check-label">
+                                <strong>Außer Konkurrenz (AK)</strong>
+                                <span class="form-text" style="display: block; margin-top: 0;">Starter nimmt teil, wird aber als AK gekennzeichnet.</span>
+                            </label>
+                        </div>
+
+                        <button type="submit" id="btn-save-start" class="btn btn-primary btn-block" disabled>
+                            ➕ Start zum Wettkampf hinzufügen
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section 3: Starterliste -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    📋 Starterliste dieses Wettkampfs
+                    <span id="starts-count-badge" class="badge badge-single" style="margin-left: 0.5rem;">0 Starts</span>
+                </h2>
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="text" id="filter-starts-input" class="form-control form-control-sm" placeholder="🔍 Starter filtern..." style="width: 220px;">
+                </div>
+            </div>
+            <div class="card-body" id="starts-table-container">
+                <div class="empty-state">
+                    <p>Lade Starter...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="wettkampf.js"></script>
+</body>
+</html>

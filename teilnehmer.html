@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teilnehmer verwalten – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html" class="active">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">👥 Teilnehmerverwaltung</h1>
+                <p class="page-subtitle">Schützen und Teilnehmer anlegen, suchen und bearbeiten</p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            
+            <!-- Card: Teilnehmer anlegen -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">➕ Neuen Teilnehmer anlegen</h2>
+                </div>
+                <div class="card-body">
+                    <form id="form-add-participant">
+                        <div class="form-group">
+                            <label for="vorname">Vorname <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="vorname" class="form-control" placeholder="z. B. Max" required autofocus>
+                        </div>
+                        <div class="form-group">
+                            <label for="nachname">Nachname <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="nachname" class="form-control" placeholder="z. B. Müller" required>
+                        </div>
+                        <button type="submit" id="btn-save-participant" class="btn btn-primary btn-block">
+                            💾 Teilnehmer speichern
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card: Schnelle Infos -->
+            <div class="card" style="background: linear-gradient(135deg, #ffffff, var(--primary-bg));">
+                <div class="card-header">
+                    <h2 class="card-title">ℹ️ Hinweise</h2>
+                </div>
+                <div class="card-body">
+                    <ul style="padding-left: 1.25rem; color: var(--text-main); font-size: 0.95rem; line-height: 1.6;">
+                        <li>Teilnehmer werden vereinsweit gespeichert und können in beliebig vielen Wettkämpfen starten.</li>
+                        <li><strong>Schnellauswahl:</strong> Neu angelegte Teilnehmer erscheinen in allen Suchfeldern sofort ganz oben.</li>
+                        <li><strong>Mehrfachstarts:</strong> Ein Teilnehmer kann innerhalb eines Wettkampfs sowohl für ein Team als auch als Einzelstarter (oder mit AK) antreten.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Card: Teilnehmerliste & Suche -->
+        <div class="card">
+            <div class="card-header">
+                <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                    <h2 class="card-title" style="margin-bottom: 0;">
+                        📋 Alle Teilnehmer
+                        <span id="participant-count-badge" class="badge badge-single" style="margin-left: 0.5rem;">0</span>
+                    </h2>
+                    <select id="select-participant-sort" class="form-select form-select-sm" style="width: auto; padding: 0.35rem 0.65rem; font-size: 0.85rem;">
+                        <option value="recent" selected>🕒 Neueste zuerst</option>
+                        <option value="alpha">🔤 Alphabetisch (A-Z)</option>
+                    </select>
+                </div>
+                <div style="width: 320px; max-width: 100%;">
+                    <div class="search-wrapper">
+                        <input type="text" id="search-participants" class="form-control" placeholder="🔍 Name suchen oder hier klicken..." autocomplete="off">
+                        <ul id="participant-search-results" class="search-results-list" style="display: none;"></ul>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body" id="participants-table-container">
+                <div class="empty-state">
+                    <p>Lade Teilnehmer...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal: Teilnehmer bearbeiten -->
+    <div id="edit-modal" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; align-items: center; justify-content: center;">
+        <div class="card" style="max-width: 480px; width: 90%; margin: auto;">
+            <div class="card-header">
+                <h3 class="card-title">✏️ Teilnehmer bearbeiten</h3>
+                <button type="button" id="btn-close-modal" class="btn btn-sm btn-outline">&times;</button>
+            </div>
+            <div class="card-body">
+                <form id="form-edit-participant">
+                    <input type="hidden" id="edit-id">
+                    <div class="form-group">
+                        <label for="edit-vorname">Vorname <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="edit-vorname" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-nachname">Nachname <span style="color: var(--danger);">*</span></label>
+                        <input type="text" id="edit-nachname" class="form-control" required>
+                    </div>
+                    <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+                        <button type="button" id="btn-cancel-edit" class="btn btn-secondary">Abbrechen</button>
+                        <button type="submit" class="btn btn-primary">Änderungen speichern</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="teilnehmer.js"></script>
+</body>
+</html>

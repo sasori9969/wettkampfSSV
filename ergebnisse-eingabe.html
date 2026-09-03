@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ergebnisse erfassen – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html" class="active">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📝 Ergebniserfassung</h1>
+                <p class="page-subtitle">Einzelergebnisse & Serien für Schützen und Starts erfassen</p>
+            </div>
+            <div id="header-action-links" style="display: flex; gap: 0.5rem;">
+                <a id="btn-to-competition" href="wettkaempfe.html" class="btn btn-outline btn-sm">🎯 Zu den Wettkämpfen</a>
+                <a id="btn-to-rankings" href="ergebnisse.html" class="btn btn-success btn-sm">🏆 Zur Rangliste</a>
+            </div>
+        </div>
+
+        <!-- Optionaler Wettkampf-Filter -->
+        <div class="card" style="margin-bottom: 1.25rem;">
+            <div class="card-body" style="padding: 0.85rem 1.25rem;">
+                <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+                    <label for="filter-competition-select" style="margin-bottom: 0; font-weight: 700; white-space: nowrap;">
+                        🎯 Wettkampf-Filter:
+                    </label>
+                    <select id="filter-competition-select" class="form-select" style="flex: 1; min-width: 240px;">
+                        <option value="">Alle Wettkämpfe anzeigen</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Schritt-Container -->
+        <div class="grid-2">
+            
+            <!-- Linke Spalte: Schritt 1 (Suche) & Schritt 2 (Start-Auswahl) -->
+            <div>
+                
+                <!-- Schritt 1: Teilnehmer suchen -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">1️⃣ Teilnehmer suchen</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="form-group">
+                            <label for="search-participant-input">Name des Schützen / Teilnehmers:</label>
+                            <div class="search-wrapper">
+                                <input type="text" id="search-participant-input" class="form-control form-control-lg" placeholder="🔍 Name suchen oder hier klicken..." autocomplete="off" autofocus>
+                                <ul id="participant-search-results" class="search-results-list" style="display: none;"></ul>
+                            </div>
+                            <div class="form-text">💡 Klicke in das Feld, um die zuletzt angelegten Teilnehmer sofort anzuzeigen.</div>
+                        </div>
+
+                        <!-- Ausgewählter Teilnehmer -->
+                        <div id="selected-participant-card" class="selected-card" style="display: none; margin-top: 0.75rem;">
+                            <div>
+                                <div class="selected-title" id="selected-participant-name">–</div>
+                                <div class="selected-meta" id="selected-participant-meta">Teilnehmer gewählt</div>
+                            </div>
+                            <button type="button" id="btn-reset-participant" class="btn btn-sm btn-outline">&times; Anderer Teilnehmer</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Schritt 2: Start auswählen -->
+                <div class="card" id="card-step-2" style="display: none;">
+                    <div class="card-header">
+                        <h2 class="card-title">2️⃣ Start auswählen</h2>
+                        <span id="starts-count-badge" class="badge badge-team">0 Starts</span>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                            Wähle den konkreten Start aus, für den Ergebnisse erfasst oder bearbeitet werden sollen:
+                        </p>
+                        <div id="starts-selection-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <!-- Dynamische Start-Karten -->
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Rechte Spalte: Schritt 3 (Ergebnisse eingeben & speichern) -->
+            <div>
+                
+                <div class="card" id="card-step-3">
+                    <div class="card-header">
+                        <h2 class="card-title">3️⃣ Ergebnisse eintragen</h2>
+                        <span id="start-status-badge" class="badge badge-single">Kein Start gewählt</span>
+                    </div>
+                    <div class="card-body">
+                        
+                        <div id="no-start-selected-hint" class="empty-state" style="padding: 2.5rem 1rem;">
+                            <div class="empty-state-icon">🎯</div>
+                            <div class="empty-state-title">Kein Start ausgewählt</div>
+                            <p>Klicke links in das Suchfeld und wähle einen Schützen aus, um die Einzelergebnisse einzutragen.</p>
+                        </div>
+
+                        <form id="form-results-entry" style="display: none;">
+                            
+                            <!-- Start Details Summary -->
+                            <div class="selected-card" style="margin-bottom: 1.25rem;">
+                                <div>
+                                    <div class="selected-title" id="entry-start-title">–</div>
+                                    <div class="selected-meta" id="entry-start-subtitle">–</div>
+                                </div>
+                            </div>
+
+                            <!-- Dynamische Serien-Felder -->
+                            <div id="score-inputs-container" class="score-inputs-grid">
+                                <!-- Werden dynamisch je nach anzahl_ergebnisse erzeugt -->
+                            </div>
+
+                            <!-- Live Summe Box -->
+                            <div class="total-score-box">
+                                <div class="total-score-label">Gesamtergebnis</div>
+                                <div class="total-score-value" id="live-total-score">0,00</div>
+                            </div>
+
+                            <button type="submit" id="btn-save-results" class="btn btn-primary btn-lg btn-block">
+                                💾 Ergebnisse speichern
+                            </button>
+
+                        </form>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="ergebnisse-eingabe.js"></script>
+</body>
+</html>

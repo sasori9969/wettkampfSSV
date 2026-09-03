@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Live-Ergebnisse – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <style>
+        :root {
+            --primary: #1b5e20;
+            --primary-light: #2e7d32;
+            --primary-dark: #0d3810;
+            --primary-bg: #e8f5e9;
+            --accent: #f57f17;
+            --accent-light: #fff8e1;
+            --danger: #d32f2f;
+            --danger-light: #ffebee;
+            --gold: #ffd700;
+            --silver: #e0e0e0;
+            --bronze: #cd7f32;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border-color: #cbd5e1;
+            --bg-page: #0d1117;
+            --bg-card: #161b22;
+            --bg-card2: #21262d;
+            --shadow-lg: 0 10px 30px rgba(0,0,0,0.5);
+            --radius-md: 12px;
+            --radius-sm: 8px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: #e6edf3;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ========================
+           HEADER
+        ======================== */
+        .live-header {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 60%, #2e7d32 100%);
+            padding: 1.25rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 3px solid var(--accent);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .live-header-brand {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .live-header-logo {
+            width: 48px;
+            height: 48px;
+        }
+
+        .live-header-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+        }
+
+        .live-header-subtitle {
+            font-size: 0.85rem;
+            opacity: 0.75;
+            margin-top: 2px;
+        }
+
+        .live-badge-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .live-badge {
+            background: #d32f2f;
+            color: #fff;
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1.5px;
+            padding: 0.4rem 1rem;
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            animation: livePulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes livePulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.75; transform: scale(0.97); }
+        }
+
+        .live-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #fff;
+            animation: dotPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .refresh-countdown {
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.6);
+            text-align: right;
+        }
+
+        .refresh-countdown strong {
+            color: rgba(255,255,255,0.9);
+            font-size: 1rem;
+        }
+
+        /* ========================
+           COMPETITION INFO BAR
+        ======================== */
+        .comp-info-bar {
+            background: var(--bg-card);
+            border-bottom: 1px solid #30363d;
+            padding: 0.85rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .comp-info-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #f0f6fc;
+        }
+
+        .comp-info-meta {
+            font-size: 0.85rem;
+            color: #8b949e;
+        }
+
+        .comp-info-badges {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.7rem;
+            font-size: 0.78rem;
+            font-weight: 700;
+            border-radius: 999px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+        }
+
+        .badge-laufend { background: #fef3c7; color: #b45309; }
+        .badge-abgeschlossen { background: #dcfce7; color: #15803d; }
+        .badge-geplant { background: #e0f2fe; color: #0369a1; }
+        .badge-ak { background: var(--accent-light); color: #b76400; border: 1px solid #ffe082; }
+        .badge-team { background: #e8f5e9; color: var(--primary-dark); border: 1px solid #a5d6a7; }
+        .badge-single { background: #f1f5f9; color: #475569; border: 1px solid #cbd5e1; }
+
+        /* ========================
+           SECTIONS LAYOUT
+        ======================== */
+        .live-main {
+            flex: 1;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .section-icon {
+            font-size: 2rem;
+            line-height: 1;
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #f0f6fc;
+            letter-spacing: 0.3px;
+        }
+
+        .section-subtitle {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        .section-divider {
+            border: none;
+            border-top: 2px solid #30363d;
+            margin: 2.5rem 0;
+        }
+
+        /* ========================
+           RANKING TABLE
+        ======================== */
+        .rank-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 1.05rem;
+        }
+
+        .rank-table thead th {
+            background: var(--bg-card2);
+            color: #8b949e;
+            font-size: 0.8rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.7px;
+            padding: 0.75rem 1rem;
+            border-bottom: 2px solid #30363d;
+            white-space: nowrap;
+        }
+
+        .rank-table tbody tr {
+            border-bottom: 1px solid #21262d;
+            transition: background 0.15s;
+        }
+
+        .rank-table tbody tr:hover {
+            background: #21262d;
+        }
+
+        .rank-table td {
+            padding: 0.9rem 1rem;
+            vertical-align: middle;
+        }
+
+        .rank-table .num-col {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Position Badges */
+        .pos-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .pos-1 { background: var(--gold); color: #3d2b00; font-size: 1.1rem; }
+        .pos-2 { background: var(--silver); color: #2c2c2c; }
+        .pos-3 { background: var(--bronze); color: #fff; }
+        .pos-n { color: #8b949e; font-weight: 700; font-size: 1rem; }
+
+        .participant-name {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: #f0f6fc;
+        }
+
+        .series-values {
+            font-size: 0.85rem;
+            color: #8b949e;
+            margin-top: 2px;
+        }
+
+        .total-score {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #58a6ff;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .total-score-gold { color: var(--gold); }
+        .total-score-silver { color: var(--silver); }
+        .total-score-bronze { color: var(--bronze); }
+        .total-score-na { color: #4d5566; font-size: 1rem; }
+
+        .row-top3 td { background: rgba(255, 255, 255, 0.03); }
+
+        /* Team Section */
+        .team-card {
+            background: var(--bg-card);
+            border: 1px solid #30363d;
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+            overflow: hidden;
+            transition: border-color 0.2s;
+        }
+
+        .team-card:hover {
+            border-color: #58a6ff;
+        }
+
+        .team-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 1.5rem;
+            background: var(--bg-card2);
+            border-bottom: 1px solid #30363d;
+        }
+
+        .team-card-pos {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .team-card-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #f0f6fc;
+        }
+
+        .team-card-total {
+            font-size: 1.8rem;
+            font-weight: 800;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .team-card-members {
+            padding: 0.75rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .team-member-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #21262d;
+        }
+
+        .team-member-row:last-child {
+            border-bottom: none;
+        }
+
+        .team-member-name {
+            font-weight: 600;
+            color: #e6edf3;
+            font-size: 0.95rem;
+        }
+
+        .team-member-series {
+            font-size: 0.8rem;
+            color: #8b949e;
+            margin-top: 1px;
+        }
+
+        .team-member-score {
+            font-weight: 700;
+            font-size: 1.05rem;
+            font-variant-numeric: tabular-nums;
+            color: #79c0ff;
+        }
+
+        /* ========================
+           LOADING / EMPTY
+        ======================== */
+        .loading-spinner {
+            text-align: center;
+            padding: 4rem;
+            color: #8b949e;
+            font-size: 1.1rem;
+        }
+
+        .loading-spinner .spinner {
+            font-size: 3rem;
+            animation: spin 1.5s linear infinite;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem;
+            color: #8b949e;
+        }
+
+        .empty-state-icon { font-size: 3rem; margin-bottom: 0.75rem; }
+        .empty-state-title { font-size: 1.2rem; font-weight: 700; color: #f0f6fc; margin-bottom: 0.5rem; }
+
+        /* ========================
+           NO COMPETITION
+        ======================== */
+        .no-comp-screen {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .no-comp-icon { font-size: 5rem; margin-bottom: 1.5rem; }
+        .no-comp-title { font-size: 2rem; font-weight: 800; color: #f0f6fc; margin-bottom: 0.75rem; }
+        .no-comp-text { color: #8b949e; font-size: 1.05rem; max-width: 500px; }
+
+        /* ========================
+           LAST UPDATED
+        ======================== */
+        .last-updated-bar {
+            background: var(--bg-card);
+            border-top: 1px solid #30363d;
+            padding: 0.65rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #8b949e;
+        }
+
+        .ak-row td { opacity: 0.75; }
+
+        /* ========================
+           RESPONSIVE
+        ======================== */
+        @media (max-width: 768px) {
+            .live-main { padding: 1rem; }
+            .comp-info-bar { padding: 0.75rem 1rem; }
+            .live-header { padding: 1rem; }
+            .rank-table { font-size: 0.9rem; }
+            .total-score { font-size: 1.1rem; }
+            .team-card-total { font-size: 1.4rem; }
+        }
+
+        /* ========================
+           PRINT (hide irrelevant)
+        ======================== */
+        @media print {
+            .live-header, .last-updated-bar { display: none; }
+            body { background: #fff; color: #000; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="live-header">
+        <div class="live-header-brand">
+            <svg class="live-header-logo" viewBox="0 0 64 64" fill="none">
+                <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+            </svg>
+            <div>
+                <div class="live-header-title">SSV 1928 Sulzbach e.V.</div>
+                <div class="live-header-subtitle">Wettkampf-Live-Ergebnisse</div>
+            </div>
+        </div>
+        <div class="live-badge-container">
+            <div class="live-badge">
+                <div class="live-dot"></div>
+                LIVE
+            </div>
+            <div class="refresh-countdown">
+                Nächste Aktualisierung in<br>
+                <strong id="countdown-display">30</strong> Sek.
+            </div>
+        </div>
+    </header>
+
+    <!-- Competition Info Bar -->
+    <div class="comp-info-bar" id="comp-info-bar" style="display: none;">
+        <div>
+            <div class="comp-info-name" id="comp-name-display">–</div>
+            <div class="comp-info-meta" id="comp-meta-display">–</div>
+        </div>
+        <div class="comp-info-badges" id="comp-badges-display"></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="live-main" id="live-main">
+
+        <!-- Kein Wettkampf ausgewählt -->
+        <div class="no-comp-screen" id="no-comp-screen">
+            <div class="no-comp-icon">📡</div>
+            <div class="no-comp-title">Kein Wettkampf ausgewählt</div>
+            <div class="no-comp-text">
+                Diese Seite wird über einen QR-Code mit einem konkreten Wettkampf verknüpft.<br>
+                Bitte den QR-Code über die Admin-Seite (<strong>qrcode.html</strong>) generieren.
+            </div>
+        </div>
+
+        <!-- Ergebnisbereich -->
+        <div id="results-area" style="display: none;">
+
+            <!-- Sektion 1: Einzelwertung -->
+            <section>
+                <div class="section-header">
+                    <div class="section-icon">🏅</div>
+                    <div>
+                        <div class="section-title">Einzelwertung</div>
+                        <div class="section-subtitle">Rangliste nach Gesamtergebnis (ohne AK)</div>
+                    </div>
+                </div>
+                <div id="einzel-container">
+                    <div class="loading-spinner"><div class="spinner">⏳</div><br>Lade Ergebnisse...</div>
+                </div>
+            </section>
+
+            <hr class="section-divider">
+
+            <!-- Sektion 2: Mannschaftswertung -->
+            <section>
+                <div class="section-header">
+                    <div class="section-icon">🛡️</div>
+                    <div>
+                        <div class="section-title">Mannschaftswertung</div>
+                        <div class="section-subtitle">Teamrangliste nach Gesamt-Mannschaftsergebnis</div>
+                    </div>
+                </div>
+                <div id="team-container">
+                    <div class="loading-spinner"><div class="spinner">⏳</div><br>Lade Ergebnisse...</div>
+                </div>
+            </section>
+
+        </div>
+
+    </main>
+
+    <!-- Last Updated Bar -->
+    <footer class="last-updated-bar">
+        <span id="last-updated-text">Lade...</span>
+        <span>SSV 1928 Sulzbach e.V. – Live-Ergebnisse</span>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="live.js"></script>
+</body>
+</html>

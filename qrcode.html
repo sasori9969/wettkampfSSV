@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live-QR-Code – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* QR-spezifische Zusatz-Styles */
+        .qr-card {
+            max-width: 560px;
+            margin: 0 auto;
+        }
+
+        .qr-canvas-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            background: #fff;
+            border-radius: var(--radius, 8px);
+            border: 2px solid var(--primary, #1b5e20);
+            margin: 1rem 0;
+        }
+
+        #qr-canvas {
+            display: block;
+        }
+
+        #qr-placeholder {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted, #64748b);
+        }
+
+        .qr-placeholder-icon { font-size: 3.5rem; margin-bottom: 0.5rem; }
+
+        .url-display {
+            background: var(--primary-bg, #e8f5e9);
+            border: 1px solid #a5d6a7;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            font-family: monospace;
+            font-size: 0.82rem;
+            color: var(--primary-dark, #0d3810);
+            word-break: break-all;
+            margin: 0.75rem 0;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .live-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.65rem 1.25rem;
+            background: var(--primary, #1b5e20);
+            color: #fff;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .live-link-btn:hover {
+            background: var(--primary-light, #2e7d32);
+        }
+
+        .copy-btn-feedback {
+            transition: color 0.2s;
+        }
+
+        .hint-box {
+            background: var(--accent-light, #fff8e1);
+            border-left: 4px solid var(--accent, #f57f17);
+            padding: 0.85rem 1.1rem;
+            border-radius: 0 6px 6px 0;
+            font-size: 0.9rem;
+            color: #7c4700;
+            margin-top: 0.5rem;
+        }
+
+        .status-badge-laufend { background: #fef3c7; color: #b45309; }
+        .status-badge-abgeschlossen { background: #dcfce7; color: #15803d; }
+        .status-badge-geplant { background: #e0f2fe; color: #0369a1; }
+    </style>
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html" class="active">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">📺 Live-Anzeige & QR-Code</h1>
+                <p class="page-subtitle">Zeige live Ergebnisse auf einem Bildschirm oder Projektor – Zuschauer scannen einfach den QR-Code</p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+
+            <!-- Card: Wettkampf auswählen -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">🎯 Wettkampf auswählen</h2>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="select-competition">Wettkampf</label>
+                        <select id="select-competition" class="form-select">
+                            <option value="">– Lade Wettkämpfe... –</option>
+                        </select>
+                    </div>
+
+                    <!-- Ausgewählter Wettkampf Info -->
+                    <div id="comp-info-box" style="display: none; margin-top: 1rem;">
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;" id="comp-info-badges"></div>
+                        <div id="comp-info-meta" style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.6;"></div>
+                    </div>
+
+                    <div class="hint-box" style="margin-top: 1.25rem;">
+                        💡 Wähle den aktuellen Wettkampf aus. Der QR-Code rechts wird sofort generiert und kann mit dem Handy gescannt werden. Die Live-Seite aktualisiert sich automatisch alle <strong>30 Sekunden</strong>.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card: QR-Code -->
+            <div class="card qr-card">
+                <div class="card-header">
+                    <h2 class="card-title">📱 QR-Code zur Live-Seite</h2>
+                </div>
+                <div class="card-body">
+
+                    <!-- QR Anzeige -->
+                    <div class="qr-canvas-wrapper" id="qr-canvas-wrapper">
+                        <div id="qr-placeholder">
+                            <div class="qr-placeholder-icon">📡</div>
+                            <div>Bitte zuerst einen Wettkampf auswählen</div>
+                        </div>
+                        <canvas id="qr-canvas" style="display: none;"></canvas>
+                    </div>
+
+                    <!-- URL -->
+                    <div id="url-display" class="url-display" style="display: none;"></div>
+
+                    <!-- Aktionen -->
+                    <div class="qr-actions" id="qr-actions" style="display: none;">
+                        <a id="btn-open-live" href="#" target="_blank" rel="noopener" class="live-link-btn">
+                            📺 Live-Seite öffnen
+                        </a>
+                        <button id="btn-copy-url" class="btn btn-secondary">
+                            📋 URL kopieren
+                        </button>
+                        <button id="btn-print-qr" class="btn btn-secondary">
+                            🖨️ QR drucken
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Hinweis-Card: So funktioniert es -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <div class="card-header">
+                <h2 class="card-title">ℹ️ So funktioniert die Live-Anzeige</h2>
+            </div>
+            <div class="card-body">
+                <div class="grid-2" style="gap: 2rem;">
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-dark);">📺 Auf dem Bildschirm / Projektor</h3>
+                        <ol style="padding-left: 1.25rem; line-height: 1.75; color: var(--text-main);">
+                            <li>Wettkampf oben auswählen</li>
+                            <li>Auf <strong>„📺 Live-Seite öffnen"</strong> klicken</li>
+                            <li>Seite im Vollbild-Modus (<kbd>F11</kbd>) auf dem Projektor anzeigen</li>
+                            <li>Die Seite aktualisiert sich <strong>alle 30 Sekunden</strong> automatisch</li>
+                        </ol>
+                    </div>
+                    <div>
+                        <h3 style="font-size: 1rem; font-weight: 700; margin-bottom: 0.5rem; color: var(--primary-dark);">📱 QR-Code für Zuschauer</h3>
+                        <ol style="padding-left: 1.25rem; line-height: 1.75; color: var(--text-main);">
+                            <li>Den QR-Code oben ausdrucken (<kbd>🖨️ QR drucken</kbd>)</li>
+                            <li>Am Schießstand aufhängen oder auf dem Tisch aufstellen</li>
+                            <li>Zuschauer scannen den QR-Code mit dem Handy</li>
+                            <li>Jeder sieht live die aktuellen Ergebnisse auf seinem Gerät</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & qrcode.js & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="supabase-client.js"></script>
+    <script src="qrcode.js"></script>
+</body>
+</html>

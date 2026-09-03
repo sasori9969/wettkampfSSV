@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wettkämpfe verwalten – SSV 1928 Sulzbach e.V.</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html" class="active">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">🎯 Wettkampfverwaltung</h1>
+                <p class="page-subtitle">Wettkämpfe anlegen, konfigurieren und verwalten</p>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            
+            <!-- Card: Wettkampf anlegen -->
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">➕ Neuen Wettkampf anlegen</h2>
+                </div>
+                <div class="card-body">
+                    <form id="form-add-competition">
+                        <div class="form-group">
+                            <label for="comp-name">Wettkampfname <span style="color: var(--danger);">*</span></label>
+                            <input type="text" id="comp-name" class="form-control" placeholder="z. B. Vereinsmeisterschaft 2026" required autofocus>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="comp-date">Datum <span style="color: var(--danger);">*</span></label>
+                                <input type="date" id="comp-date" class="form-control" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="comp-status">Status</label>
+                                <select id="comp-status" class="form-select">
+                                    <option value="geplant" selected>Geplant</option>
+                                    <option value="laufend">Laufend</option>
+                                    <option value="abgeschlossen">Abgeschlossen</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="comp-results-count">Anzahl Ergebnisse je Starter</label>
+                                <input type="number" id="comp-results-count" class="form-control" value="3" min="1" max="10" required>
+                                <div class="form-text">Z. B. 3 Serien / Serienwertungen</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="comp-team-size">Teamgröße (max. Starter / Team)</label>
+                                <input type="number" id="comp-team-size" class="form-control" value="3" min="1" max="20" required>
+                                <div class="form-text">Standard: 3 Schützen pro Team</div>
+                            </div>
+                        </div>
+
+                        <button type="submit" id="btn-save-competition" class="btn btn-primary btn-block" style="margin-top: 0.5rem;">
+                            🎯 Wettkampf anlegen
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Card: Hinweise & Schnelltipps -->
+            <div class="card" style="background: linear-gradient(135deg, #ffffff, var(--primary-bg));">
+                <div class="card-header">
+                    <h2 class="card-title">💡 Wettkampf-Ablauf</h2>
+                </div>
+                <div class="card-body">
+                    <ol style="padding-left: 1.25rem; color: var(--text-main); font-size: 0.95rem; line-height: 1.6;">
+                        <li><strong>Wettkampf anlegen:</strong> Name, Datum und gewünschte Anzahl an Serien (Ergebnissen) festlegen.</li>
+                        <li><strong>Teams & Starter eintragen:</strong> Öffne den Wettkampf über den Button <em>"⚙️ Details & Starter"</em>, um Mannschaften anzulegen und Teilnehmer zuzuweisen.</li>
+                        <li><strong>Ergebnisse erfassen:</strong> Über <em>"📝 Ergebnisse erfassen"</em> können die Ringzahlen bzw. Wertungen je Start eingetragen werden.</li>
+                        <li><strong>Rangliste ansehen:</strong> Über <em>"🏆 Rangliste"</em> werden Einzel- und Mannschaftssieger automatisch ermittelt.</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Card: Wettkämpfe Übersicht -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">
+                    📋 Alle Wettkämpfe
+                    <span id="competition-count-badge" class="badge badge-single" style="margin-left: 0.5rem;">0</span>
+                </h2>
+                <div style="width: 300px; max-width: 100%;">
+                    <input type="text" id="search-competitions" class="form-control" placeholder="🔍 Wettkampf suchen...">
+                </div>
+            </div>
+            <div class="card-body" id="competitions-list-container">
+                <div class="empty-state">
+                    <p>Lade Wettkämpfe...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Wettkampfauswertung</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script src="wettkaempfe.js"></script>
+</body>
+</html>

@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSV 1928 Sulzbach e.V. – Wettkampfauswertung</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="alternate icon" href="favicon.ico">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="index.html" class="nav-brand">
+                <div class="nav-brand-logo">
+                    <svg viewBox="0 0 64 64" fill="none">
+                        <circle cx="32" cy="32" r="30" fill="#1b5e20" stroke="#f57f17" stroke-width="3"/>
+                        <circle cx="32" cy="32" r="20" fill="#ffffff"/>
+                        <circle cx="32" cy="32" r="10" fill="#1b5e20"/>
+                        <circle cx="32" cy="32" r="4" fill="#f57f17"/>
+                    </svg>
+                </div>
+                <div>
+                    SSV 1928 Sulzbach e.V.
+                    <span class="nav-brand-sub">Wettkampfauswertung</span>
+                </div>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">🏠 Startseite</a></li>
+                <li><a href="teilnehmer.html">👥 Teilnehmer</a></li>
+                <li><a href="wettkaempfe.html">🎯 Wettkämpfe</a></li>
+                <li><a href="ergebnisse-eingabe.html">📝 Ergebnisse erfassen</a></li>
+                <li><a href="ergebnisse.html">🏆 Ranglisten</a></li>
+                <li><a href="qrcode.html">📺 Live-QR</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <main class="main-content">
+        
+        <div class="page-header">
+            <div>
+                <h1 class="page-title">Willkommen zur Wettkampfauswertung</h1>
+                <p class="page-subtitle">Zentrale Verwaltung von Teilnehmern, Wettkämpfen, Starts und Ergebnissen für den SSV 1928 Sulzbach e.V.</p>
+            </div>
+        </div>
+
+        <!-- Live Statistics Bar -->
+        <div class="grid-3" style="margin-bottom: 2rem;">
+            <div class="stat-box">
+                <div class="stat-icon">👥</div>
+                <div>
+                    <div class="stat-value" id="stat-participants">–</div>
+                    <div class="stat-label">Registrierte Teilnehmer</div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">🎯</div>
+                <div>
+                    <div class="stat-value" id="stat-competitions">–</div>
+                    <div class="stat-label">Wettkämpfe angelegt</div>
+                </div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon">📋</div>
+                <div>
+                    <div class="stat-value" id="stat-starts">–</div>
+                    <div class="stat-label">Erfasste Starts</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Action Cards -->
+        <div class="grid-2" style="margin-bottom: 2rem;">
+            <a href="teilnehmer.html" class="action-card">
+                <div>
+                    <div class="action-card-icon">👥</div>
+                    <div class="action-card-title">Teilnehmer verwalten</div>
+                    <div class="action-card-desc">Schützen und Starter anlegen, bearbeiten, durchsuchen und die Teilnehmerkartei pflegen.</div>
+                </div>
+                <div class="action-card-arrow">Zur Teilnehmerverwaltung &rarr;</div>
+            </a>
+
+            <a href="wettkaempfe.html" class="action-card">
+                <div>
+                    <div class="action-card-icon">🎯</div>
+                    <div class="action-card-title">Wettkämpfe verwalten</div>
+                    <div class="action-card-desc">Wettkämpfe anlegen, Teams zusammenstellen, Einzel- und Mehrfachstarts zuweisen.</div>
+                </div>
+                <div class="action-card-arrow">Zu den Wettkämpfen &rarr;</div>
+            </a>
+
+            <a href="ergebnisse-eingabe.html" class="action-card">
+                <div>
+                    <div class="action-card-icon">📝</div>
+                    <div class="action-card-title">Ergebnisse erfassen</div>
+                    <div class="action-card-desc">Schnelle und intuitive Eingabe von Einzelergebnissen je Starter mit automatischer Summenbildung.</div>
+                </div>
+                <div class="action-card-arrow">Zur Ergebniseingabe &rarr;</div>
+            </a>
+
+            <a href="ergebnisse.html" class="action-card">
+                <div>
+                    <div class="action-card-icon">🏆</div>
+                    <div class="action-card-title">Ergebnisse & Ranglisten</div>
+                    <div class="action-card-desc">Einzel- und Mannschaftswertungen in Echtzeit ansehen, filtern, als CSV exportieren oder drucken.</div>
+                </div>
+                <div class="action-card-arrow">Zu den Ranglisten &rarr;</div>
+            </a>
+
+            <a href="qrcode.html" class="action-card" style="border-top-color: var(--accent);">
+                <div>
+                    <div class="action-card-icon">📺</div>
+                    <div class="action-card-title">Live-Anzeige & QR-Code</div>
+                    <div class="action-card-desc">Öffentliche Live-Ergebnisse für Beamer/Projektor oder QR-Code zum Scannen für Zuschauer am Schießstand.</div>
+                </div>
+                <div class="action-card-arrow">Zur Live-Anzeige & QR &rarr;</div>
+            </a>
+        </div>
+
+        <!-- Recent Competitions Card -->
+        <div class="card">
+            <div class="card-header">
+                <h2 class="card-title">🎯 Aktuelle & geplante Wettkämpfe</h2>
+                <a href="wettkaempfe.html" class="btn btn-sm btn-outline">+ Neuer Wettkampf</a>
+            </div>
+            <div class="card-body" id="recent-competitions-body">
+                <div class="empty-state">
+                    <p>Lade Wettkämpfe...</p>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 SSV 1928 Sulzbach e.V. – Alle Rechte vorbehalten. Bereitgestellt über GitHub Pages & Supabase.</p>
+    </footer>
+
+    <!-- Supabase & Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (!window.supabaseClient) {
+                console.error('Supabase Client nicht verfügbar.');
+                return;
+            }
+
+            try {
+                // Lade Zähler
+                const [partRes, compRes, startRes] = await Promise.all([
+                    window.supabaseClient.from('participants').select('id', { count: 'exact', head: true }),
+                    window.supabaseClient.from('competitions').select('id', { count: 'exact', head: true }),
+                    window.supabaseClient.from('starts').select('id', { count: 'exact', head: true })
+                ]);
+
+                if (partRes.count !== null) document.getElementById('stat-participants').textContent = partRes.count;
+                if (compRes.count !== null) document.getElementById('stat-competitions').textContent = compRes.count;
+                if (startRes.count !== null) document.getElementById('stat-starts').textContent = startRes.count;
+
+                // Lade Wettkämpfe
+                const { data: competitions, error: compError } = await window.supabaseClient
+                    .from('competitions')
+                    .select('*')
+                    .order('datum', { ascending: false })
+                    .limit(5);
+
+                const compContainer = document.getElementById('recent-competitions-body');
+
+                if (compError) {
+                    console.error('Fehler beim Laden der Wettkämpfe:', compError);
+                    compContainer.innerHTML = `<div class="alert alert-danger">Fehler beim Laden der Wettkämpfe: ${window.AppUtils.escapeHtml(compError.message)}</div>`;
+                    return;
+                }
+
+                if (!competitions || competitions.length === 0) {
+                    compContainer.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">🎯</div>
+                            <div class="empty-state-title">Noch keine Wettkämpfe vorhanden</div>
+                            <p>Erstelle deinen ersten Wettkampf, um Teilnehmer und Ergebnisse zu erfassen.</p>
+                            <br>
+                            <a href="wettkaempfe.html" class="btn btn-primary">+ Jetzt Wettkampf anlegen</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                let html = `
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Wettkampfname</th>
+                                    <th>Datum</th>
+                                    <th>Status</th>
+                                    <th>Modus</th>
+                                    <th style="text-align: right;">Aktionen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                `;
+
+                competitions.forEach(c => {
+                    const statusBadge = c.status === 'laufend' ? '<span class="badge badge-status-laufend">Laufend</span>' :
+                                        c.status === 'abgeschlossen' ? '<span class="badge badge-status-abgeschlossen">Beendet</span>' :
+                                        '<span class="badge badge-status-geplant">Geplant</span>';
+
+                    html += `
+                        <tr>
+                            <td><strong>${window.AppUtils.escapeHtml(c.name)}</strong></td>
+                            <td>${window.AppUtils.formatDate(c.datum)}</td>
+                            <td>${statusBadge}</td>
+                            <td>${c.anzahl_ergebnisse} Ergebnisse &bull; Teamgröße ${c.teamgroesse}</td>
+                            <td style="text-align: right; white-space: nowrap;">
+                                <a href="wettkampf.html?id=${c.id}" class="btn btn-sm btn-primary">⚙️ Verwalten</a>
+                                <a href="ergebnisse-eingabe.html?competition_id=${c.id}" class="btn btn-sm btn-outline">📝 Eingabe</a>
+                                <a href="ergebnisse.html?competition_id=${c.id}" class="btn btn-sm btn-outline">🏆 Auswertung</a>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                html += `
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+
+                compContainer.innerHTML = html;
+
+            } catch (err) {
+                console.error('Unerwarteter Fehler auf Startseite:', err);
+            }
+        });
+    </script>
+</body>
+</html>
