@@ -150,9 +150,14 @@
 
     function resetSelection() {
         currentCompId = null;
-        document.getElementById('comp-info-box').style.display = 'none';
-        document.getElementById('url-display').style.display = 'none';
-        document.getElementById('qr-actions').style.display = 'none';
+        const infoBox = document.getElementById('comp-info-box');
+        if (infoBox) infoBox.style.display = 'none';
+
+        const urlDisplay = document.getElementById('url-display');
+        if (urlDisplay) urlDisplay.style.display = 'none';
+
+        const qrActions = document.getElementById('qr-actions');
+        if (qrActions) qrActions.style.display = 'none';
         
         const target = document.getElementById('qr-target');
         if (target) {
