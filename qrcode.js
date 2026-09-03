@@ -142,45 +142,68 @@
             qrActions.style.display = 'flex';
         }
 
-        // QR Code auf Canvas zeichnen
+        // QR Code zeichnen
         generateQr(liveUrlString);
     }
+
+    let qrCodeInstance = null;
 
     function resetSelection() {
         currentCompId = null;
         document.getElementById('comp-info-box').style.display = 'none';
         document.getElementById('url-display').style.display = 'none';
         document.getElementById('qr-actions').style.display = 'none';
-        document.getElementById('qr-canvas').style.display = 'none';
-        document.getElementById('qr-placeholder').style.display = 'block';
+        
+        const target = document.getElementById('qr-target');
+        if (target) {
+            target.innerHTML = '';
+            target.style.display = 'none';
+        }
+
+        const placeholder = document.getElementById('qr-placeholder');
+        if (placeholder) {
+            placeholder.innerHTML = `
+                <div class="qr-placeholder-icon">📡</div>
+                <div>Bitte zuerst einen Wettkampf auswählen</div>
+            `;
+            placeholder.style.display = 'block';
+        }
+        qrCodeInstance = null;
     }
 
     function generateQr(url) {
-        const canvas = document.getElementById('qr-canvas');
+        const target = document.getElementById('qr-target');
         const placeholder = document.getElementById('qr-placeholder');
 
-        if (!canvas) return;
+        if (!target) return;
 
-        if (window.QRCode && typeof window.QRCode.toCanvas === 'function') {
-            window.QRCode.toCanvas(canvas, url, {
-                width: 250,
-                margin: 2,
-                color: {
-                    dark: '#0d3810',
-                    light: '#ffffff'
+        if (typeof window.QRCode !== 'undefined') {
+            target.innerHTML = '';
+            target.style.display = 'block';
+            if (placeholder) placeholder.style.display = 'none';
+
+            try {
+                qrCodeInstance = new window.QRCode(target, {
+                    text: url,
+                    width: 250,
+                    height: 250,
+                    colorDark: '#0d3810',
+                    colorLight: '#ffffff',
+                    correctLevel: window.QRCode.CorrectLevel.H
+                });
+            } catch (err) {
+                console.error('Fehler bei QR-Generierung:', err);
+                if (placeholder) {
+                    placeholder.innerHTML = '⚠️ Fehler bei der QR-Code-Erstellung.';
+                    placeholder.style.display = 'block';
                 }
-            }, function (error) {
-                if (error) {
-                    console.error('Fehler beim Generieren des QR-Codes:', error);
-                    window.AppUtils?.showNotification('Fehler beim Generieren des QR-Codes', 'error');
-                    return;
-                }
-                placeholder.style.display = 'none';
-                canvas.style.display = 'block';
-            });
+            }
         } else {
             console.error('QRCode-Bibliothek nicht verfügbar.');
-            placeholder.innerHTML = '⚠️ QR-Code-Bibliothek konnte nicht geladen werden.';
+            if (placeholder) {
+                placeholder.innerHTML = '⚠️ QR-Code-Bibliothek konnte nicht geladen werden.';
+                placeholder.style.display = 'block';
+            }
         }
     }
 
@@ -219,12 +242,27 @@
         if (!currentCompId) return;
         const comp = allCompetitions.find(c => c.id === currentCompId);
         const compName = comp ? comp.name : 'Wettkampf';
-        const canvas = document.getElementById('qr-canvas');
+        const target = document.getElementById('qr-target');
         const urlDisplay = document.getElementById('url-display');
 
-        if (!canvas) return;
+        if (!target) return;
 
-        const qrDataUrl = canvas.toDataURL();
+        // Bild-Daten abrufen (entweder aus img oder canvas)
+        let qrDataUrl = '';
+        const imgEl = target.querySelector('img');
+        const canvasEl = target.querySelector('canvas');
+
+        if (imgEl && imgEl.src && imgEl.src.startsWith('data:image')) {
+            qrDataUrl = imgEl.src;
+        } else if (canvasEl && typeof canvasEl.toDataURL === 'function') {
+            qrDataUrl = canvasEl.toDataURL();
+        }
+
+        if (!qrDataUrl) {
+            window.AppUtils?.showNotification('QR-Code Bild konnte nicht für den Druck extrahiert werden.', 'warning');
+            return;
+        }
+
         const dateStr = comp ? (window.AppUtils?.formatDate(comp.datum) || comp.datum) : '';
 
         const printWindow = window.open('', '_blank');

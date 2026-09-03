@@ -26,8 +26,13 @@
             margin: 1rem 0;
         }
 
-        #qr-canvas {
+        #qr-target {
             display: block;
+        }
+
+        #qr-target img, #qr-target canvas {
+            display: block;
+            margin: 0 auto;
         }
 
         #qr-placeholder {
@@ -173,7 +178,7 @@
                             <div class="qr-placeholder-icon">📡</div>
                             <div>Bitte zuerst einen Wettkampf auswählen</div>
                         </div>
-                        <canvas id="qr-canvas" style="display: none;"></canvas>
+                        <div id="qr-target" style="display: none;"></div>
                     </div>
 
                     <!-- URL -->
@@ -235,7 +240,13 @@
 
     <!-- Supabase & qrcode.js & Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    <script src="qrcode.min.js"></script>
+    <script>
+        // Fallback falls die lokale Datei nicht erreichbar wäre
+        if (typeof window.QRCode === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"><\/script>');
+        }
+    </script>
     <script src="supabase-client.js"></script>
     <script src="qrcode.js"></script>
 </body>
